@@ -2,7 +2,7 @@
 export type Regione = {
   id: string;
   descrizione: string;
-  sigla: string;
+  codice: string;
   coordinate?: {
     x: number;
     y: number;

@@ -4,7 +4,7 @@ export type Software = {
   id: string;
   descrizione: string;
   note?: string;
-  tipoAmbiente: Ambiente[];
+  ambienti: Ambiente[];
   versioneCorrente: string;
   dataUltimoAggiornamento: Date;
 };

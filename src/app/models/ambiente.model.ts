@@ -4,6 +4,5 @@ export type Ambiente = {
   id: string;
   descrizione: string;
   note?: string;
-  softwareInstallato: Software[];
   dataCreazione: Date;
 };
