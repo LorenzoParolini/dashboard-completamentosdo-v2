@@ -1,10 +1,10 @@
-import type { Cliente } from './cliente.model';
+import type { Ambiente } from './ambiente.model';
 
 export type Software = {
   id: string;
-  nome: string;
   descrizione: string;
+  note?: string;
+  tipoAmbiente: Ambiente[];
   versioneCorrente: string;
   dataUltimoAggiornamento: Date;
-  clientiAssociati: Cliente[];
 };

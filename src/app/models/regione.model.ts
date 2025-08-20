@@ -1,9 +1,9 @@
 
 export type Regione = {
   id: string;
-  nome: string;
+  descrizione: string;
   sigla: string;
-  coordinate: {
+  coordinate?: {
     x: number;
     y: number;
   };
