@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Regione } from '../models/regione.model';
+import { delay, Observable, of } from 'rxjs';
 
 export const regioni: Regione[] = [
     { id: '1', descrizione: 'Lombardia', codice: 'LOM', coordinate: { x: 45.4668, y: 9.1905 } },
@@ -19,12 +20,16 @@ export const regioni: Regione[] = [
 })
 export class RegioniService {
 
-  getAllRegioni(): Regione[] {
-    return regioni;
-  }
+  getAllRegioni(): Observable<Regione[]> {
+  return of(regioni).pipe(delay(2000));
+}
 
   getRegioneById(id: string): Regione | undefined {
     return regioni.find(regione => regione.id === id);
+  }
+
+  deleteRegione(id: string) {
+    console.log(`Deleting regione with id: ${id}`);
   }
 
 }

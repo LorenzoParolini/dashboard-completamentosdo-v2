@@ -19,6 +19,29 @@
 .regioni-tr {
   @apply border-b hover:bg-blue-50;
 }
+.regioni-tr:hover {
+  @apply bg-blue-100;
+}
 .regioni-td {
   @apply px-4 py-2;
+}
+.regioni-tr:hover {
+  @apply bg-blue-100;
+}
+.loading-spinner {
+  @apply flex items-center justify-center h-64;
+}
+.add-button {
+  @apply px-4 py-2 bg-blue-500 text-white hover:bg-blue-600;
+}
+
+.update-button {
+  @apply px-4 py-2 bg-yellow-500 text-white hover:bg-yellow-600;
+}
+
+.delete-button {
+  @apply px-4 py-2 bg-red-500 text-white hover:bg-red-600;
+}
+.UD-buttons {
+  @apply flex space-x-2 justify-evenly;
 }
