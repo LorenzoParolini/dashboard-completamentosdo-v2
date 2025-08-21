@@ -1,0 +1,24 @@
+.regioni-container {
+  @apply p-6;
+}
+.regioni-title {
+  @apply text-2xl font-bold mb-4 text-blue-900;
+}
+.regioni-table-wrapper {
+  @apply overflow-x-auto rounded-lg shadow;
+}
+.regioni-table {
+  @apply min-w-full bg-white;
+}
+.regioni-thead-row {
+  @apply bg-blue-900 text-white;
+}
+.regioni-th {
+  @apply px-4 py-2 text-left;
+}
+.regioni-tr {
+  @apply border-b hover:bg-blue-50;
+}
+.regioni-td {
+  @apply px-4 py-2;
+}
