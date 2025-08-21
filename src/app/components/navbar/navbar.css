@@ -1,0 +1,58 @@
+/* navbar.component.css */
+.navbar-container {
+  @apply w-full bg-gray-50 px-6 py-3;
+}
+.navbar-content {
+  @apply flex items-center gap-4 max-w-7xl mx-auto;
+}
+
+/* Logo */
+.logo-container {
+  @apply flex items-center;
+}
+.logo-circle {
+  @apply w-14 h-14 rounded-full flex items-center justify-center;
+  background: linear-gradient(135deg, #a8e6cf 0%, #81d4e0 100%);
+}
+.logo-text {
+  @apply text-white font-semibold text-sm;
+} 
+
+/* Search Container */
+.search-container {
+  @apply flex-1 flex items-center relative max-w-2xl;
+}
+.search-input {
+  @apply w-full px-4 py-2.5 pr-12 rounded-full border-0 text-gray-700 placeholder-gray-500;
+  background-color: #c8e6e0;
+}
+.search-input:focus {
+  @apply outline-none ring-2 ring-teal-400 ring-opacity-50;
+}
+.search-button {
+  @apply absolute right-1 p-2.5 rounded-full transition-all hover:bg-teal-600;
+  background-color: #5a9aa8;
+} 
+
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .user-text {
+    @apply hidden;
+  }
+  .add-text {
+    @apply hidden;
+  }
+  .search-container {
+    @apply max-w-xs;
+  }
+}
+@media (max-width: 640px) {
+  .navbar-content {
+    @apply gap-2 px-2;
+  }
+  .search-container {
+    @apply hidden;
+  }
+}
