@@ -29,7 +29,10 @@ export class RegioniService {
   }
 
   deleteRegione(id: string) {
-    console.log(`Deleting regione with id: ${id}`);
+    const index = regioni.findIndex(regione => regione.id === id);
+    if (index !== -1) {
+      regioni.splice(index, 1);
+    }
   }
 
 }

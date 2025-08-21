@@ -1,5 +1,6 @@
 <div class="regioni-container">
   <h2 class="regioni-title">Regioni</h2>
+  <app-regioni-modal></app-regioni-modal>
   <ng-container *ngIf="!loading; else loadingBlock">
     <div class="regioni-table-wrapper" *ngIf="regioni.length > 0; else noDataBlock">
       <table class="regioni-table" >
@@ -9,7 +10,9 @@
             <th class="regioni-th">Descrizione</th>
             <th class="regioni-th">Codice</th>
             <th class="regioni-th">Coordinate</th>
-            <th class="add-button"><button>Aggiungi</button></th>
+            <th class="add-button">
+              <button (click)="openRegioneModal()">Aggiungi</button>
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -19,7 +22,7 @@
             <td class="regioni-td">{{ regione.codice }}</td>
             <td class="regioni-td">{{ regione.coordinate?.x }}, {{ regione.coordinate?.y }}</td>
             <td class="regioni-td UD-buttons">
-              <button class="update-button">Modifica</button>
+              <button class="update-button" (click)="openRegioneModal(regione)">Modifica</button>
               <button class="delete-button" (click)="onDeleteRegione(regione.id)">Elimina</button>
             </td>
           </tr>

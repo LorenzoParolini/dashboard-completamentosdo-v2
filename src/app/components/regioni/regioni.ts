@@ -3,10 +3,12 @@ import { Regione } from '../../models/regione.model';
 import { RegioniService } from '../../services/regioni';
 import { CommonModule } from '@angular/common';
 import { LoadingSpinner } from '../loading-spinner/loading-spinner';
+import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { RegioniModal } from './regioni-modal/regioni-modal';
 
 @Component({
   selector: 'app-regioni',
-  imports: [CommonModule, LoadingSpinner],
+  imports: [CommonModule, LoadingSpinner, NgbModule, RegioniModal],
   templateUrl: './regioni.html',
   styleUrl: './regioni.css',
 })
@@ -23,13 +25,27 @@ export class Regioni implements OnInit {
     });
   }
 
-  constructor(private regioniService: RegioniService) {
-    
-  }
+  constructor(
+    private regioniService: RegioniService,
+    private modalService: NgbModal
+  ) {}
 
   onDeleteRegione(id_regione_da_eliminare: string) {
-
-    console.log('Eliminazione regione con id:', id_regione_da_eliminare);
     this.regioniService.deleteRegione(id_regione_da_eliminare);
+  }
+
+  openRegioneModal(regione?: Regione) {
+    const modalRef = this.modalService.open(RegioniModal, {
+      backdrop: 'static',
+      keyboard: false,
+    });
+    // Esempio: puoi passare dati alla modale
+    // modalRef.componentInstance.regione = regione ? { ...regione } : undefined;
+    modalRef.result.then(
+      (result) => {
+        // gestisci il risultato della modale qui
+      },
+      () => {}
+    );
   }
 }

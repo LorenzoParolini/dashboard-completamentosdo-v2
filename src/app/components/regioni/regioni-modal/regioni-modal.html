@@ -1,0 +1,48 @@
+<div class="regioni-modal-overlay">
+  <div class="regioni-modal-container">
+    <div class="regioni-modal-header">
+      <h2 class="regioni-modal-title">Gestione Regioni</h2>
+      <button class="regioni-modal-close">&times;</button>
+    </div>
+    <div class="regioni-modal-body">
+      <form class="regioni-modal-form flex-col gap-2">
+        <input
+          type="text"
+          name="descrizione"
+          placeholder="Descrizione"
+          class="regioni-modal-input"
+          required
+        />
+        <input
+          type="text"
+          name="codice"
+          placeholder="Codice"
+          class="regioni-modal-input"
+          required
+        />
+        <input
+          type="number"
+          name="coordinateX"
+          placeholder="Coordinata X"
+          class="regioni-modal-input"
+        />
+        <input
+          type="number"
+          name="coordinateY"
+          placeholder="Coordinata Y"
+          class="regioni-modal-input"
+        />
+        <button type="submit" class="regioni-modal-add-btn mt-2">Aggiungi</button>
+      </form>
+      <ul class="regioni-modal-list">
+        <li class="regioni-modal-list-item">
+          <span>
+            <span >
+            </span>
+          </span>
+          <button class="regioni-modal-delete-btn">Elimina</button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
