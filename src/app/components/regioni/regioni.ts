@@ -2,10 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { Regione } from '../../models/regione.model';
 import { RegioniService } from '../../services/regioni';
 import { CommonModule } from '@angular/common';
+import { LoadingSpinner } from '../loading-spinner/loading-spinner';
 
 @Component({
   selector: 'app-regioni',
-  imports: [CommonModule],
+  imports: [CommonModule, LoadingSpinner],
   templateUrl: './regioni.html',
   styleUrl: './regioni.css',
 })

@@ -28,9 +28,7 @@
 .regioni-tr:hover {
   @apply bg-blue-100;
 }
-.loading-spinner {
-  @apply flex items-center justify-center h-64;
-}
+
 .add-button {
   @apply px-4 py-2 bg-blue-500 text-white hover:bg-blue-600;
 }
