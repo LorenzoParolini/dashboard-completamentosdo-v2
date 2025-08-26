@@ -1,1 +1,38 @@
-<p>ambienti works!</p>
+<div class="ambienti-container">
+  <h2 class="ambienti-title">Ambienti</h2>
+  <ng-container *ngIf="!loading; else loadingBlock">
+    <div class="ambienti-table-wrapper" *ngIf="ambienti.length > 0; else noDataBlock">
+      <table class="ambienti-table">
+        <thead>
+          <tr class="ambienti-thead-row">
+            <th class="ambienti-th">ID</th>
+            <th class="ambienti-th">Descrizione</th>
+            <th class="ambienti-th">Note</th>
+            <th class="ambienti-th">Data Creazione</th>
+            <th class="add-button">
+              <button (click)="openAmbienteModal()">Aggiungi</button>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="ambienti-tbody-row" *ngFor="let ambiente of ambienti">
+            <td class="ambienti-td">{{ ambiente.id }}</td>
+            <td class="ambienti-td">{{ ambiente.descrizione }}</td>
+            <td class="ambienti-td">{{ ambiente.note || 'N/A' }}</td>
+            <td class="ambienti-td">{{ ambiente.dataCreazione | date:'dd/MM/yyyy' }}</td>
+            <td class="ambienti-td UD-buttons">
+              <button class="update-button" (click)="openAmbienteModal(ambiente)">Modifica</button>
+              <button class="delete-button" (click)="onDeleteAmbiente(ambiente.id)">Elimina</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-container>
+  <ng-template #loadingBlock>
+    <app-loading-spinner/>
+  </ng-template>
+  <ng-template #noDataBlock>
+    <div class="text-center p-4 text-gray-500">Nessun ambiente trovato.</div>
+  </ng-template>
+</div>

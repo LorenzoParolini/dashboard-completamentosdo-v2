@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Observable, of } from 'rxjs';
 import { Software } from '../models/software.model';
 import { Ambiente } from '../models/ambiente.model';
 
@@ -31,4 +32,13 @@ export const software: Software[] = [
 })
 export class SoftwareService {
   
+  getAllSoftware(): Observable<Software[]> {
+    // Mock implementation - sostituire con chiamata HTTP reale
+    return of(software);
+  }
+
+  deleteSoftware(id: string): void {
+    // Mock implementation - sostituire con chiamata HTTP reale
+    console.log('Eliminando software con ID:', id);
+  }
 }

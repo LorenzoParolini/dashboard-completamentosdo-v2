@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Observable, of } from 'rxjs';
 import { Ambiente } from '../models/ambiente.model';
 
 @Injectable({
@@ -12,11 +13,16 @@ export class AmbientiService {
     { id: 'a4', descrizione: 'STAGING', dataCreazione: new Date('2024-04-05'), note: 'Ambiente di pre-produzione' },
   ];
 
-  getAllAmbienti(): Ambiente[] {
-    return this.ambienti;
+  getAllAmbienti(): Observable<Ambiente[]> {
+    return of(this.ambienti);
   }
 
   getAmbienteById(id: string): Ambiente | undefined {
     return this.ambienti.find(ambiente => ambiente.id === id);
+  }
+
+  deleteAmbiente(id: string): void {
+    console.log('Eliminando ambiente con ID:', id);
+    this.ambienti = this.ambienti.filter(ambiente => ambiente.id !== id);
   }
 }

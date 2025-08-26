@@ -1,0 +1,48 @@
+.clienti-container {
+  @apply p-6;
+}
+.clienti-title {
+  @apply text-2xl font-bold mb-4 text-blue-900;
+}
+.clienti-table-wrapper {
+  @apply overflow-x-auto rounded-lg shadow;
+}
+.clienti-table {
+  @apply min-w-full bg-white;
+}
+.clienti-thead-row {
+  @apply bg-blue-900 text-white;
+}
+.clienti-th {
+  @apply px-4 py-2 text-left;
+}
+.clienti-tr {
+  @apply border-b hover:bg-blue-50;
+}
+.clienti-tr:hover {
+  @apply bg-blue-100;
+}
+.clienti-td {
+  @apply px-4 py-2;
+}
+.clienti-tbody-row {
+  @apply border-b hover:bg-blue-50;
+}
+.clienti-tbody-row:hover {
+  @apply bg-blue-100;
+}
+
+.add-button {
+  @apply px-4 py-2 bg-blue-500 text-white hover:bg-blue-600;
+}
+
+.update-button {
+  @apply px-4 py-2 bg-yellow-500 text-white hover:bg-yellow-600;
+}
+
+.delete-button {
+  @apply px-4 py-2 bg-red-500 text-white hover:bg-red-600;
+}
+.UD-buttons {
+  @apply flex space-x-2 justify-evenly;
+}

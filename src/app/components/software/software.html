@@ -1,1 +1,47 @@
-<p>software works!</p>
+<div class="software-container">
+  <h2 class="software-title">Software</h2>
+  <ng-container *ngIf="!loading; else loadingBlock">
+    <div class="software-table-wrapper" *ngIf="software.length > 0; else noDataBlock">
+      <table class="software-table">
+        <thead>
+          <tr class="software-thead-row">
+            <th class="software-th">ID</th>
+            <th class="software-th">Descrizione</th>
+            <th class="software-th">Note</th>
+            <th class="software-th">Versione Corrente</th>
+            <th class="software-th">Ultimo Aggiornamento</th>
+            <th class="software-th">Ambienti</th>
+            <th class="add-button">
+              <button (click)="openSoftwareModal()">Aggiungi</button>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="software-tbody-row" *ngFor="let sw of software">
+            <td class="software-td">{{ sw.id }}</td>
+            <td class="software-td">{{ sw.descrizione }}</td>
+            <td class="software-td">{{ sw.note || 'N/A' }}</td>
+            <td class="software-td">{{ sw.versioneCorrente }}</td>
+            <td class="software-td">{{ sw.dataUltimoAggiornamento | date:'dd/MM/yyyy' }}</td>
+            <td class="software-td">
+              <span *ngFor="let amb of sw.ambienti; let last = last">
+                {{ amb.descrizione }}<span *ngIf="!last">, </span>
+              </span>
+              <span *ngIf="sw.ambienti.length === 0">Nessun ambiente</span>
+            </td>
+            <td class="software-td UD-buttons">
+              <button class="update-button" (click)="openSoftwareModal(sw)">Modifica</button>
+              <button class="delete-button" (click)="onDeleteSoftware(sw.id)">Elimina</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-container>
+  <ng-template #loadingBlock>
+    <app-loading-spinner/>
+  </ng-template>
+  <ng-template #noDataBlock>
+    <div class="text-center p-4 text-gray-500">Nessun software trovato.</div>
+  </ng-template>
+</div>

@@ -1,6 +1,5 @@
 <div class="regioni-container">
   <h2 class="regioni-title">Regioni</h2>
-  <app-regioni-modal></app-regioni-modal>
   <ng-container *ngIf="!loading; else loadingBlock">
     <div class="regioni-table-wrapper" *ngIf="regioni.length > 0; else noDataBlock">
       <table class="regioni-table" >
@@ -28,7 +27,6 @@
           </tr>
         </tbody>
       </table>
-      
     </div>
   </ng-container>
   <ng-template #loadingBlock>

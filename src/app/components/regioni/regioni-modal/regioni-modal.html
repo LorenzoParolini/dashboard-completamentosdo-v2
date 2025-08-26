@@ -1,13 +1,14 @@
 <div class="regioni-modal-overlay">
   <div class="regioni-modal-container">
     <div class="regioni-modal-header">
-      <h2 class="regioni-modal-title">Gestione Regioni</h2>
-      <button class="regioni-modal-close">&times;</button>
+      <h2 class="regioni-modal-title">{{ regione ? 'Modifica Regione' : 'Aggiungi Regione' }}</h2>
+      <button class="regioni-modal-close" (click)="closeModal()">&times;</button>
     </div>
     <div class="regioni-modal-body">
-      <form class="regioni-modal-form flex-col gap-2">
+      <form (ngSubmit)="salva()" class="regioni-modal-form flex-col gap-2">
         <input
           type="text"
+          [(ngModel)]="nuovaRegione.descrizione"
           name="descrizione"
           placeholder="Descrizione"
           class="regioni-modal-input"
@@ -15,6 +16,7 @@
         />
         <input
           type="text"
+          [(ngModel)]="nuovaRegione.codice"
           name="codice"
           placeholder="Codice"
           class="regioni-modal-input"
@@ -22,27 +24,22 @@
         />
         <input
           type="number"
+          [(ngModel)]="nuovaRegione.coordinate!.x"
           name="coordinateX"
           placeholder="Coordinata X"
           class="regioni-modal-input"
         />
         <input
           type="number"
+          [(ngModel)]="nuovaRegione.coordinate!.y"
           name="coordinateY"
           placeholder="Coordinata Y"
           class="regioni-modal-input"
         />
-        <button type="submit" class="regioni-modal-add-btn mt-2">Aggiungi</button>
+        <button type="submit" class="regioni-modal-add-btn mt-2">
+          {{ regione ? 'Salva' : 'Aggiungi' }}
+        </button>
       </form>
-      <ul class="regioni-modal-list">
-        <li class="regioni-modal-list-item">
-          <span>
-            <span >
-            </span>
-          </span>
-          <button class="regioni-modal-delete-btn">Elimina</button>
-        </li>
-      </ul>
     </div>
   </div>
 </div>

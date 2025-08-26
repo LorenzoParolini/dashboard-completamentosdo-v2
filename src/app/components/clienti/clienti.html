@@ -1,1 +1,42 @@
-<p>clienti works!</p>
+<div class="clienti-container">
+  <h2 class="clienti-title">Clienti</h2>
+  <ng-container *ngIf="!loading; else loadingBlock">
+    <div class="clienti-table-wrapper" *ngIf="clienti.length > 0; else noDataBlock">
+      <table class="clienti-table">
+        <thead>
+          <tr class="clienti-thead-row">
+            <th class="clienti-th">ID</th>
+            <th class="clienti-th">Descrizione</th>
+            <th class="clienti-th">Regione</th>
+            <th class="clienti-th">Software</th>
+            <th class="add-button">
+              <button (click)="openClienteModal()">Aggiungi</button>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="clienti-tbody-row" *ngFor="let cliente of clienti">
+            <td class="clienti-td">{{ cliente.id }}</td>
+            <td class="clienti-td">{{ cliente.descrizione }}</td>
+            <td class="clienti-td">{{ cliente.regione.descrizione }}</td>
+            <td class="clienti-td">
+              <span *ngFor="let sw of cliente.software; let last = last">
+                {{ sw.descrizione }}<span *ngIf="!last">, </span>
+              </span>
+            </td>
+            <td class="clienti-td UD-buttons">
+              <button class="update-button" (click)="openClienteModal(cliente)">Modifica</button>
+              <button class="delete-button" (click)="onDeleteCliente(cliente.id)">Elimina</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-container>
+  <ng-template #loadingBlock>
+    <app-loading-spinner/>
+  </ng-template>
+  <ng-template #noDataBlock>
+    <div class="text-center p-4 text-gray-500">Nessun cliente trovato.</div>
+  </ng-template>
+</div>

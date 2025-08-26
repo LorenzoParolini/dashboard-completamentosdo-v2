@@ -1,0 +1,64 @@
+<div class="modal-header">
+  <h4 class="modal-title">{{ cliente ? 'Modifica Cliente' : 'Aggiungi Cliente' }}</h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<div class="modal-body">
+  <form (ngSubmit)="salva()" class="clienti-modal-form">
+    <div class="mb-3">
+      <label class="form-label">Descrizione</label>
+      <input
+        type="text"
+        [(ngModel)]="nuovoCliente.descrizione"
+        name="descrizione"
+        placeholder="Descrizione del cliente"
+        class="form-control"
+        required
+      />
+    </div>
+    
+    <div class="mb-3">
+      <label class="form-label">Regione</label>
+      <select 
+        [value]="nuovoCliente.regione.id"
+        (change)="onRegioneChange($event)"
+        name="regione"
+        class="form-control"
+        required
+      >
+        <option value="">Seleziona una regione</option>
+        <option *ngFor="let regione of regioniDisponibili" [value]="regione.id">
+          {{ regione.descrizione }}
+        </option>
+      </select>
+    </div>
+    
+    <div class="mb-3">
+      <label class="form-label">Software</label>
+      <div class="checkbox-group">
+        <div *ngFor="let software of softwareDisponibili" class="checkbox-item">
+          <input
+            type="checkbox"
+            [id]="'software-' + software.id"
+            [value]="software.id"
+            [checked]="isSoftwareSelected(software.id)"
+            (change)="onSoftwareChange($event)"
+            class="form-check-input"
+          />
+          <label [for]="'software-' + software.id" class="form-check-label">
+            {{ software.descrizione }}
+          </label>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="closeModal()">Annulla</button>
+  <button type="button" class="btn btn-primary" (click)="salva()">
+    {{ cliente ? 'Salva' : 'Aggiungi' }}
+  </button>
+</div>

@@ -1,0 +1,48 @@
+.ambienti-container {
+  @apply p-6;
+}
+.ambienti-title {
+  @apply text-2xl font-bold mb-4 text-blue-900;
+}
+.ambienti-table-wrapper {
+  @apply overflow-x-auto rounded-lg shadow;
+}
+.ambienti-table {
+  @apply min-w-full bg-white;
+}
+.ambienti-thead-row {
+  @apply bg-blue-900 text-white;
+}
+.ambienti-th {
+  @apply px-4 py-2 text-left;
+}
+.ambienti-tr {
+  @apply border-b hover:bg-blue-50;
+}
+.ambienti-tr:hover {
+  @apply bg-blue-100;
+}
+.ambienti-td {
+  @apply px-4 py-2;
+}
+.ambienti-tbody-row {
+  @apply border-b hover:bg-blue-50;
+}
+.ambienti-tbody-row:hover {
+  @apply bg-blue-100;
+}
+
+.add-button {
+  @apply px-4 py-2 bg-blue-500 text-white hover:bg-blue-600;
+}
+
+.update-button {
+  @apply px-4 py-2 bg-yellow-500 text-white hover:bg-yellow-600;
+}
+
+.delete-button {
+  @apply px-4 py-2 bg-red-500 text-white hover:bg-red-600;
+}
+.UD-buttons {
+  @apply flex space-x-2 justify-evenly;
+}
