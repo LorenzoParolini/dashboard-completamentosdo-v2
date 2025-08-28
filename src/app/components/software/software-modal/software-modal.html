@@ -1,82 +1,45 @@
-<div class="modal-header">
-  <h4 class="modal-title">{{ software ? 'Modifica Software' : 'Aggiungi Software' }}</h4>
-  <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()">
-    <span aria-hidden="true">&times;</span>
-  </button>
-</div>
-
-<div class="modal-body">
-  <form (ngSubmit)="salva()" class="software-modal-form">
-    <div class="mb-3">
-      <label class="form-label">Descrizione</label>
-      <input
-        type="text"
-        [(ngModel)]="nuovoSoftware.descrizione"
-        name="descrizione"
-        placeholder="Descrizione del software"
-        class="form-control"
-        required
-      />
+<div class="software-modal-overlay">
+  <div class="software-modal-container">
+    <div class="software-modal-header">
+      <h2 class="software-modal-title">{{ software ? 'Modifica Software' : 'Aggiungi Software' }}</h2>
+      <button class="software-modal-close" (click)="closeModal()">&times;</button>
     </div>
-    
-    <div class="mb-3">
-      <label class="form-label">Note</label>
-      <textarea
-        [(ngModel)]="nuovoSoftware.note"
-        name="note"
-        placeholder="Note opzionali"
-        class="form-control"
-        rows="3"
-      ></textarea>
+    <div class="software-modal-body">
+      <form (ngSubmit)="salva()" class="software-modal-form flex-col gap-2">
+        <input
+          type="text"
+          [(ngModel)]="nuovoSoftware.descrizione"
+          name="descrizione"
+          placeholder="Descrizione del software"
+          class="software-modal-input"
+          required
+        />
+        <textarea
+          [(ngModel)]="nuovoSoftware.note"
+          name="note"
+          placeholder="Note opzionali"
+          class="software-modal-input"
+          rows="3"
+        ></textarea>
+        <input
+          type="text"
+          [(ngModel)]="nuovoSoftware.versioneCorrente"
+          name="versioneCorrente"
+          placeholder="es. 1.0.0"
+          class="software-modal-input"
+          required
+        />
+        <input
+          type="date"
+          [(ngModel)]="nuovoSoftware.dataUltimoAggiornamento"
+          name="dataUltimoAggiornamento"
+          class="software-modal-input"
+          required
+        />
+        <button type="submit" class="software-modal-add-btn mt-2">
+          {{ software ? 'Salva' : 'Aggiungi' }}
+        </button>
+      </form>
     </div>
-
-    <div class="mb-3">
-      <label class="form-label">Versione Corrente</label>
-      <input
-        type="text"
-        [(ngModel)]="nuovoSoftware.versioneCorrente"
-        name="versioneCorrente"
-        placeholder="es. 1.0.0"
-        class="form-control"
-        required
-      />
-    </div>
-
-    <div class="mb-3">
-      <label class="form-label">Data Ultimo Aggiornamento</label>
-      <input
-        type="date"
-        [(ngModel)]="nuovoSoftware.dataUltimoAggiornamento"
-        name="dataUltimoAggiornamento"
-        class="form-control"
-        required
-      />
-    </div>
-    
-    <div class="mb-3">
-      <label class="form-label">Ambienti</label>
-      <div class="checkbox-group">
-        <div *ngFor="let ambiente of ambientiDisponibili" class="checkbox-item">
-          <input
-            type="checkbox"
-            [id]="'ambiente-' + ambiente.id"
-            [value]="ambiente.id"
-            [checked]="isAmbienteSelected(ambiente.id)"
-            (change)="onAmbienteChange($event)"
-            class="form-check-input"
-          />
-          <label [for]="'ambiente-' + ambiente.id" class="form-check-label">
-            {{ ambiente.descrizione }}
-          </label>
-        </div>
-      </div>
-    </div>
-  </form>
-</div>
-
-<div class="modal-footer">
-  <button type="button" class="btn btn-secondary" (click)="closeModal()">Annulla</button>
-  <button type="button" class="btn btn-primary" (click)="salva()">
-    {{ software ? 'Salva' : 'Aggiungi' }}
-  </button>
+  </div>
 </div>

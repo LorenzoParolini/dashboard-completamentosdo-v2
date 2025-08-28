@@ -21,7 +21,7 @@ export const regioni: Regione[] = [
 export class RegioniService {
 
   getAllRegioni(): Observable<Regione[]> {
-  return of(regioni).pipe(delay(2000));
+  return of(regioni).pipe(delay(500));
 }
 
   getRegioneById(id: string): Regione | undefined {

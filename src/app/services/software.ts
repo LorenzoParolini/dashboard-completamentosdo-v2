@@ -37,8 +37,14 @@ export class SoftwareService {
     return of(software);
   }
 
-  deleteSoftware(id: string): void {
-    // Mock implementation - sostituire con chiamata HTTP reale
-    console.log('Eliminando software con ID:', id);
+  getSoftwareById(id: string): Software | undefined {
+    return software.find(soft => soft.id === id);
+  }
+
+  deleteSoftware(id: string) {
+    const index = software.findIndex(soft => soft.id === id);
+    if (index !== -1) {
+      software.splice(index, 1);
+    }
   }
 }

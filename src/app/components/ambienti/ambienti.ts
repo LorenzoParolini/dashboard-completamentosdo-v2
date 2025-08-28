@@ -19,33 +19,10 @@ export class Ambienti implements OnInit {
   ngOnInit(): void {
     this.loading = true;
     this.ambienti = [];
-    // Dati di esempio
-    this.ambienti = [
-      {
-        id: '1',
-        descrizione: 'Ambiente di Sviluppo',
-        note: 'Ambiente per lo sviluppo delle applicazioni',
-        dataCreazione: new Date('2024-01-15')
-      },
-      {
-        id: '2',
-        descrizione: 'Ambiente di Test',
-        note: 'Ambiente per i test di integrazione',
-        dataCreazione: new Date('2024-02-10')
-      },
-      {
-        id: '3',
-        descrizione: 'Ambiente di Produzione',
-        dataCreazione: new Date('2024-03-01')
-      }
-    ];
-    this.loading = false;
-    
-    // Uncomment quando il servizio sarà pronto
-    // this.ambientiService.getAllAmbienti().subscribe((data) => {
-    //   this.ambienti = data;
-    //   this.loading = false;
-    // });
+    this.ambientiService.getAllAmbienti().subscribe((data) => {
+      this.ambienti = data;
+      this.loading = false;
+    });
   }
 
   constructor(
@@ -55,12 +32,15 @@ export class Ambienti implements OnInit {
 
   onDeleteAmbiente(id_ambiente_da_eliminare: string) {
     this.ambientiService.deleteAmbiente(id_ambiente_da_eliminare);
+    this.ambienti = this.ambienti.filter(a => a.id !== id_ambiente_da_eliminare);
   }
 
   openAmbienteModal(ambiente?: Ambiente) {
     const modalRef = this.modalService.open(AmbientiModal, {
-      backdrop: true,
-      keyboard: true,
+      backdrop: 'static', // impedisce la chiusura cliccando fuori
+      keyboard: true, // permette la chiusura con ESC
+      centered: true, // centra la modale
+      size: 'lg' // dimensione grande
     });
     if (ambiente) {
       modalRef.componentInstance.ambiente = ambiente;

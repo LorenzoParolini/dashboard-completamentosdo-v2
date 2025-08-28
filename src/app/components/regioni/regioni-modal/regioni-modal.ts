@@ -3,6 +3,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { Regione } from '../../../models/regione.model';
+
 export interface DialogData {
   regione?: Regione;
 }
@@ -57,11 +58,5 @@ export class RegioniModal implements OnInit {
     this.activeModal.close();
     console.log('Modale chiusa senza salvare');
   }
-
-  // Metodi placeholder per futura compatibilità con Material Dialog
-  blockClose() {}
-  unblockClose() {}
-  updateDialogSize() {}
-  updateDialogPosition() {}
 
 }

@@ -1,73 +1,33 @@
+.clienti-modal-overlay {
+  @apply fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50;
+}
+
+.clienti-modal-container {
+  @apply bg-white rounded-lg shadow-lg w-full max-w-md p-6;
+}
+
+.clienti-modal-header {
+  @apply flex justify-between items-center mb-4;
+}
+
+.clienti-modal-title {
+  @apply text-xl font-semibold text-blue-700;
+}
+
+.clienti-modal-close {
+  @apply text-2xl text-gray-400 hover:text-blue-700 cursor-pointer bg-transparent border-none;
+}
+
 .clienti-modal-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  @apply flex flex-col gap-2 mb-4;
 }
 
-.form-label {
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-  color: #374151;
+.clienti-modal-input {
+  @apply border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500;
 }
 
-.form-control {
-  padding: 0.5rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-}
-
-.form-control:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.checkbox-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.checkbox-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.form-check-input {
-  margin: 0;
-}
-
-.form-check-label {
-  margin: 0;
-  cursor: pointer;
-}
-
-.btn {
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  font-weight: 500;
-  cursor: pointer;
-  border: none;
-}
-
-.btn-primary {
-  background-color: #3b82f6;
-  color: white;
-}
-
-.btn-primary:hover {
-  background-color: #2563eb;
-}
-
-.btn-secondary {
-  background-color: #6b7280;
-  color: white;
-}
-
-.btn-secondary:hover {
-  background-color: #4b5563;
+.clienti-modal-add-btn {
+  @apply bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mt-2;
 }
 
 .modal-footer {
