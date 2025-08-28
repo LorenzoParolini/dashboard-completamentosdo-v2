@@ -6,11 +6,12 @@ import { Ambiente } from '../models/ambiente.model';
 const ambientiBase: Ambiente[] = [
   { id: 'a1', descrizione: 'DEV', dataCreazione: new Date('2024-01-10'), note: 'Ambiente di sviluppo' },
   { id: 'a2', descrizione: 'TEST', dataCreazione: new Date('2024-02-15'), note: 'Ambiente di test funzionale' },
+  { id: 'a3', descrizione: 'PROD', dataCreazione: new Date('2024-03-20'), note: 'Ambiente di produzione' },
 ];
 
 export const software: Software[] = [
   {
-    id: 's1',
+    id: '1',
     descrizione: 'Gestionale ERP',
     note: 'Software gestionale aziendale',
     ambienti: ambientiBase,
@@ -18,7 +19,7 @@ export const software: Software[] = [
     dataUltimoAggiornamento: new Date('2024-07-01'),
   },
   {
-    id: 's2',
+    id: '2',
     descrizione: 'CRM Web',
     note: 'Gestione clienti e contatti',
     ambienti: ambientiBase,
@@ -46,5 +47,9 @@ export class SoftwareService {
     if (index !== -1) {
       software.splice(index, 1);
     }
+  }
+
+  length(): number {
+    return software.length;
   }
 }

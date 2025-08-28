@@ -1,17 +1,18 @@
 <div class="clienti-container">
-  <h2 class="clienti-title">Clienti</h2>
+  <div class="title-row">
+    <h2 class="clienti-title">Clienti</h2>
+    <button class="add-button" (click)="openClienteModal()">Aggiungi</button>
+  </div>
   <ng-container *ngIf="!loading; else loadingBlock">
     <div class="clienti-table-wrapper" *ngIf="clienti.length > 0; else noDataBlock">
       <table class="clienti-table">
         <thead>
           <tr class="clienti-thead-row">
-            <th class="clienti-th">ID</th>
-            <th class="clienti-th">Descrizione</th>
-            <th class="clienti-th">Regione</th>
-            <th class="clienti-th">Software</th>
-            <th class="add-button">
-              <button (click)="openClienteModal()">Aggiungi</button>
-            </th>
+            <th class="clienti-th text-left">ID</th>
+            <th class="clienti-th text-left">Descrizione</th>
+            <th class="clienti-th text-left">Regione</th>
+            <th class="clienti-th text-left">Software</th>
+            <th class="clienti-th">Azioni</th>
           </tr>
         </thead>
         <tbody>

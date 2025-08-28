@@ -21,6 +21,22 @@
           class="software-modal-input"
           rows="3"
         ></textarea>
+        
+        <!-- Selezione Ambiente -->
+        <select
+          [(ngModel)]="ambienteSelezionatoId"
+          name="ambienteSelezionato"
+          class="software-modal-input"
+          required
+        >
+          <option value="" disabled>Seleziona un ambiente</option>
+          <option 
+            *ngFor="let ambiente of ambientiDisponibili" 
+            [value]="ambiente.id"
+          >
+            {{ ambiente.descrizione }}
+          </option>
+        </select>
         <input
           type="text"
           [(ngModel)]="nuovoSoftware.versioneCorrente"

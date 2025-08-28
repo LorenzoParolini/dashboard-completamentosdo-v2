@@ -38,7 +38,7 @@ export class Regioni implements OnInit {
   // Metodo attuale con NgBootstrap
   openRegioneModal(regione?: Regione) {
     const modalRef = this.modalService.open(RegioniModal, {
-      backdrop: 'static', // impedisce la chiusura cliccando fuori
+      backdrop: true, // consente la chiusura cliccando fuori
       keyboard: true, // permette la chiusura con ESC
       centered: true, // centra la modale
       size: 'lg' // dimensione grande

@@ -8,7 +8,7 @@ import { SoftwareComponent } from './components/software/software';
 export const routes: Routes = [
     { path: '',  component: Main },
 
-    { path: 'home', component: Main },
+    { path: 'home', redirectTo: '' },
     { path: 'regione', component: Regioni },
     { path: 'cliente', component: Clienti },
     { path: 'ambiente', component: Ambienti },

@@ -1,8 +1,13 @@
 .regioni-container {
   @apply p-6;
 }
+
+.title-row {
+  @apply flex justify-between items-center mb-4;
+}
+
 .regioni-title {
-  @apply text-2xl font-bold mb-4 text-blue-900;
+  @apply text-2xl font-bold text-blue-900;
 }
 .regioni-table-wrapper {
   @apply overflow-x-auto rounded-lg shadow;
@@ -14,7 +19,7 @@
   @apply bg-blue-900 text-white;
 }
 .regioni-th {
-  @apply px-4 py-2 text-left;
+  @apply px-4 py-2;
 }
 .regioni-tr {
   @apply border-b hover:bg-blue-50;
@@ -30,15 +35,15 @@
 }
 
 .add-button {
-  @apply px-4 py-2 bg-blue-500 text-white hover:bg-blue-600;
+  @apply px-4 py-2 bg-blue-500 text-white hover:bg-blue-600 rounded;
 }
 
 .update-button {
-  @apply px-4 py-2 bg-yellow-500 text-white hover:bg-yellow-600;
+  @apply px-4 py-2 bg-yellow-500 text-white hover:bg-yellow-600 rounded;
 }
 
 .delete-button {
-  @apply px-4 py-2 bg-red-500 text-white hover:bg-red-600;
+  @apply px-4 py-2 bg-red-500 text-white hover:bg-red-600 rounded;
 }
 .UD-buttons {
   @apply flex space-x-2 justify-evenly;

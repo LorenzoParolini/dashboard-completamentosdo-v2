@@ -5,6 +5,9 @@ import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { Cliente } from '../../../models/cliente.model';
 import { Regione } from '../../../models/regione.model';
 import { Software } from '../../../models/software.model';
+import { ClientiService } from '../../../services/clienti';
+import { RegioniService } from '../../../services/regioni';
+import { SoftwareService } from '../../../services/software';
 
 export interface ClientiDialogData {
   cliente?: Cliente;
@@ -14,8 +17,7 @@ export interface ClientiDialogData {
   selector: 'app-clienti-modal',
   imports: [CommonModule, FormsModule, NgbModule],
   templateUrl: './clienti-modal.html',
-  styleUrls: ['./clienti-modal.css'],
-  providers: [NgbActiveModal]
+  styleUrls: ['./clienti-modal.css']
 })
 export class ClientiModal implements OnInit {
   @Input() cliente?: Cliente;
@@ -27,29 +29,41 @@ export class ClientiModal implements OnInit {
     software: []
   };
 
-  // Mock data per le select
-  regioniDisponibili: Regione[] = [
-    { id: '1', descrizione: 'Lombardia', codice: 'LOM', coordinate: { x: 45.4642, y: 9.1900 } },
-    { id: '2', descrizione: 'Campania', codice: 'CAM', coordinate: { x: 40.8518, y: 14.2681 } },
-    { id: '3', descrizione: 'Toscana', codice: 'TOS', coordinate: { x: 43.7696, y: 11.2558 } }
-  ];
+  regioniDisponibili: Regione[] = [];
+  softwareDisponibili: Software[] = [];
 
-  softwareDisponibili: Software[] = [
-    { id: '1', descrizione: 'ERP System', note: 'Sistema gestionale', ambienti: [], versioneCorrente: '2.1.0', dataUltimoAggiornamento: new Date() },
-    { id: '2', descrizione: 'CRM Platform', note: 'Gestione clienti', ambienti: [], versioneCorrente: '1.5.2', dataUltimoAggiornamento: new Date() },
-    { id: '3', descrizione: 'Accounting Software', ambienti: [], versioneCorrente: '3.0.1', dataUltimoAggiornamento: new Date() }
-  ];
+  constructor(
+    public activeModal: NgbActiveModal, 
+    private clientiService: ClientiService,
+    private regioniService: RegioniService,
+    private softwareService: SoftwareService
+  ) {
+  }
 
-  constructor(public activeModal: NgbActiveModal) {
+  getLength(): number {
+    return this.clientiService.length();
   }
 
   ngOnInit() {
+    // Carica regioni disponibili
+    this.regioniService.getAllRegioni().subscribe(regioni => {
+      this.regioniDisponibili = regioni;
+    });
+
+    // Carica software disponibili
+    this.softwareService.getAllSoftware().subscribe(software => {
+      this.softwareDisponibili = software;
+    });
+
     if (this.cliente) {
       this.nuovoCliente = {
         ...this.cliente,
         regione: { ...this.cliente.regione },
         software: [...this.cliente.software]
       };
+    } else {
+      // Inizializza l'ID solo qui, quando il servizio è disponibile
+      this.nuovoCliente.id = (this.getLength() + 1).toString();
     }
   }
 
@@ -58,7 +72,7 @@ export class ClientiModal implements OnInit {
   }
 
   closeModal() {
-    this.activeModal.close();
+    this.activeModal.dismiss();
   }
 
   onRegioneChange(event: any) {
@@ -71,19 +85,19 @@ export class ClientiModal implements OnInit {
 
   onSoftwareChange(event: any) {
     const softwareId = event.target.value;
-    const isChecked = event.target.checked;
-    
-    if (isChecked) {
+    if (softwareId) {
       const software = this.softwareDisponibili.find(s => s.id === softwareId);
-      if (software && !this.nuovoCliente.software.find(s => s.id === softwareId)) {
-        this.nuovoCliente.software.push(software);
+      if (software) {
+        // Sostituisce l'array con un singolo software
+        this.nuovoCliente.software = [software];
       }
     } else {
-      this.nuovoCliente.software = this.nuovoCliente.software.filter(s => s.id !== softwareId);
+      // Svuota l'array se non è selezionato nessun software
+      this.nuovoCliente.software = [];
     }
   }
 
-  isSoftwareSelected(softwareId: string): boolean {
-    return this.nuovoCliente.software.some(s => s.id === softwareId);
+  getSelectedSoftwareId(): string {
+    return this.nuovoCliente.software.length > 0 ? this.nuovoCliente.software[0].id : '';
   }
 }

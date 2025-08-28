@@ -1,17 +1,18 @@
 <div class="ambienti-container">
-  <h2 class="ambienti-title">Ambienti</h2>
+  <div class="title-row">
+    <h2 class="ambienti-title">Ambienti</h2>
+    <button class="add-button" (click)="openAmbienteModal()">Aggiungi</button>
+  </div>
   <ng-container *ngIf="!loading; else loadingBlock">
     <div class="ambienti-table-wrapper" *ngIf="ambienti.length > 0; else noDataBlock">
       <table class="ambienti-table">
         <thead>
           <tr class="ambienti-thead-row">
-            <th class="ambienti-th">ID</th>
-            <th class="ambienti-th">Descrizione</th>
-            <th class="ambienti-th">Note</th>
-            <th class="ambienti-th">Data Creazione</th>
-            <th class="add-button">
-              <button (click)="openAmbienteModal()">Aggiungi</button>
-            </th>
+            <th class="ambienti-th text-left">ID</th>
+            <th class="ambienti-th text-left">Descrizione</th>
+            <th class="ambienti-th text-left">Note</th>
+            <th class="ambienti-th text-left">Data Creazione</th>
+            <th class="ambienti-th">Azioni</th>
           </tr>
         </thead>
         <tbody>

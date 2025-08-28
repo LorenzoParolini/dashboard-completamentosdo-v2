@@ -3,6 +3,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { Regione } from '../../../models/regione.model';
+import { RegioniService } from '../../../services/regioni';
 
 export interface DialogData {
   regione?: Regione;
@@ -14,7 +15,6 @@ export interface DialogData {
   imports: [CommonModule, FormsModule, NgbModule],
   templateUrl: './regioni-modal.html',
   styleUrls: ['./regioni-modal.css'],
-  providers: [NgbActiveModal]
 })
 export class RegioniModal implements OnInit {
   @Input() regione?: Regione;
@@ -26,7 +26,11 @@ export class RegioniModal implements OnInit {
     coordinate: { x: 0, y: 0 }
   };
 
-  constructor(public activeModal: NgbActiveModal) {
+  constructor(public activeModal: NgbActiveModal, private regioniService: RegioniService) {
+  }
+
+  getLength(): number {
+    return this.regioniService.length();
   }
 
   ngOnInit() {
@@ -38,6 +42,9 @@ export class RegioniModal implements OnInit {
           y: this.regione.coordinate?.y ?? 0
         }
       };
+    } else {
+      // Inizializza l'ID solo qui, quando il servizio è disponibile
+      this.nuovaRegione.id = (this.getLength() + 1).toString();
     }
     
     if (!this.nuovaRegione.coordinate) {
@@ -55,7 +62,7 @@ export class RegioniModal implements OnInit {
   }
 
   closeModal() {
-    this.activeModal.close();
+    this.activeModal.dismiss();
     console.log('Modale chiusa senza salvare');
   }
 

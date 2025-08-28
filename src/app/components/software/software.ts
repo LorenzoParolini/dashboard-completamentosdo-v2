@@ -37,7 +37,7 @@ export class SoftwareComponent implements OnInit {
 
   openSoftwareModal(software?: SoftwareModel) {
     const modalRef = this.modalService.open(SoftwareModal, {
-      backdrop: 'static', // impedisce la chiusura cliccando fuori
+      backdrop: true, // permette la chiusura cliccando fuori
       keyboard: true, // permette la chiusura con ESC
       centered: true, // centra la modale
       size: 'lg' // dimensione grande

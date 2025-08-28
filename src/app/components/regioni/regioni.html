@@ -1,21 +1,22 @@
 <div class="regioni-container">
-  <h2 class="regioni-title">Regioni</h2>
+  <div class="title-row">
+    <h2 class="regioni-title">Regioni</h2>
+    <button class="add-button" (click)="openRegioneModal()">Aggiungi</button>
+  </div>
   <ng-container *ngIf="!loading; else loadingBlock">
     <div class="regioni-table-wrapper" *ngIf="regioni.length > 0; else noDataBlock">
       <table class="regioni-table" >
         <thead>
           <tr class="regioni-thead-row">
-            <th class="regioni-th">ID</th>
-            <th class="regioni-th">Descrizione</th>
-            <th class="regioni-th">Codice</th>
-            <th class="regioni-th">Coordinate</th>
-            <th class="add-button">
-              <button (click)="openRegioneModal()">Aggiungi</button>
-            </th>
+            <th class="regioni-th text-left">ID</th>
+            <th class="regioni-th text-left">Descrizione</th>
+            <th class="regioni-th text-left">Codice</th>
+            <th class="regioni-th text-left">Coordinate</th>
+            <th class="regioni-th">Azioni</th>
           </tr>
         </thead>
         <tbody>
-          <tr class="regioni-tbody-row" *ngFor="let regione of regioni">
+          <tr class="regioni-tbody-row regioni-tr" *ngFor="let regione of regioni">
             <td class="regioni-td">{{ regione.id }}</td>
             <td class="regioni-td">{{ regione.descrizione }}</td>
             <td class="regioni-td">{{ regione.codice }}</td>

@@ -29,4 +29,8 @@ export class AmbientiService {
       ambienti.splice(index, 1);
     }
   }
+
+  length(): number {
+    return ambienti.length;
+  }
 }

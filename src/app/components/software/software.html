@@ -1,19 +1,20 @@
 <div class="software-container">
-  <h2 class="software-title">Software</h2>
+  <div class="title-row">
+    <h2 class="software-title">Software</h2>
+    <button class="add-button" (click)="openSoftwareModal()">Aggiungi</button>
+  </div>
   <ng-container *ngIf="!loading; else loadingBlock">
     <div class="software-table-wrapper" *ngIf="software.length > 0; else noDataBlock">
       <table class="software-table">
         <thead>
           <tr class="software-thead-row">
-            <th class="software-th">ID</th>
-            <th class="software-th">Descrizione</th>
-            <th class="software-th">Note</th>
-            <th class="software-th">Versione Corrente</th>
-            <th class="software-th">Ultimo Aggiornamento</th>
-            <th class="software-th">Ambienti</th>
-            <th class="add-button">
-              <button (click)="openSoftwareModal()">Aggiungi</button>
-            </th>
+            <th class="software-th text-left">ID</th>
+            <th class="software-th text-left">Descrizione</th>
+            <th class="software-th text-left">Note</th>
+            <th class="software-th text-left">Versione Corrente</th>
+            <th class="software-th text-left">Ultimo Aggiornamento</th>
+            <th class="software-th text-left">Ambienti</th>
+            <th class="software-th">Azioni</th>
           </tr>
         </thead>
         <tbody>

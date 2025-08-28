@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { Software } from '../../../models/software.model';
 import { Ambiente } from '../../../models/ambiente.model';
+import { SoftwareService } from '../../../services/software';
+import { AmbientiService } from '../../../services/ambienti';
 
 export interface SoftwareDialogData {
   software?: Software;
@@ -14,7 +16,6 @@ export interface SoftwareDialogData {
   imports: [CommonModule, FormsModule, NgbModule],
   templateUrl: './software-modal.html',
   styleUrls: ['./software-modal.css'],
-  providers: [NgbActiveModal]
 })
 export class SoftwareModal implements OnInit {
   @Input() software?: Software;
@@ -28,22 +29,37 @@ export class SoftwareModal implements OnInit {
     dataUltimoAggiornamento: new Date()
   };
 
-  // Mock data per le select
-  ambientiDisponibili: Ambiente[] = [
-    { id: '1', descrizione: 'Ambiente di Sviluppo', note: 'Per sviluppo', dataCreazione: new Date('2024-01-15') },
-    { id: '2', descrizione: 'Ambiente di Test', note: 'Per test', dataCreazione: new Date('2024-02-10') },
-    { id: '3', descrizione: 'Ambiente di Produzione', dataCreazione: new Date('2024-03-01') }
-  ];
+  // Campo per il menu a tendina
+  ambienteSelezionatoId: string = '';
 
-  constructor(public activeModal: NgbActiveModal) {
+  // Mock data per le select
+  ambientiDisponibili: Ambiente[] = [];
+
+  constructor(public activeModal: NgbActiveModal, private softwareService: SoftwareService, private ambientiService: AmbientiService) {
+  }
+
+  getLength(): number {
+    return this.softwareService.length();
   }
 
   ngOnInit() {
+    // Carica gli ambienti dal servizio
+    this.ambientiService.getAllAmbienti().subscribe(ambienti => {
+      this.ambientiDisponibili = ambienti;
+    });
+
     if (this.software) {
       this.nuovoSoftware = {
         ...this.software,
         ambienti: [...this.software.ambienti]
       };
+      // Se c'è un ambiente già selezionato, imposta l'ID
+      if (this.software.ambienti.length > 0) {
+        this.ambienteSelezionatoId = this.software.ambienti[0].id;
+      }
+    } else {
+      // Inizializza l'ID solo qui, quando il servizio è disponibile
+      this.nuovoSoftware.id = (this.getLength() + 1).toString();
     }
   }
 
@@ -51,28 +67,21 @@ export class SoftwareModal implements OnInit {
     if (!this.nuovoSoftware.dataUltimoAggiornamento) {
       this.nuovoSoftware.dataUltimoAggiornamento = new Date();
     }
+    
+    // Converte l'ambiente selezionato nell'array di ambienti
+    if (this.ambienteSelezionatoId) {
+      const ambienteSelezionato = this.ambientiDisponibili.find(a => a.id === this.ambienteSelezionatoId);
+      if (ambienteSelezionato) {
+        this.nuovoSoftware.ambienti = [ambienteSelezionato];
+      }
+    } else {
+      this.nuovoSoftware.ambienti = [];
+    }
+    
     this.activeModal.close(this.nuovoSoftware);
   }
 
   closeModal() {
-    this.activeModal.close();
-  }
-
-  onAmbienteChange(event: any) {
-    const ambienteId = event.target.value;
-    const isChecked = event.target.checked;
-    
-    if (isChecked) {
-      const ambiente = this.ambientiDisponibili.find(a => a.id === ambienteId);
-      if (ambiente && !this.nuovoSoftware.ambienti.find(a => a.id === ambienteId)) {
-        this.nuovoSoftware.ambienti.push(ambiente);
-      }
-    } else {
-      this.nuovoSoftware.ambienti = this.nuovoSoftware.ambienti.filter(a => a.id !== ambienteId);
-    }
-  }
-
-  isAmbienteSelected(ambienteId: string): boolean {
-    return this.nuovoSoftware.ambienti.some(a => a.id === ambienteId);
+    this.activeModal.dismiss();
   }
 }

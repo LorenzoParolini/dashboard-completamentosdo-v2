@@ -35,5 +35,9 @@ export class RegioniService {
     }
   }
 
+  length(): number {
+    return regioni.length;
+  }
+
 }
 

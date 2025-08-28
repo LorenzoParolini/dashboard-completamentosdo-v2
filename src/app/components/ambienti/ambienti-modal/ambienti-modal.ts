@@ -3,21 +3,26 @@ import { Component, OnInit, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { Ambiente } from '../../../models/ambiente.model';
+import { AmbientiService } from '../../../services/ambienti';
+
 
 export interface AmbientiDialogData {
   ambiente?: Ambiente;
 }
+
+
 
 @Component({
   selector: 'app-ambienti-modal',
   imports: [CommonModule, FormsModule, NgbModule],
   templateUrl: './ambienti-modal.html',
   styleUrls: ['./ambienti-modal.css'],
-  providers: [NgbActiveModal]
+  
 })
 export class AmbientiModal implements OnInit {
   @Input() ambiente?: Ambiente;
 
+  // Non inizializzare qui - fallo in ngOnInit
   nuovoAmbiente: Ambiente = {
     id: '',
     descrizione: '',
@@ -25,7 +30,12 @@ export class AmbientiModal implements OnInit {
     dataCreazione: new Date()
   };
 
-  constructor(public activeModal: NgbActiveModal) {
+  
+  constructor(public activeModal: NgbActiveModal, private ambientiService: AmbientiService) {
+  }
+
+  getLength(): number {
+    return this.ambientiService.length();
   }
 
   ngOnInit() {
@@ -33,6 +43,9 @@ export class AmbientiModal implements OnInit {
       this.nuovoAmbiente = {
         ...this.ambiente
       };
+    } else {
+      // Inizializza l'ID solo qui, quando il servizio è disponibile
+      this.nuovoAmbiente.id = (this.getLength()+1).toString();
     }
   }
 
@@ -44,6 +57,6 @@ export class AmbientiModal implements OnInit {
   }
 
   closeModal() {
-    this.activeModal.close();
+    this.activeModal.dismiss();
   }
 }

@@ -7,13 +7,27 @@ export const clienti: Cliente[] = [
     id: '1',
     descrizione: 'Azienda Nord Italia',
     regione: { id: '1', descrizione: 'Lombardia', codice: 'LOM', coordinate: { x: 45.4642, y: 9.1900 } },
-    software: []
+    software: [{
+      id: '1',
+      descrizione: 'Gestionale ERP',
+      note: 'Software gestionale aziendale',
+      ambienti: [],
+      versioneCorrente: '2.3.1',
+      dataUltimoAggiornamento: new Date('2024-07-01'),
+    }]
   },
   {
     id: '2',
     descrizione: 'Società Sud Italia',
     regione: { id: '8', descrizione: 'Campania', codice: 'CAM', coordinate: { x: 40.8518, y: 14.2681 } },
-    software: []
+    software: [{
+      id: '2',
+      descrizione: 'CRM Web',
+      note: 'Gestione clienti e contatti',
+      ambienti: [],
+      versioneCorrente: '1.8.0',
+      dataUltimoAggiornamento: new Date('2024-06-15'),
+    }]
   },
   {
     id: '3',
@@ -41,5 +55,20 @@ export class ClientiService {
     if (index !== -1) {
       clienti.splice(index, 1);
     }
+  }
+
+  addCliente(cliente: Cliente) {
+    clienti.push(cliente);
+  }
+
+  updateCliente(cliente: Cliente) {
+    const index = clienti.findIndex(c => c.id === cliente.id);
+    if (index !== -1) {
+      clienti[index] = cliente;
+    }
+  }
+
+  length(): number {
+    return clienti.length;
   }
 }

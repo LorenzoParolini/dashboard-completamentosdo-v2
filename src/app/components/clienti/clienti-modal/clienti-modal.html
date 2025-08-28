@@ -26,6 +26,18 @@
             {{ regione.descrizione }}
           </option>
         </select>
+        
+        <select 
+          [value]="getSelectedSoftwareId()"
+          (change)="onSoftwareChange($event)"
+          name="software"
+          class="clienti-modal-input"
+        >
+          <option value="">Seleziona un software</option>
+          <option *ngFor="let software of softwareDisponibili" [value]="software.id">
+            {{ software.descrizione }}
+          </option>
+        </select>
         <button type="submit" class="clienti-modal-add-btn mt-2">
           {{ cliente ? 'Salva' : 'Aggiungi' }}
         </button>
