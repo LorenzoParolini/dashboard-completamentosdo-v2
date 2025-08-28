@@ -6,6 +6,19 @@
   @apply flex items-center gap-4 max-w-7xl mx-auto;
 }
 
+/* Navigation Buttons */
+.nav-buttons-container {
+  @apply flex items-center gap-2;
+}
+
+.nav-button {
+  @apply px-4 py-2 rounded-lg font-medium text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 hover:text-blue-600 transition-all duration-200;
+}
+
+.nav-button-active {
+  @apply bg-blue-600 text-white border-blue-600 hover:bg-blue-700 hover:text-white;
+}
+
 /* Logo */
 .logo-container {
   @apply flex items-center;
@@ -38,6 +51,12 @@
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
+  .nav-buttons-container {
+    @apply gap-1;
+  }
+  .nav-button {
+    @apply px-2 py-1 text-sm;
+  }
   .user-text {
     @apply hidden;
   }
@@ -51,6 +70,9 @@
 @media (max-width: 640px) {
   .navbar-content {
     @apply gap-2 px-2;
+  }
+  .nav-buttons-container {
+    @apply hidden;
   }
   .search-container {
     @apply hidden;
