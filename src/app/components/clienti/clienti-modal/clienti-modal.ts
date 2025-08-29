@@ -29,6 +29,9 @@ export class ClientiModal implements OnInit {
     software: []
   };
 
+  // Campo per il menu a tendina
+  softwareSelezionatoId: string = '';
+
   regioniDisponibili: Regione[] = [];
   softwareDisponibili: Software[] = [];
 
@@ -48,6 +51,18 @@ export class ClientiModal implements OnInit {
     // Carica regioni disponibili
     this.regioniService.getAllRegioni().subscribe(regioni => {
       this.regioniDisponibili = regioni;
+      
+      // Se siamo in modalità modifica, assicuriamoci che la regione sia settata correttamente
+      if (this.cliente) {
+        this.nuovoCliente = {
+          ...this.cliente,
+          regione: { ...this.cliente.regione },
+          software: [...this.cliente.software]
+        };
+        console.log('Cliente da modificare:', this.cliente);
+        console.log('Regione del cliente:', this.cliente.regione);
+        console.log('ID regione del cliente:', this.cliente.regione.id);
+      }
     });
 
     // Carica software disponibili
@@ -55,13 +70,7 @@ export class ClientiModal implements OnInit {
       this.softwareDisponibili = software;
     });
 
-    if (this.cliente) {
-      this.nuovoCliente = {
-        ...this.cliente,
-        regione: { ...this.cliente.regione },
-        software: [...this.cliente.software]
-      };
-    } else {
+    if (!this.cliente) {
       // Inizializza l'ID solo qui, quando il servizio è disponibile
       this.nuovoCliente.id = (this.getLength() + 1).toString();
     }
@@ -80,24 +89,31 @@ export class ClientiModal implements OnInit {
     const regione = this.regioniDisponibili.find(r => r.id === regioneId);
     if (regione) {
       this.nuovoCliente.regione = regione;
-    }
-  }
-
-  onSoftwareChange(event: any) {
-    const softwareId = event.target.value;
-    if (softwareId) {
-      const software = this.softwareDisponibili.find(s => s.id === softwareId);
-      if (software) {
-        // Sostituisce l'array con un singolo software
-        this.nuovoCliente.software = [software];
-      }
     } else {
-      // Svuota l'array se non è selezionato nessun software
-      this.nuovoCliente.software = [];
+      // Se non viene trovata la regione, reimposta la regione vuota
+      this.nuovoCliente.regione = { id: '', descrizione: '', codice: '', coordinate: { x: 0, y: 0 } };
     }
   }
 
-  getSelectedSoftwareId(): string {
-    return this.nuovoCliente.software.length > 0 ? this.nuovoCliente.software[0].id : '';
+  // Chiamata quando cambia la selezione nel dropdown software
+  onSoftwareSelezionato() {
+    if (this.softwareSelezionatoId) {
+      const softwareSelezionato = this.softwareDisponibili.find(s => s.id === this.softwareSelezionatoId);
+      if (softwareSelezionato && !this.nuovoCliente.software.find(s => s.id === this.softwareSelezionatoId)) {
+        this.nuovoCliente.software.push(softwareSelezionato);
+      }
+      // Resetta la selezione
+      this.softwareSelezionatoId = '';
+    }
+  }
+
+  // Rimuove un software dalla lista
+  rimuoviSoftware(softwareId: string) {
+    this.nuovoCliente.software = this.nuovoCliente.software.filter(s => s.id !== softwareId);
+  }
+
+  // Controlla se un software è già stato selezionato
+  isSoftwareGiaSelezionato(softwareId: string): boolean {
+    return this.nuovoCliente.software.some(s => s.id === softwareId);
   }
 }

@@ -23,20 +23,45 @@
         ></textarea>
         
         <!-- Selezione Ambiente -->
-        <select
-          [(ngModel)]="ambienteSelezionatoId"
-          name="ambienteSelezionato"
-          class="software-modal-input"
-          required
-        >
-          <option value="" disabled>Seleziona un ambiente</option>
-          <option 
-            *ngFor="let ambiente of ambientiDisponibili" 
-            [value]="ambiente.id"
+        <div class="ambiente-selection-container">
+          <select
+            [(ngModel)]="ambienteSelezionatoId"
+            name="ambienteSelezionato"
+            class="software-modal-input"
+            (change)="onAmbienteSelezionato()"
           >
-            {{ ambiente.descrizione }}
-          </option>
-        </select>
+            <option value="">Seleziona un ambiente da aggiungere</option>
+            <option 
+              *ngFor="let ambiente of ambientiDisponibili" 
+              [value]="ambiente.id"
+              [disabled]="isAmbienteGiaSelezionato(ambiente.id)"
+            >
+              {{ ambiente.descrizione }}
+              <span *ngIf="isAmbienteGiaSelezionato(ambiente.id)"> (già selezionato)</span>
+            </option>
+          </select>
+          
+          <!-- Lista ambienti selezionati -->
+          <div class="ambienti-selezionati" *ngIf="nuovoSoftware.ambienti.length > 0">
+            <label class="ambienti-label">Ambienti selezionati:</label>
+            <div class="ambienti-lista">
+              <div 
+                *ngFor="let ambiente of nuovoSoftware.ambienti" 
+                class="ambiente-item"
+              >
+                <span class="ambiente-nome">{{ ambiente.descrizione }}</span>
+                <button 
+                  type="button" 
+                  class="rimuovi-ambiente-btn"
+                  (click)="rimuoviAmbiente(ambiente.id)"
+                  title="Rimuovi ambiente"
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
         <input
           type="text"
           [(ngModel)]="nuovoSoftware.versioneCorrente"

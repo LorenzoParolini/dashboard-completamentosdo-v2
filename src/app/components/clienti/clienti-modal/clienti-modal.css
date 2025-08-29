@@ -1,9 +1,12 @@
 .clienti-modal-overlay {
-  @apply fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50;
+  @apply fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4;
+  overflow-y: auto;
 }
 
 .clienti-modal-container {
-  @apply bg-white rounded-lg shadow-lg w-full max-w-md p-6;
+  @apply bg-white rounded-lg shadow-lg w-full max-w-md p-6 my-auto;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .clienti-modal-header {
@@ -34,4 +37,33 @@
   display: flex;
   gap: 0.5rem;
   justify-content: flex-end;
+}
+
+/* Stili per la selezione dei software */
+.software-selection-container {
+  @apply border border-gray-300 rounded px-3 py-3 bg-gray-50 mb-2;
+}
+
+.software-selezionati {
+  @apply border-t border-gray-300 pt-3 mt-3;
+}
+
+.software-label {
+  @apply block text-sm font-medium text-gray-700 mb-2;
+}
+
+.software-lista {
+  @apply flex flex-col gap-2;
+}
+
+.software-item {
+  @apply flex items-center justify-between bg-blue-100 px-3 py-2 rounded border;
+}
+
+.software-nome {
+  @apply text-sm text-blue-800 font-medium;
+}
+
+.rimuovi-software-btn {
+  @apply bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center hover:bg-red-600 text-sm font-bold;
 }

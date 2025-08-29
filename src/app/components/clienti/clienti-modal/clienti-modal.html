@@ -15,29 +15,58 @@
           required
         />
         <select 
-          [value]="nuovoCliente.regione.id"
+          [(ngModel)]="nuovoCliente.regione.id"
           (change)="onRegioneChange($event)"
           name="regione"
           class="clienti-modal-input"
           required
         >
-          <option value="">Seleziona una regione</option>
+          <option value="" *ngIf="!cliente">Seleziona una regione</option>
           <option *ngFor="let regione of regioniDisponibili" [value]="regione.id">
             {{ regione.descrizione }}
           </option>
         </select>
         
-        <select 
-          [value]="getSelectedSoftwareId()"
-          (change)="onSoftwareChange($event)"
-          name="software"
-          class="clienti-modal-input"
-        >
-          <option value="">Seleziona un software</option>
-          <option *ngFor="let software of softwareDisponibili" [value]="software.id">
-            {{ software.descrizione }}
-          </option>
-        </select>
+        <!-- Selezione Software -->
+        <div class="software-selection-container">
+          <select
+            [(ngModel)]="softwareSelezionatoId"
+            name="softwareSelezionato"
+            class="clienti-modal-input"
+            (change)="onSoftwareSelezionato()"
+          >
+            <option value="">Seleziona un software da aggiungere</option>
+            <option 
+              *ngFor="let software of softwareDisponibili" 
+              [value]="software.id"
+              [disabled]="isSoftwareGiaSelezionato(software.id)"
+            >
+              {{ software.descrizione }}
+              <span *ngIf="isSoftwareGiaSelezionato(software.id)"> (già selezionato)</span>
+            </option>
+          </select>
+          
+          <!-- Lista software selezionati -->
+          <div class="software-selezionati" *ngIf="nuovoCliente.software.length > 0">
+            <label class="software-label">Software selezionati:</label>
+            <div class="software-lista">
+              <div 
+                *ngFor="let software of nuovoCliente.software" 
+                class="software-item"
+              >
+                <span class="software-nome">{{ software.descrizione }}</span>
+                <button 
+                  type="button" 
+                  class="rimuovi-software-btn"
+                  (click)="rimuoviSoftware(software.id)"
+                  title="Rimuovi software"
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
         <button type="submit" class="clienti-modal-add-btn mt-2">
           {{ cliente ? 'Salva' : 'Aggiungi' }}
         </button>

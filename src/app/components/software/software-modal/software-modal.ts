@@ -53,10 +53,6 @@ export class SoftwareModal implements OnInit {
         ...this.software,
         ambienti: [...this.software.ambienti]
       };
-      // Se c'è un ambiente già selezionato, imposta l'ID
-      if (this.software.ambienti.length > 0) {
-        this.ambienteSelezionatoId = this.software.ambienti[0].id;
-      }
     } else {
       // Inizializza l'ID solo qui, quando il servizio è disponibile
       this.nuovoSoftware.id = (this.getLength() + 1).toString();
@@ -68,20 +64,32 @@ export class SoftwareModal implements OnInit {
       this.nuovoSoftware.dataUltimoAggiornamento = new Date();
     }
     
-    // Converte l'ambiente selezionato nell'array di ambienti
-    if (this.ambienteSelezionatoId) {
-      const ambienteSelezionato = this.ambientiDisponibili.find(a => a.id === this.ambienteSelezionatoId);
-      if (ambienteSelezionato) {
-        this.nuovoSoftware.ambienti = [ambienteSelezionato];
-      }
-    } else {
-      this.nuovoSoftware.ambienti = [];
-    }
-    
     this.activeModal.close(this.nuovoSoftware);
   }
 
   closeModal() {
     this.activeModal.dismiss();
+  }
+
+  // Chiamata quando cambia la selezione nel dropdown
+  onAmbienteSelezionato() {
+    if (this.ambienteSelezionatoId) {
+      const ambienteSelezionato = this.ambientiDisponibili.find(a => a.id === this.ambienteSelezionatoId);
+      if (ambienteSelezionato && !this.nuovoSoftware.ambienti.find(a => a.id === this.ambienteSelezionatoId)) {
+        this.nuovoSoftware.ambienti.push(ambienteSelezionato);
+      }
+      // Resetta la selezione
+      this.ambienteSelezionatoId = '';
+    }
+  }
+
+  // Rimuove un ambiente dalla lista
+  rimuoviAmbiente(ambienteId: string) {
+    this.nuovoSoftware.ambienti = this.nuovoSoftware.ambienti.filter(a => a.id !== ambienteId);
+  }
+
+  // Controlla se un ambiente è già stato selezionato
+  isAmbienteGiaSelezionato(ambienteId: string): boolean {
+    return this.nuovoSoftware.ambienti.some(a => a.id === ambienteId);
   }
 }
