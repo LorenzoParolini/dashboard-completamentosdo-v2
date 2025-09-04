@@ -1,1 +1,77 @@
-<p>main works!</p>
+<div class="homepage-container">
+  <div class="homepage-header">
+    <h1 class="homepage-title">Dashboard</h1>
+    <p class="homepage-subtitle">Passa il mouse sui clienti per vedere i dettagli...</p>
+  </div>
+
+  <app-loading-spinner *ngIf="loading"></app-loading-spinner>
+  <div class="clienti-grid" *ngIf="!loading && clienti.length > 0; else noClienti">
+    <div 
+      class="cliente-card" 
+      *ngFor="let cliente of clienti"
+      (mouseenter)="showDetails(cliente)"
+      (mouseleave)="selectedCliente = null"
+    >
+      <!-- Card Content -->
+      <div class="card-content">
+        <div class="card-header">
+          <h3 class="card-title">{{ cliente.descrizione }}</h3>
+          <span class="regione-badge">{{ cliente.regione.descrizione }}</span>
+        </div>
+        
+        <div class="card-body">
+          <div class="regione-info">
+            <span class="regione-code">{{ cliente.regione.codice }}</span>
+          </div>
+          
+          <div class="software-count" *ngIf="cliente.software.length > 0">
+            <span class="software-label">Software:</span>
+            <span class="software-number">{{ cliente.software.length }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detailed Information Overlay -->
+      <div 
+        class="details-card"
+        [class.visible]="selectedCliente?.id === cliente.id"
+      >
+        <div class="details-header">
+          <h4 class="details-title">{{ cliente.descrizione }}</h4>
+        </div>
+        
+        <div class="details-content">
+          <div class="detail-section">
+            <h5 class="detail-section-title">Regione</h5>
+            <p class="detail-text">{{ cliente.regione.descrizione }} ({{ cliente.regione.codice }})</p>
+            <p *ngIf="cliente.regione.coordinate" class="coordinates">
+              Coordinate: {{ cliente.regione.coordinate.x | number:'1.4-4' }}, {{ cliente.regione.coordinate.y | number:'1.4-4' }}
+            </p>
+          </div>
+
+          <div class="detail-section" *ngIf="cliente.software.length > 0">
+            <h5 class="detail-section-title">Software</h5>
+            <div class="software-list">
+              <div class="software-item" *ngFor="let software of cliente.software">
+                <h6 class="software-name">{{ software.descrizione }}</h6>
+                <p class="software-version">Versione: {{ software.versioneCorrente }}</p>
+                <p class="software-notes" *ngIf="software.note">{{ software.note }}</p>
+                <p class="software-update">Ultimo aggiornamento: {{ software.dataUltimoAggiornamento | date:'dd/MM/yyyy' }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-section" *ngIf="cliente.software.length === 0">
+            <p class="no-software">Nessun software installato</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #noClienti>
+    <div class="no-data">
+      <p *ngIf="!loading" class="no-data-text">Nessun cliente trovato</p>
+    </div>
+  </ng-template>
+</div>

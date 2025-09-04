@@ -7,6 +7,14 @@
 }
 
 /* Navigation Buttons */
+.dashboard-container {
+  @apply flex items-center mr-4;
+}
+
+.dashboard-button {
+  @apply bg-blue-600 text-white border-blue-600 hover:bg-blue-700 shadow-md;
+}
+
 .nav-buttons-container {
   @apply flex items-center gap-2;
 }
@@ -51,6 +59,12 @@
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
+  .dashboard-container {
+    @apply mr-2;
+  }
+  .dashboard-button {
+    @apply px-2 py-1 text-sm;
+  }
   .nav-buttons-container {
     @apply gap-1;
   }
@@ -70,6 +84,9 @@
 @media (max-width: 640px) {
   .navbar-content {
     @apply gap-2 px-2;
+  }
+  .dashboard-container {
+    @apply mr-1;
   }
   .nav-buttons-container {
     @apply hidden;

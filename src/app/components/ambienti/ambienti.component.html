@@ -34,6 +34,6 @@
     <app-loading-spinner/>
   </ng-template>
   <ng-template #noDataBlock>
-    <div class="text-center p-4 text-gray-500">Nessun ambiente trovato.</div>
+    <div class="text-center p-4 text-gray-500" *ngIf="!loading">Nessun ambiente trovato.</div>
   </ng-template>
 </div>

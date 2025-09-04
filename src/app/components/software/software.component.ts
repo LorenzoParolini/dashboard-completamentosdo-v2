@@ -19,10 +19,12 @@ export class SoftwareComponent implements OnInit {
   ngOnInit(): void {
     this.loading = true;
     this.software = [];
-    this.softwareService.getAllSoftware().subscribe((data) => {
-      this.software = data;
-      this.loading = false;
-    });
+    setTimeout(() => {
+      this.softwareService.getAllSoftware().subscribe((data) => {
+        this.software = data;
+        this.loading = false;
+      });
+    }, 1200);
   }
 
   constructor(

@@ -19,10 +19,12 @@ export class ClientiComponent implements OnInit {
   ngOnInit(): void {
     this.loading = true;
     this.clienti = [];
-    this.clientiService.getAllClienti().subscribe((data) => {
-      this.clienti = data;
-      this.loading = false;
-    });
+    setTimeout(() => {
+      this.clientiService.getAllClienti().subscribe((data) => {
+        this.clienti = data;
+        this.loading = false;
+      });
+    }, 1200);
   }
 
   constructor(

@@ -19,10 +19,12 @@ export class AmbientiComponent implements OnInit {
   ngOnInit(): void {
     this.loading = true;
     this.ambienti = [];
-    this.ambientiService.getAllAmbienti().subscribe((data) => {
-      this.ambienti = data;
-      this.loading = false;
-    });
+    setTimeout(() => {
+      this.ambientiService.getAllAmbienti().subscribe((data) => {
+        this.ambienti = data;
+        this.loading = false;
+      });
+    }, 1200);
   }
 
   constructor(
