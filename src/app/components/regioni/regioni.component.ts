@@ -1,18 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { Regione } from '../../models/regione.model';
-import { RegioniService } from '../../services/regioni';
+import { RegioniService } from '../../services/regioni.service';
 import { CommonModule } from '@angular/common';
-import { LoadingSpinner } from '../loading-spinner/loading-spinner';
+import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
 import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { RegioniModal } from './regioni-modal/regioni-modal';
+import { RegioniModalComponent } from './regioni-modal/regioni-modal.component';
 
 @Component({
   selector: 'app-regioni',
-  imports: [CommonModule, LoadingSpinner, NgbModule, RegioniModal],
-  templateUrl: './regioni.html',
-  styleUrl: './regioni.css',
+  imports: [CommonModule, LoadingSpinnerComponent, NgbModule, RegioniModalComponent],
+  templateUrl: './regioni.component.html',
+  styleUrl: './regioni.component.css',
 })
-export class Regioni implements OnInit {
+export class RegioniComponent implements OnInit {
   regioni: Regione[] = [];
   loading: boolean = false;
 
@@ -37,7 +37,7 @@ export class Regioni implements OnInit {
 
   // Metodo attuale con NgBootstrap
   openRegioneModal(regione?: Regione) {
-    const modalRef = this.modalService.open(RegioniModal, {
+    const modalRef = this.modalService.open(RegioniModalComponent, {
       backdrop: true, // consente la chiusura cliccando fuori
       keyboard: true, // permette la chiusura con ESC
       centered: true, // centra la modale

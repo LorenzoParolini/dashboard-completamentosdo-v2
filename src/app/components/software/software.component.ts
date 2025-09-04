@@ -1,16 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { Software as SoftwareModel } from '../../models/software.model';
-import { SoftwareService } from '../../services/software';
+import { SoftwareService } from '../../services/software.service';
 import { CommonModule } from '@angular/common';
-import { LoadingSpinner } from '../loading-spinner/loading-spinner';
+import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
 import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { SoftwareModal } from './software-modal/software-modal';
+import { SoftwareModalComponent } from './software-modal/software-modal.component';
 
 @Component({
   selector: 'app-software',
-  imports: [CommonModule, LoadingSpinner, NgbModule, SoftwareModal],
-  templateUrl: './software.html',
-  styleUrl: './software.css',
+  imports: [CommonModule, LoadingSpinnerComponent, NgbModule, SoftwareModalComponent],
+  templateUrl: './software.component.html',
+  styleUrl: './software.component.css',
 })
 export class SoftwareComponent implements OnInit {
   software: SoftwareModel[] = [];
@@ -36,7 +36,7 @@ export class SoftwareComponent implements OnInit {
   }
 
   openSoftwareModal(software?: SoftwareModel) {
-    const modalRef = this.modalService.open(SoftwareModal, {
+    const modalRef = this.modalService.open(SoftwareModalComponent, {
       backdrop: true, // permette la chiusura cliccando fuori
       keyboard: true, // permette la chiusura con ESC
       centered: true, // centra la modale

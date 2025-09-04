@@ -3,7 +3,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { Ambiente } from '../../../models/ambiente.model';
-import { AmbientiService } from '../../../services/ambienti';
+import { AmbientiService } from '../../../services/ambienti.service';
 
 
 export interface AmbientiDialogData {
@@ -15,11 +15,11 @@ export interface AmbientiDialogData {
 @Component({
   selector: 'app-ambienti-modal',
   imports: [CommonModule, FormsModule, NgbModule],
-  templateUrl: './ambienti-modal.html',
-  styleUrls: ['./ambienti-modal.css'],
+  templateUrl: './ambienti-modal.component.html',
+  styleUrls: ['./ambienti-modal.component.css'],
   
 })
-export class AmbientiModal implements OnInit {
+export class AmbientiModalComponent implements OnInit {
   @Input() ambiente?: Ambiente;
 
   // Non inizializzare qui - fallo in ngOnInit

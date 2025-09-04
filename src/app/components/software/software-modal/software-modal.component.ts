@@ -4,8 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { Software } from '../../../models/software.model';
 import { Ambiente } from '../../../models/ambiente.model';
-import { SoftwareService } from '../../../services/software';
-import { AmbientiService } from '../../../services/ambienti';
+import { SoftwareService } from '../../../services/software.service';
+import { AmbientiService } from '../../../services/ambienti.service';
 
 export interface SoftwareDialogData {
   software?: Software;
@@ -14,10 +14,10 @@ export interface SoftwareDialogData {
 @Component({
   selector: 'app-software-modal',
   imports: [CommonModule, FormsModule, NgbModule],
-  templateUrl: './software-modal.html',
-  styleUrls: ['./software-modal.css'],
+  templateUrl: './software-modal.component.html',
+  styleUrls: ['./software-modal.component.css'],
 })
-export class SoftwareModal implements OnInit {
+export class SoftwareModalComponent implements OnInit {
   @Input() software?: Software;
 
   nuovoSoftware: Software = {

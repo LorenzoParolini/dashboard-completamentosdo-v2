@@ -1,18 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { Cliente } from '../../models/cliente.model';
-import { ClientiService } from '../../services/clienti';
+import { ClientiService } from '../../services/clienti.service';
 import { CommonModule } from '@angular/common';
-import { LoadingSpinner } from '../loading-spinner/loading-spinner';
+import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
 import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { ClientiModal } from './clienti-modal/clienti-modal';
+import { ClientiModalComponent } from './clienti-modal/clienti-modal.component';
 
 @Component({
   selector: 'app-clienti',
-  imports: [CommonModule, LoadingSpinner, NgbModule, ClientiModal],
-  templateUrl: './clienti.html',
-  styleUrl: './clienti.css',
+  imports: [CommonModule, LoadingSpinnerComponent, NgbModule, ClientiModalComponent],
+  templateUrl: './clienti.component.html',
+  styleUrl: './clienti.component.css',
 })
-export class Clienti implements OnInit {
+export class ClientiComponent implements OnInit {
   clienti: Cliente[] = [];
   loading: boolean = false;
 
@@ -36,7 +36,7 @@ export class Clienti implements OnInit {
   }
 
   openClienteModal(cliente?: Cliente) {
-    const modalRef = this.modalService.open(ClientiModal, {
+    const modalRef = this.modalService.open(ClientiModalComponent, {
       backdrop: 'static', // impedisce la chiusura cliccando fuori
       keyboard: true, // permette la chiusura con ESC
       centered: true, // centra la modale

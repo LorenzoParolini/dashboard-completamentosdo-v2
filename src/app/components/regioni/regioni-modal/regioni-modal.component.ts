@@ -3,7 +3,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { Regione } from '../../../models/regione.model';
-import { RegioniService } from '../../../services/regioni';
+import { RegioniService } from '../../../services/regioni.service';
 
 export interface DialogData {
   regione?: Regione;
@@ -13,10 +13,10 @@ export interface DialogData {
 @Component({
   selector: 'app-regioni-modal',
   imports: [CommonModule, FormsModule, NgbModule],
-  templateUrl: './regioni-modal.html',
-  styleUrls: ['./regioni-modal.css'],
+  templateUrl: './regioni-modal.component.html',
+  styleUrls: ['./regioni-modal.component.css'],
 })
-export class RegioniModal implements OnInit {
+export class RegioniModalComponent implements OnInit {
   @Input() regione?: Regione;
 
   nuovaRegione: Regione = {

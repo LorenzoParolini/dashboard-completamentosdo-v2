@@ -7,10 +7,10 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   selector: 'app-navbar',
   standalone: true,
   imports: [RouterLink, RouterLinkActive, FormsModule],
-  templateUrl: './navbar.html',
-  styleUrls: ['./navbar.css']
+  templateUrl: './navbar.component.html',
+  styleUrls: ['./navbar.component.css']
 })
-export class Navbar {
+export class NavbarComponent {
   searchQuery: string = '';
   toggleMenu() {
     // Logica per aprire/chiudere il menu

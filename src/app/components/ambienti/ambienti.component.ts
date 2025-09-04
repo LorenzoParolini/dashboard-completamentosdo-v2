@@ -1,18 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { Ambiente } from '../../models/ambiente.model';
-import { AmbientiService } from '../../services/ambienti';
+import { AmbientiService } from '../../services/ambienti.service';
 import { CommonModule } from '@angular/common';
-import { LoadingSpinner } from '../loading-spinner/loading-spinner';
+import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
 import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { AmbientiModal } from './ambienti-modal/ambienti-modal';
+import { AmbientiModalComponent } from './ambienti-modal/ambienti-modal.component';
 
 @Component({
   selector: 'app-ambienti',
-  imports: [CommonModule, LoadingSpinner, NgbModule, AmbientiModal],
-  templateUrl: './ambienti.html',
-  styleUrl: './ambienti.css',
+  imports: [CommonModule, LoadingSpinnerComponent, NgbModule, AmbientiModalComponent],
+  templateUrl: './ambienti.component.html',
+  styleUrl: './ambienti.component.css',
 })
-export class Ambienti implements OnInit {
+export class AmbientiComponent implements OnInit {
   ambienti: Ambiente[] = [];
   loading: boolean = false;
 
@@ -36,7 +36,7 @@ export class Ambienti implements OnInit {
   }
 
   openAmbienteModal(ambiente?: Ambiente) {
-    const modalRef = this.modalService.open(AmbientiModal, {
+    const modalRef = this.modalService.open(AmbientiModalComponent, {
       backdrop: 'static', // impedisce la chiusura cliccando fuori
       keyboard: true, // permette la chiusura con ESC
       centered: true, // centra la modale

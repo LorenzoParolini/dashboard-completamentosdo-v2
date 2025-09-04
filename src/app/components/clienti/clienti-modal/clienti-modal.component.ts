@@ -5,9 +5,9 @@ import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { Cliente } from '../../../models/cliente.model';
 import { Regione } from '../../../models/regione.model';
 import { Software } from '../../../models/software.model';
-import { ClientiService } from '../../../services/clienti';
-import { RegioniService } from '../../../services/regioni';
-import { SoftwareService } from '../../../services/software';
+import { ClientiService } from '../../../services/clienti.service';
+import { RegioniService } from '../../../services/regioni.service';
+import { SoftwareService } from '../../../services/software.service';
 
 export interface ClientiDialogData {
   cliente?: Cliente;
@@ -16,10 +16,10 @@ export interface ClientiDialogData {
 @Component({
   selector: 'app-clienti-modal',
   imports: [CommonModule, FormsModule, NgbModule],
-  templateUrl: './clienti-modal.html',
-  styleUrls: ['./clienti-modal.css']
+  templateUrl: './clienti-modal.component.html',
+  styleUrls: ['./clienti-modal.component.css']
 })
-export class ClientiModal implements OnInit {
+export class ClientiModalComponent implements OnInit {
   @Input() cliente?: Cliente;
 
   nuovoCliente: Cliente = {
