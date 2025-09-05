@@ -1,7 +1,7 @@
 <div class="homepage-container">
   <div class="homepage-header">
     <h1 class="homepage-title">Dashboard</h1>
-    <p class="homepage-subtitle">Passa il mouse sui clienti per vedere i dettagli...</p>
+    <p class="homepage-subtitle">Passa il mouse sui clienti per vedere i dettagli, clicca per aprire la vista completa</p>
   </div>
 
   <app-loading-spinner *ngIf="loading"></app-loading-spinner>
@@ -11,6 +11,7 @@
       *ngFor="let cliente of clienti"
       (mouseenter)="showDetails(cliente)"
       (mouseleave)="selectedCliente = null"
+      (click)="openModal(cliente)"
     >
       <!-- Card Content -->
       <div class="card-content">
@@ -31,6 +32,13 @@
         </div>
       </div>
 
+      <!-- Click indicator -->
+      <div class="click-indicator">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 18l6-6-6-6"/>
+        </svg>
+      </div>
+
       <!-- Detailed Information Overlay -->
       <div 
         class="details-card"
@@ -38,6 +46,7 @@
       >
         <div class="details-header">
           <h4 class="details-title">{{ cliente.descrizione }}</h4>
+          <span class="click-hint">Clicca per dettagli completi</span>
         </div>
         
         <div class="details-content">
@@ -50,13 +59,14 @@
           </div>
 
           <div class="detail-section" *ngIf="cliente.software.length > 0">
-            <h5 class="detail-section-title">Software</h5>
-            <div class="software-list">
-              <div class="software-item" *ngFor="let software of cliente.software">
-                <h6 class="software-name">{{ software.descrizione }}</h6>
-                <p class="software-version">Versione: {{ software.versioneCorrente }}</p>
-                <p class="software-notes" *ngIf="software.note">{{ software.note }}</p>
-                <p class="software-update">Ultimo aggiornamento: {{ software.dataUltimoAggiornamento | date:'dd/MM/yyyy' }}</p>
+            <h5 class="detail-section-title">Software ({{ cliente.software.length }})</h5>
+            <div class="software-preview">
+              <div class="software-preview-item" *ngFor="let software of cliente.software.slice(0, 2)">
+                <span class="software-preview-name">{{ software.descrizione }}</span>
+                <span class="software-preview-version">v{{ software.versioneCorrente }}</span>
+              </div>
+              <div class="software-more" *ngIf="cliente.software.length > 2">
+                +{{ cliente.software.length - 2 }} altri...
               </div>
             </div>
           </div>
@@ -74,4 +84,11 @@
       <p *ngIf="!loading" class="no-data-text">Nessun cliente trovato</p>
     </div>
   </ng-template>
+
+  <!-- Modale dettagli -->
+  <app-details-modal 
+    [cliente]="modalCliente" 
+    [isOpen]="isModalOpen" 
+    (closeModal)="closeModal()">
+  </app-details-modal>
 </div>

@@ -4,10 +4,11 @@ import { ClientiService } from '../../services/clienti.service';
 import { Cliente } from '../../models/cliente.model';
 
 import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
+import { DetailsModalComponent } from './details-modal/details-modal.component';
 
 @Component({
   selector: 'app-main',
-  imports: [CommonModule, LoadingSpinnerComponent],
+  imports: [CommonModule, LoadingSpinnerComponent, DetailsModalComponent],
   templateUrl: './main.component.html',
   styleUrl: './main.component.css'
 })
@@ -15,6 +16,8 @@ export class MainComponent implements OnInit {
   clienti: Cliente[] = [];
   selectedCliente: Cliente | null = null;
   loading: boolean = true;
+  isModalOpen: boolean = false;
+  modalCliente: Cliente | null = null;
 
   constructor(private clientiService: ClientiService) {}
 
@@ -36,5 +39,15 @@ export class MainComponent implements OnInit {
 
   showDetails(cliente: Cliente) {
     this.selectedCliente = cliente;
+  }
+
+  openModal(cliente: Cliente) {
+    this.modalCliente = cliente;
+    this.isModalOpen = true;
+  }
+
+  closeModal() {
+    this.isModalOpen = false;
+    this.modalCliente = null;
   }
 }
