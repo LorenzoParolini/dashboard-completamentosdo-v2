@@ -1,7 +1,8 @@
 /* navbar.component.css */
 .navbar-container {
-  @apply w-full bg-gray-50 px-6 py-3;
+  @apply w-full bg-gray-50 px-6 py-3 border-b border-gray-200 shadow-sm;
 }
+
 .navbar-content {
   @apply flex items-center gap-4 max-w-7xl mx-auto;
 }
@@ -12,29 +13,129 @@
 }
 
 .dashboard-button {
-  @apply bg-blue-600 text-white border-blue-600 hover:bg-blue-700 shadow-md;
+  @apply bg-white text-gray-800 border-2 hover:bg-gray-50 transition-all duration-200 rounded-xl px-6 py-2.5 font-semibold shadow-sm relative;
+  border: 2px solid transparent;
+  background: linear-gradient(white, white) padding-box,
+              linear-gradient(135deg, #6366f1, #8b5cf6) border-box;
+}
+
+.dashboard-button.nav-button-active,
+.dashboard-button.router-link-active,
+.dashboard-button:active,
+.nav-button.dashboard-button.nav-button-active {
+  @apply text-white shadow-lg;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+  border: none !important;
+}
+
+.dashboard-button.nav-button-active:hover,
+.dashboard-button.router-link-active:hover,
+.dashboard-button:active:hover,
+.nav-button.dashboard-button.nav-button-active:hover {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed) !important;
 }
 
 .nav-buttons-container {
-  @apply flex items-center gap-2;
+  @apply flex items-center gap-3;
 }
 
 .nav-button {
-  @apply px-4 py-2 rounded-lg font-medium text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 hover:text-blue-600 transition-all duration-200;
+  @apply px-4 py-2 rounded-xl font-medium text-gray-700 bg-white border border-gray-200 hover:border-indigo-600 hover:shadow-lg hover:shadow-indigo-100 transition-all duration-200 relative overflow-hidden;
 }
 
 .nav-button-active {
-  @apply bg-blue-600 text-white border-blue-600 hover:bg-blue-700 hover:text-white;
+  @apply bg-gradient-to-r from-indigo-500 to-purple-600 text-white border-0 hover:from-indigo-600 hover:to-purple-700 shadow-lg;
+}
+
+/* Icon Button Effects */
+.icon-button {
+  @apply min-w-12 h-12 p-3 flex items-center justify-center gap-2 transition-all duration-300 ease-out relative overflow-hidden;
+}
+
+.icon-button::before {
+  content: '';
+  @apply absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-600 opacity-0 transition-all duration-300 ease-out scale-x-0 origin-left;
+}
+
+.icon-container {
+  @apply flex items-center justify-center transition-all duration-300 ease-out relative z-10;
+}
+
+.icon-container svg {
+  @apply transition-all duration-300 ease-out;
+}
+
+.text-container {
+  @apply opacity-0 max-w-0 overflow-hidden transition-all duration-300 ease-out relative z-10;
+}
+
+.text-container span {
+  @apply text-sm font-semibold whitespace-nowrap;
+}
+
+/* Hover Effects */
+.icon-button:hover {
+  @apply min-w-fit px-4 text-white;
+}
+
+.icon-button:hover::before {
+  @apply opacity-100 scale-x-100;
+}
+
+.icon-button:hover .icon-container svg {
+  @apply transform scale-110 rotate-12 text-white;
+}
+
+.icon-button:hover .text-container {
+  @apply opacity-100 max-w-24 ml-2;
+}
+
+/* Active state for icon buttons */
+.nav-button-active {
+  @apply min-w-fit px-4 text-white;
+}
+
+.nav-button-active::before {
+  @apply opacity-100 scale-x-100;
+}
+
+.nav-button-active .icon-container svg {
+  @apply transform scale-110 rotate-12 text-white;
+}
+
+.nav-button-active .text-container {
+  @apply opacity-100 max-w-24 ml-2;
+}
+
+/* Pulse effect for active icons */
+.nav-button-active .icon-container svg {
+  animation: iconPulse 2s ease-in-out infinite;
+}
+
+/* Icon bounce on click */
+.icon-button:active .icon-container svg {
+  @apply transform scale-95 rotate-6;
+}
+
+@keyframes iconPulse {
+  0%, 100% {
+    transform: scale(1.1) rotate(12deg);
+  }
+  50% {
+    transform: scale(1.2) rotate(12deg);
+  }
 }
 
 /* Logo */
 .logo-container {
   @apply flex items-center;
 }
+
 .logo-circle {
-  @apply w-14 h-14 rounded-full flex items-center justify-center;
+  @apply w-14 h-14 rounded-full flex items-center justify-center shadow-md;
   background: linear-gradient(135deg, #a8e6cf 0%, #81d4e0 100%);
 }
+
 .logo-text {
   @apply text-white font-semibold text-sm;
 } 
@@ -43,19 +144,38 @@
 .search-container {
   @apply flex-1 flex items-center relative max-w-2xl;
 }
+
 .search-input {
-  @apply w-full px-4 py-2.5 pr-12 rounded-full border-0 text-gray-700 placeholder-gray-500;
-  background-color: #c8e6e0;
+  @apply w-full px-6 py-3 pr-14 rounded-xl border border-gray-200 text-gray-700 placeholder-gray-500 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200;
 }
-.search-input:focus {
-  @apply outline-none ring-2 ring-teal-400 ring-opacity-50;
+
+/* Filter Container */
+.filter-container {
+  @apply flex items-center ml-4;
 }
+
+.filter-button {
+  @apply min-w-12 h-12;
+}
+
 .search-button {
-  @apply absolute right-1 p-2.5 rounded-full transition-all hover:bg-teal-600;
-  background-color: #5a9aa8;
+  @apply absolute right-2 p-2.5 rounded-lg transition-all duration-200 hover:bg-indigo-600 bg-gradient-to-r from-indigo-500 to-purple-600 shadow-md;
+  transition: transform 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
 } 
-
-
+.search-button:hover {
+  transform: scale(1.08);
+}
+.search-button:active {
+  transform: scale(0.93);
+}
+.search-button .search-icon {
+  transition: transform 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-block;
+}
+.search-button:hover .search-icon {
+  transform: rotate(-16deg);
+}
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
@@ -63,24 +183,25 @@
     @apply mr-2;
   }
   .dashboard-button {
-    @apply px-2 py-1 text-sm;
+    @apply px-3 py-2 text-sm;
   }
   .nav-buttons-container {
-    @apply gap-1;
+    @apply gap-2;
   }
   .nav-button {
-    @apply px-2 py-1 text-sm;
+    @apply px-2 py-2;
   }
-  .user-text {
-    @apply hidden;
-  }
-  .add-text {
-    @apply hidden;
+  .icon-button:hover {
+    @apply min-w-fit px-3;
   }
   .search-container {
     @apply max-w-xs;
   }
+  .filter-container {
+    @apply ml-2;
+  }
 }
+
 @media (max-width: 640px) {
   .navbar-content {
     @apply gap-2 px-2;
@@ -92,6 +213,9 @@
     @apply hidden;
   }
   .search-container {
+    @apply hidden;
+  }
+  .filter-container {
     @apply hidden;
   }
 }

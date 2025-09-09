@@ -1,45 +1,98 @@
-<div class="regioni-modal-overlay">
-  <div class="regioni-modal-container">
-    <div class="regioni-modal-header">
-      <h2 class="regioni-modal-title">{{ regione ? 'Modifica Regione' : 'Aggiungi Regione' }}</h2>
-      <button class="regioni-modal-close" (click)="closeModal()">&times;</button>
+<div class="modal-backdrop" (click)="onBackdropClick($event)">
+  <div class="modal-container">
+    <!-- Header -->
+    <div class="modal-header">
+      <div class="modal-title-section">
+        <h2 class="modal-title">{{ regione ? 'Modifica Regione' : 'Aggiungi Regione' }}</h2>
+        <span class="modal-subtitle">{{ regione ? 'Aggiorna i dati della regione' : 'Inserisci i dati della nuova regione' }}</span>
+      </div>
+      <button class="close-button" (click)="closeModal()" aria-label="Chiudi modale">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
     </div>
-    <div class="regioni-modal-body">
-      <form (ngSubmit)="salva()" class="regioni-modal-form flex-col gap-2">
-        <input
-          type="text"
-          [(ngModel)]="nuovaRegione.descrizione"
-          name="descrizione"
-          placeholder="Descrizione"
-          class="regioni-modal-input"
-          required
-        />
-        <input
-          type="text"
-          [(ngModel)]="nuovaRegione.codice"
-          name="codice"
-          placeholder="Codice"
-          class="regioni-modal-input"
-          required
-        />
-        <input
-          type="number"
-          [(ngModel)]="nuovaRegione.coordinate!.x"
-          name="coordinateX"
-          placeholder="Coordinata X"
-          class="regioni-modal-input"
-        />
-        <input
-          type="number"
-          [(ngModel)]="nuovaRegione.coordinate!.y"
-          name="coordinateY"
-          placeholder="Coordinata Y"
-          class="regioni-modal-input"
-        />
-        <button type="submit" class="regioni-modal-add-btn mt-2">
-          {{ regione ? 'Salva' : 'Aggiungi' }}
-        </button>
-      </form>
+
+    <!-- Content -->
+    <div class="modal-content">
+      <div class="form-section">
+        <div class="section-header">
+          <h3 class="section-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+            Informazioni Regione
+          </h3>
+        </div>
+
+        <form (ngSubmit)="salva()" class="form-container">
+          <div class="form-grid">
+            <div class="form-field">
+              <label class="form-label">Descrizione</label>
+              <input
+                type="text"
+                [(ngModel)]="nuovaRegione.descrizione"
+                name="descrizione"
+                placeholder="Inserisci la descrizione"
+                class="form-input"
+                required
+              />
+            </div>
+
+            <div class="form-field">
+              <label class="form-label">Codice</label>
+              <input
+                type="text"
+                [(ngModel)]="nuovaRegione.codice"
+                name="codice"
+                placeholder="Inserisci il codice"
+                class="form-input"
+                required
+              />
+            </div>
+
+            <div class="form-field">
+              <label class="form-label">Coordinata X</label>
+              <input
+                type="number"
+                [(ngModel)]="nuovaRegione.coordinate!.x"
+                name="coordinateX"
+                placeholder="Coordinata X"
+                class="form-input"
+                step="any"
+              />
+            </div>
+
+            <div class="form-field">
+              <label class="form-label">Coordinata Y</label>
+              <input
+                type="number"
+                [(ngModel)]="nuovaRegione.coordinate!.y"
+                name="coordinateY"
+                placeholder="Coordinata Y"
+                class="form-input"
+                step="any"
+              />
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" (click)="closeModal()">
+              Annulla
+            </button>
+            <button type="submit" class="btn-primary">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                <polyline points="17,21 17,13 7,13 7,21"></polyline>
+                <polyline points="7,3 7,8 15,8"></polyline>
+              </svg>
+              {{ regione ? 'Salva' : 'Aggiungi' }}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </div>

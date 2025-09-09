@@ -66,4 +66,10 @@ export class RegioniModalComponent implements OnInit {
     console.log('Modale chiusa senza salvare');
   }
 
+  onBackdropClick(event: MouseEvent) {
+    if (event.target === event.currentTarget) {
+      this.closeModal();
+    }
+  }
+
 }

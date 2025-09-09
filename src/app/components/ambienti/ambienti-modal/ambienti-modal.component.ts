@@ -59,4 +59,10 @@ export class AmbientiModalComponent implements OnInit {
   closeModal() {
     this.activeModal.dismiss();
   }
+
+  onBackdropClick(event: MouseEvent) {
+    if (event.target === event.currentTarget) {
+      this.closeModal();
+    }
+  }
 }

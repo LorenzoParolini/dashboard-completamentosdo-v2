@@ -84,6 +84,12 @@ export class ClientiModalComponent implements OnInit {
     this.activeModal.dismiss();
   }
 
+  onBackdropClick(event: MouseEvent) {
+    if (event.target === event.currentTarget) {
+      this.closeModal();
+    }
+  }
+
   onRegioneChange(event: any) {
     const regioneId = event.target.value;
     const regione = this.regioniDisponibili.find(r => r.id === regioneId);

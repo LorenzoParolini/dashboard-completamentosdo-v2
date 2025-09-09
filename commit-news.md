@@ -2,4 +2,5 @@
 
 ### Cosa c'è di nuovo?
 
-- aggiunta una prima versione della hompage
+- migliorata esttica UI generale
+- aggiunta modale dettagli

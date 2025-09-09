@@ -1,48 +1,137 @@
-<div class="software-container">
-  <div class="title-row">
-    <h2 class="software-title">Software</h2>
-    <button class="add-button" (click)="openSoftwareModal()">Aggiungi</button>
-  </div>
-  <ng-container *ngIf="!loading; else loadingBlock">
-    <div class="software-table-wrapper" *ngIf="software.length > 0; else noDataBlock">
-      <table class="software-table">
-        <thead>
-          <tr class="software-thead-row">
-            <th class="software-th text-left">ID</th>
-            <th class="software-th text-left">Descrizione</th>
-            <th class="software-th text-left">Note</th>
-            <th class="software-th text-left">Versione Corrente</th>
-            <th class="software-th text-left">Ultimo Aggiornamento</th>
-            <th class="software-th text-left">Ambienti</th>
-            <th class="software-th">Azioni</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="software-tbody-row" *ngFor="let sw of software">
-            <td class="software-td">{{ sw.id }}</td>
-            <td class="software-td">{{ sw.descrizione }}</td>
-            <td class="software-td">{{ sw.note || 'N/A' }}</td>
-            <td class="software-td">{{ sw.versioneCorrente }}</td>
-            <td class="software-td">{{ sw.dataUltimoAggiornamento | date:'dd/MM/yyyy' }}</td>
-            <td class="software-td">
-              <span *ngFor="let amb of sw.ambienti; let last = last">
-                {{ amb.descrizione }}<span *ngIf="!last">, </span>
-              </span>
-              <span *ngIf="sw.ambienti.length === 0">Nessun ambiente</span>
-            </td>
-            <td class="software-td UD-buttons">
-              <button class="update-button" (click)="openSoftwareModal(sw)">Modifica</button>
-              <button class="delete-button" (click)="onDeleteSoftware(sw.id)">Elimina</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+<div class="page-container">
+  <!-- Header Section -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="title-section">
+        <h1 class="page-title">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+          </svg>
+          Gestione Software
+        </h1>
+        <p class="page-subtitle">Visualizza e gestisci tutti i software del sistema</p>
+      </div>
+      <button class="add-button icon-button" (click)="openSoftwareModal()">
+        <div class="icon-container">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+        </div>
+        <div class="text-container">
+          <span>Aggiungi</span>
+        </div>
+      </button>
     </div>
-  </ng-container>
-  <ng-template #loadingBlock>
-    <app-loading-spinner/>
-  </ng-template>
-  <ng-template #noDataBlock>
-    <div class="text-center p-4 text-gray-500" *ngIf="!loading">Nessun software trovato.</div>
-  </ng-template>
+  </div>
+
+  <!-- Content Section -->
+  <div class="page-content">
+    <ng-container *ngIf="!loading; else loadingBlock">
+      <div class="data-table-container" *ngIf="software.length > 0; else noDataBlock">
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead class="table-header">
+              <tr>
+                <th class="table-th"></th>
+                <th class="table-th">Descrizione</th>
+                <th class="table-th">Note</th>
+                <th class="table-th">Versione</th>
+                <th class="table-th">Ultimo Aggiornamento</th>
+                <th class="table-th">Ambienti</th>
+                <th class="table-th actions-column">Azioni</th>
+              </tr>
+            </thead>
+            <tbody class="table-body">
+              <tr class="table-row" *ngFor="let sw of software">
+                <td class="table-td id-column">{{ sw.id }}</td>
+                <td class="table-td">{{ sw.descrizione }}</td>
+                <td class="table-td">
+                  <span class="note-text" *ngIf="sw.note; else noNote">{{ sw.note }}</span>
+                  <ng-template #noNote>
+                    <span class="no-data">N/A</span>
+                  </ng-template>
+                </td>
+                <td class="table-td">
+                  <span class="version-badge">{{ sw.versioneCorrente }}</span>
+                </td>
+                <td class="table-td">
+                  <span class="date-text">{{ sw.dataUltimoAggiornamento | date:'dd/MM/yyyy' }}</span>
+                </td>
+                <td class="table-td">
+                  <div class="ambiente-list" *ngIf="sw.ambienti.length > 0; else noAmbienti">
+                    <span class="ambiente-item" *ngFor="let amb of sw.ambienti; let last = last">
+                      {{ amb.descrizione }}<span class="ambiente-separator" *ngIf="!last">, </span>
+                    </span>
+                  </div>
+                  <ng-template #noAmbienti>
+                    <span class="no-data">Nessun ambiente</span>
+                  </ng-template>
+                </td>
+                <td class="table-td actions-column">
+                  <div class="action-buttons">
+                    <button class="action-button edit-button icon-button" (click)="openSoftwareModal(sw)">
+                      <div class="icon-container">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                      </div>
+                      <div class="text-container">
+                        <span>Modifica</span>
+                      </div>
+                    </button>
+                    <button class="action-button delete-button icon-button" (click)="onDeleteSoftware(sw.id)">
+                      <div class="icon-container">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <polyline points="3,6 5,6 21,6"></polyline>
+                          <path d="M19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"></path>
+                        </svg>
+                      </div>
+                      <div class="text-container">
+                        <span>Elimina</span>
+                      </div>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-template #loadingBlock>
+      <div class="loading-container">
+        <app-loading-spinner/>
+      </div>
+    </ng-template>
+
+    <ng-template #noDataBlock>
+      <div class="no-data-container">
+        <div class="no-data-icon">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+          </svg>
+        </div>
+        <h3 class="no-data-title">Nessun software trovato</h3>
+        <p class="no-data-text">Inizia aggiungendo il primo software al sistema</p>
+        <button class="no-data-action icon-button" (click)="openSoftwareModal()">
+          <div class="icon-container">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+          </div>
+          <div class="text-container">
+            <span>Aggiungi Primo Software</span>
+          </div>
+        </button>
+      </div>
+    </ng-template>
+  </div>
 </div>

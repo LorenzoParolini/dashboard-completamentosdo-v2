@@ -1,53 +1,237 @@
-.software-container {
-  @apply p-6;
+/* Page Layout */
+.page-container {
+  @apply p-8 min-h-screen;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
 }
 
-.title-row {
-  @apply flex justify-between items-center mb-4;
+/* Header Section */
+.page-header {
+  @apply mb-8;
 }
 
-.software-title {
-  @apply text-2xl font-bold text-blue-900;
-}
-.software-table-wrapper {
-  @apply overflow-x-auto rounded-lg shadow;
-}
-.software-table {
-  @apply min-w-full bg-white;
-}
-.software-thead-row {
-  @apply bg-blue-900 text-white;
-}
-.software-th {
-  @apply px-4 py-2;
-}
-.software-tr {
-  @apply border-b hover:bg-blue-50;
-}
-.software-tr:hover {
-  @apply bg-blue-100;
-}
-.software-td {
-  @apply px-4 py-2;
-}
-.software-tbody-row {
-  @apply border-b hover:bg-blue-50;
-}
-.software-tbody-row:hover {
-  @apply bg-blue-100;
+.header-content {
+  @apply flex justify-between items-start rounded-xl p-6 mb-8;
 }
 
+
+.title-section {
+  @apply flex flex-col;
+}
+
+.page-title {
+  @apply text-3xl font-bold text-gray-800 flex items-center gap-3 mb-2;
+}
+
+.page-title svg {
+  @apply text-indigo-600;
+  filter: drop-shadow(0 2px 4px rgba(99, 102, 241, 0.3));
+}
+
+.page-subtitle {
+  @apply text-gray-600 text-lg font-medium;
+}
+
+/* Content Section */
+.page-content {
+  @apply bg-white rounded-xl shadow-lg overflow-hidden border border-indigo-100;
+}
+
+/* Table Styling */
+.data-table-container {
+  @apply overflow-hidden;
+}
+
+.table-wrapper {
+  @apply overflow-x-auto;
+}
+
+.data-table {
+  @apply w-full;
+}
+
+.table-header {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+}
+
+.table-th {
+  @apply px-6 py-4 text-left text-sm font-semibold text-white tracking-wider;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.table-body {
+  @apply bg-white;
+}
+
+.table-row {
+  @apply border-b border-gray-100 transition-all duration-200;
+}
+
+.table-row:hover {
+  @apply bg-gradient-to-r from-indigo-50 to-purple-50;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+}
+
+.table-td {
+  @apply px-6 py-4 text-sm text-gray-900;
+}
+
+.id-column {
+  @apply font-mono font-semibold text-indigo-600;
+}
+
+.note-text {
+  @apply text-sm text-gray-700 italic;
+}
+
+.version-badge {
+  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200;
+}
+
+.date-text {
+  @apply text-sm text-gray-600 font-mono;
+}
+
+.ambiente-list {
+  @apply flex flex-wrap gap-1;
+}
+
+.ambiente-item {
+  @apply text-sm text-gray-700;
+}
+
+.ambiente-separator {
+  @apply text-gray-400;
+}
+
+.no-data {
+  @apply text-gray-400 italic;
+}
+
+.actions-column {
+  @apply text-center;
+  width: 140px;
+}
+
+.action-buttons {
+  @apply flex items-center justify-center gap-2;
+}
+
+/* Icon Button System */
+.icon-button {
+  @apply relative inline-flex items-center justify-center rounded-lg transition-all duration-300 ease-in-out;
+  @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
+  overflow: hidden;
+}
+
+.icon-button .icon-container {
+  @apply flex items-center justify-center transition-all duration-300;
+  z-index: 2;
+  position: relative;
+}
+
+.icon-button .text-container {
+  @apply absolute left-full ml-2 px-3 py-1 rounded-lg text-sm font-medium whitespace-nowrap;
+  @apply opacity-0 transform translate-x-2 transition-all duration-300 ease-in-out;
+  @apply bg-gray-800 text-white shadow-lg;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.icon-button .text-container::before {
+  content: '';
+  @apply absolute right-full top-1/2 transform -translate-y-1/2;
+  border: 6px solid transparent;
+  border-right-color: rgb(31, 41, 55);
+}
+
+.icon-button:hover .text-container {
+  @apply opacity-100 transform translate-x-0;
+}
+
+/* Add Button */
 .add-button {
-  @apply px-4 py-2 bg-blue-500 text-white hover:bg-blue-600 rounded;
+  @apply px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg;
+  @apply hover:from-indigo-700 hover:to-purple-700 focus:ring-indigo-500;
+  @apply transform hover:scale-105 hover:-translate-y-1;
 }
 
-.update-button {
-  @apply px-4 py-2 bg-yellow-500 text-white hover:bg-yellow-600 rounded;
+.add-button .icon-container {
+  @apply w-5 h-5;
+}
+
+.add-button .text-container {
+  @apply ml-2 opacity-100 transform-none static bg-transparent text-current shadow-none;
+  pointer-events: auto;
+}
+
+.add-button .text-container::before {
+  display: none;
+}
+
+/* Action Buttons */
+.action-button {
+  @apply w-10 h-10 border-2;
+}
+
+.edit-button {
+  @apply border-amber-300 bg-gradient-to-r from-amber-50 to-orange-50 text-amber-700;
+  @apply hover:from-amber-100 hover:to-orange-100 hover:border-amber-400 focus:ring-amber-500;
+  @apply hover:scale-110 hover:shadow-lg;
+}
+
+.edit-button:hover .icon-container {
+  @apply transform rotate-12;
 }
 
 .delete-button {
-  @apply px-4 py-2 bg-red-500 text-white hover:bg-red-600 rounded;
+  @apply border-red-300 bg-gradient-to-r from-red-50 to-pink-50 text-red-700;
+  @apply hover:from-red-100 hover:to-pink-100 hover:border-red-400 focus:ring-red-500;
+  @apply hover:scale-110 hover:shadow-lg;
 }
-.UD-buttons {
-  @apply flex space-x-2 justify-evenly;
+
+.delete-button:hover .icon-container {
+  @apply transform -rotate-12;
+}
+
+/* Loading State */
+.loading-container {
+  @apply flex items-center justify-center py-20;
+}
+
+/* No Data State */
+.no-data-container {
+  @apply flex flex-col items-center justify-center py-16 px-8 text-center;
+}
+
+.no-data-icon {
+  @apply w-20 h-20 rounded-full bg-gradient-to-r from-indigo-100 to-purple-100 flex items-center justify-center mb-6;
+  @apply text-indigo-600;
+}
+
+.no-data-title {
+  @apply text-2xl font-bold text-gray-800 mb-3;
+}
+
+.no-data-text {
+  @apply text-gray-600 text-lg mb-8 max-w-md;
+}
+
+.no-data-action {
+  @apply px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg rounded-lg;
+  @apply hover:from-indigo-700 hover:to-purple-700 focus:ring-indigo-500;
+  @apply transform hover:scale-105 hover:-translate-y-1;
+}
+
+.no-data-action .icon-container {
+  @apply w-5 h-5;
+}
+
+.no-data-action .text-container {
+  @apply ml-3 opacity-100 transform-none static bg-transparent text-current shadow-none;
+  pointer-events: auto;
+}
+
+.no-data-action .text-container::before {
+  display: none;
 }

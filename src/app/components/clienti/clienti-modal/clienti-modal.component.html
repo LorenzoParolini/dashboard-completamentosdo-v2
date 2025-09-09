@@ -1,76 +1,142 @@
-<div class="clienti-modal-overlay">
-  <div class="clienti-modal-container">
-    <div class="clienti-modal-header">
-      <h2 class="clienti-modal-title">{{ cliente ? 'Modifica Cliente' : 'Aggiungi Cliente' }}</h2>
-      <button class="clienti-modal-close" (click)="closeModal()">&times;</button>
+<div class="modal-backdrop" (click)="onBackdropClick($event)">
+  <div class="modal-container">
+    <!-- Header -->
+    <div class="modal-header">
+      <div class="modal-title-section">
+        <h2 class="modal-title">{{ cliente ? 'Modifica Cliente' : 'Aggiungi Cliente' }}</h2>
+        <span class="modal-subtitle">{{ cliente ? 'Aggiorna i dati del cliente' : 'Inserisci i dati del nuovo cliente' }}</span>
+      </div>
+      <button class="close-button" (click)="closeModal()" aria-label="Chiudi modale">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
     </div>
-    <div class="clienti-modal-body">
-      <form (ngSubmit)="salva()" class="clienti-modal-form flex-col gap-2">
-        <input
-          type="text"
-          [(ngModel)]="nuovoCliente.descrizione"
-          name="descrizione"
-          placeholder="Descrizione del cliente"
-          class="clienti-modal-input"
-          required
-        />
-        <select 
-          [(ngModel)]="nuovoCliente.regione.id"
-          (change)="onRegioneChange($event)"
-          name="regione"
-          class="clienti-modal-input"
-          required
-        >
-          <option value="" *ngIf="!cliente">Seleziona una regione</option>
-          <option *ngFor="let regione of regioniDisponibili" [value]="regione.id">
-            {{ regione.descrizione }}
-          </option>
-        </select>
-        
-        <!-- Selezione Software -->
-        <div class="software-selection-container">
-          <select
-            [(ngModel)]="softwareSelezionatoId"
-            name="softwareSelezionato"
-            class="clienti-modal-input"
-            (change)="onSoftwareSelezionato()"
-          >
-            <option value="">Seleziona un software da aggiungere</option>
-            <option 
-              *ngFor="let software of softwareDisponibili" 
-              [value]="software.id"
-              [disabled]="isSoftwareGiaSelezionato(software.id)"
-            >
-              {{ software.descrizione }}
-              <span *ngIf="isSoftwareGiaSelezionato(software.id)"> (già selezionato)</span>
-            </option>
-          </select>
-          
-          <!-- Lista software selezionati -->
-          <div class="software-selezionati" *ngIf="nuovoCliente.software.length > 0">
-            <label class="software-label">Software selezionati:</label>
-            <div class="software-lista">
-              <div 
-                *ngFor="let software of nuovoCliente.software" 
-                class="software-item"
+
+    <!-- Content -->
+    <div class="modal-content">
+      <div class="form-section">
+        <div class="section-header">
+          <h3 class="section-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            Informazioni Cliente
+          </h3>
+        </div>
+
+        <form (ngSubmit)="salva()" class="form-container">
+          <div class="form-grid">
+            <div class="form-field form-field-full">
+              <label class="form-label">Descrizione Cliente</label>
+              <input
+                type="text"
+                [(ngModel)]="nuovoCliente.descrizione"
+                name="descrizione"
+                placeholder="Inserisci la descrizione del cliente"
+                class="form-input"
+                required
+              />
+            </div>
+
+            <div class="form-field form-field-full">
+              <label class="form-label">Regione</label>
+              <select 
+                [(ngModel)]="nuovoCliente.regione.id"
+                (change)="onRegioneChange($event)"
+                name="regione"
+                class="form-select"
+                required
               >
-                <span class="software-nome">{{ software.descrizione }}</span>
-                <button 
-                  type="button" 
-                  class="rimuovi-software-btn"
-                  (click)="rimuoviSoftware(software.id)"
-                  title="Rimuovi software"
-                >
-                  ×
-                </button>
-              </div>
+                <option value="" *ngIf="!cliente">Seleziona una regione</option>
+                <option *ngFor="let regione of regioniDisponibili" [value]="regione.id">
+                  {{ regione.descrizione }}
+                </option>
+              </select>
             </div>
           </div>
-        </div>
-        <button type="submit" class="clienti-modal-add-btn mt-2">
-          {{ cliente ? 'Salva' : 'Aggiungi' }}
-        </button>
-      </form>
+
+          <!-- Software Section -->
+          <div class="software-section">
+            <div class="section-divider">
+              <h4 class="section-subtitle">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                  <line x1="8" y1="21" x2="16" y2="21"></line>
+                  <line x1="12" y1="17" x2="12" y2="21"></line>
+                </svg>
+                Software Associati
+              </h4>
+            </div>
+
+            <div class="form-field">
+              <label class="form-label">Aggiungi Software</label>
+              <select
+                [(ngModel)]="softwareSelezionatoId"
+                name="softwareSelezionato"
+                class="form-select"
+                (change)="onSoftwareSelezionato()"
+              >
+                <option value="">Seleziona un software da aggiungere</option>
+                <option 
+                  *ngFor="let software of softwareDisponibili" 
+                  [value]="software.id"
+                  [disabled]="isSoftwareGiaSelezionato(software.id)"
+                >
+                  {{ software.descrizione }}
+                  <span *ngIf="isSoftwareGiaSelezionato(software.id)"> (già selezionato)</span>
+                </option>
+              </select>
+            </div>
+            
+            <!-- Lista software selezionati -->
+            <div class="software-list" *ngIf="nuovoCliente.software.length > 0">
+              <div class="software-grid">
+                <div 
+                  *ngFor="let software of nuovoCliente.software" 
+                  class="software-card"
+                >
+                  <div class="software-info">
+                    <span class="software-name">{{ software.descrizione }}</span>
+                    <span class="software-version">v{{ software.versioneCorrente }}</span>
+                  </div>
+                  <button 
+                    type="button" 
+                    class="remove-software-btn"
+                    (click)="rimuoviSoftware(software.id)"
+                    title="Rimuovi software"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="no-software" *ngIf="nuovoCliente.software.length === 0">
+              <p class="no-data-text">Nessun software selezionato</p>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" (click)="closeModal()">
+              Annulla
+            </button>
+            <button type="submit" class="btn-primary">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                <polyline points="17,21 17,13 7,13 7,21"></polyline>
+                <polyline points="7,3 7,8 15,8"></polyline>
+              </svg>
+              {{ cliente ? 'Salva' : 'Aggiungi' }}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </div>

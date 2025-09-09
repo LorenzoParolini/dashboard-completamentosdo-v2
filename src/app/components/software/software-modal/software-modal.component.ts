@@ -71,6 +71,12 @@ export class SoftwareModalComponent implements OnInit {
     this.activeModal.dismiss();
   }
 
+  onBackdropClick(event: MouseEvent) {
+    if (event.target === event.currentTarget) {
+      this.closeModal();
+    }
+  }
+
   // Chiamata quando cambia la selezione nel dropdown
   onAmbienteSelezionato() {
     if (this.ambienteSelezionatoId) {

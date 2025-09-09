@@ -1,43 +1,124 @@
-<div class="clienti-container">
-  <div class="title-row">
-    <h2 class="clienti-title">Clienti</h2>
-    <button class="add-button" (click)="openClienteModal()">Aggiungi</button>
-  </div>
-  <ng-container *ngIf="!loading; else loadingBlock">
-    <div class="clienti-table-wrapper" *ngIf="clienti.length > 0; else noDataBlock">
-      <table class="clienti-table">
-        <thead>
-          <tr class="clienti-thead-row">
-            <th class="clienti-th text-left">ID</th>
-            <th class="clienti-th text-left">Descrizione</th>
-            <th class="clienti-th text-left">Regione</th>
-            <th class="clienti-th text-left">Software</th>
-            <th class="clienti-th">Azioni</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="clienti-tbody-row" *ngFor="let cliente of clienti">
-            <td class="clienti-td">{{ cliente.id }}</td>
-            <td class="clienti-td">{{ cliente.descrizione }}</td>
-            <td class="clienti-td">{{ cliente.regione.descrizione }}</td>
-            <td class="clienti-td">
-              <span *ngFor="let sw of cliente.software; let last = last">
-                {{ sw.descrizione }}<span *ngIf="!last">, </span>
-              </span>
-            </td>
-            <td class="clienti-td UD-buttons">
-              <button class="update-button" (click)="openClienteModal(cliente)">Modifica</button>
-              <button class="delete-button" (click)="onDeleteCliente(cliente.id)">Elimina</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+<div class="page-container">
+  <!-- Header Section -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="title-section">
+        <h1 class="page-title">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          Gestione Clienti
+        </h1>
+        <p class="page-subtitle">Visualizza e gestisci tutti i clienti del sistema</p>
+      </div>
+      <button class="add-button icon-button" (click)="openClienteModal()">
+        <div class="icon-container">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+        </div>
+        <div class="text-container">
+          <span>Aggiungi</span>
+        </div>
+      </button>
     </div>
-  </ng-container>
-  <ng-template #loadingBlock>
-    <app-loading-spinner/>
-  </ng-template>
-  <ng-template #noDataBlock>
-    <div class="text-center p-4 text-gray-500" *ngIf="!loading">Nessun cliente trovato.</div>
-  </ng-template>
+  </div>
+
+  <!-- Content Section -->
+  <div class="page-content">
+    <ng-container *ngIf="!loading; else loadingBlock">
+      <div class="data-table-container" *ngIf="clienti.length > 0; else noDataBlock">
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead class="table-header">
+              <tr>
+                <th class="table-th"></th>
+                <th class="table-th">Descrizione</th>
+                <th class="table-th">Regione</th>
+                <th class="table-th">Software</th>
+                <th class="table-th actions-column">Azioni</th>
+              </tr>
+            </thead>
+            <tbody class="table-body">
+              <tr class="table-row" *ngFor="let cliente of clienti">
+                <td class="table-td id-column">{{ cliente.id }}</td>
+                <td class="table-td">{{ cliente.descrizione }}</td>
+                <td class="table-td">
+                  <span class="region-badge">{{ cliente.regione.descrizione }}</span>
+                </td>
+                <td class="table-td">
+                  <div class="software-list" *ngIf="cliente.software.length > 0; else noSoftware">
+                    <span class="software-item" *ngFor="let sw of cliente.software; let last = last">
+                      {{ sw.descrizione }}<span class="software-separator" *ngIf="!last">, </span>
+                    </span>
+                  </div>
+                  <ng-template #noSoftware>
+                    <span class="no-data">Nessun software</span>
+                  </ng-template>
+                </td>
+                <td class="table-td actions-column">
+                  <div class="action-buttons">
+                    <button class="action-button edit-button icon-button" (click)="openClienteModal(cliente)">
+                      <div class="icon-container">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                      </div>
+                      <div class="text-container">
+                        <span>Modifica</span>
+                      </div>
+                    </button>
+                    <button class="action-button delete-button icon-button" (click)="onDeleteCliente(cliente.id)">
+                      <div class="icon-container">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <polyline points="3,6 5,6 21,6"></polyline>
+                          <path d="M19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"></path>
+                        </svg>
+                      </div>
+                      <div class="text-container">
+                        <span>Elimina</span>
+                      </div>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-template #loadingBlock>
+      <div class="loading-container">
+        <app-loading-spinner/>
+      </div>
+    </ng-template>
+
+    <ng-template #noDataBlock>
+      <div class="no-data-container">
+        <div class="no-data-icon">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </div>
+        <h3 class="no-data-title">Nessun cliente trovato</h3>
+        <p class="no-data-text">Inizia aggiungendo il primo cliente al sistema</p>
+        <button class="no-data-action icon-button" (click)="openClienteModal()">
+          <div class="icon-container">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+          </div>
+          <div class="text-container">
+            <span>Aggiungi Primo Cliente</span>
+          </div>
+        </button>
+      </div>
+    </ng-template>
+  </div>
 </div>
