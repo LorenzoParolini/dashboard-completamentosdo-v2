@@ -1,0 +1,45 @@
+/* Host element styling to match original container */
+:host {
+  @apply flex-1 flex items-center relative max-w-2xl;
+}
+
+/* Search Container */
+.search-container {
+  @apply w-full flex items-center relative;
+}
+
+.search-input {
+  @apply w-full px-6 py-3 pr-14 rounded-xl border border-gray-200 text-gray-700 placeholder-gray-500 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200;
+}
+
+.search-button {
+  @apply absolute right-2 p-2.5 rounded-lg transition-all duration-200 hover:bg-indigo-600 bg-gradient-to-r from-indigo-500 to-purple-600 shadow-md;
+  transition: transform 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+} 
+.search-button:hover {
+  transform: scale(1.08);
+}
+.search-button:active {
+  transform: scale(0.93);
+}
+.search-button .search-icon {
+  transition: transform 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-block;
+}
+.search-button:hover .search-icon {
+  transform: rotate(-16deg);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  :host {
+    @apply max-w-xs;
+  }
+}
+
+@media (max-width: 640px) {
+  :host {
+    @apply hidden;
+  }
+}

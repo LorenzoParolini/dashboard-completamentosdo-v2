@@ -64,35 +64,11 @@
     </div>
     
     <!-- Search Bar -->
-    <div class="search-container">
-      <input
-        type="text"
-        class="search-input"
-        placeholder="Search..."
-        [(ngModel)]="searchQuery"
-      />
-      <button class="search-button">
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 20 20"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <circle cx="9" cy="9" r="6" stroke="white" stroke-width="2" />
-          <path
-            d="M14 14L17 17"
-            stroke="white"
-            stroke-width="2"
-            stroke-linecap="round"
-          />
-        </svg>
-      </button>
-    </div>
+    <app-searchbar></app-searchbar>
 
     <!-- Filter Button -->
     <div class="filter-container">
-      <button class="nav-button icon-button filter-button" (click)="toggleFilters()">
+      <button class="nav-button icon-button filter-button" (click)="openFilterOffcanvas()">
         <div class="icon-container">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"></polygon>
@@ -102,3 +78,9 @@
     </div>
   </div>
 </nav>
+
+<!-- Filter Offcanvas -->
+<app-filter-offcanvas 
+  [isOpen]="isFilterOffcanvasOpen" 
+  (onClose)="closeFilterOffcanvas()">
+</app-filter-offcanvas>

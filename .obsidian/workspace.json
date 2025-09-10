@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "TODO.md",
+                "file": "commit-news.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "TODO"
+              "title": "commit-news"
             }
           }
         ]
@@ -170,5 +170,9 @@
     }
   },
   "active": "932f3afa7fdc95c1",
-  "lastOpenFiles": []
+  "lastOpenFiles": [
+    "TODO.md",
+    "README.md",
+    "commit-news.md"
+  ]
 }

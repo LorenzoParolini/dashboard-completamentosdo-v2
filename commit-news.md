@@ -2,5 +2,5 @@
 
 ### Cosa c'è di nuovo?
 
-- migliorata esttica UI generale
-- aggiunta modale dettagli
+- aggiunti prossimi stemp in [[TODO]]
+- aggiunta sidebar per i filtri
