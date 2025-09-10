@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { SearchbarComponent } from './searchbar/searchbar.component';
-import { FilterOffcanvasComponent } from '../filter-offcanvas/filter-offcanvas.component';
+import { FilterOffcanvasComponent } from './filter-offcanvas/filter-offcanvas.component';
 
 @Component({
   selector: 'app-navbar',
@@ -12,6 +12,7 @@ import { FilterOffcanvasComponent } from '../filter-offcanvas/filter-offcanvas.c
 })
 export class NavbarComponent {
   isFilterOffcanvasOpen = false;
+  currentView: 'D' | 'R' | 'C' | 'S' | 'A' = 'D';
 
   toggleMenu() {
     // Logica per aprire/chiudere il menu
@@ -24,5 +25,31 @@ export class NavbarComponent {
 
   closeFilterOffcanvas() {
     this.isFilterOffcanvasOpen = false;
+  }
+
+  onFiltersApplied(filters: {regioni: string[], software: string[], ambienti: string[]}) {
+    console.log('Filtri applicati:', filters);
+    // Qui puoi implementare la logica per applicare i filtri ai dati
+    this.isFilterOffcanvasOpen = false;
+  }
+
+  onClickDashboard() {
+    this.currentView = 'D';
+  }
+
+  onClickRegione() {
+    this.currentView = 'R';
+  }
+
+  onClickCliente() {
+    this.currentView = 'C';
+  }
+
+  onClickSoftware() {
+    this.currentView = 'S';
+  }
+
+  onClickAmbiente() {
+    this.currentView = 'A';
   }
 }

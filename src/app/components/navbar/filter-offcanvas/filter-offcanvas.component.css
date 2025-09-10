@@ -1,0 +1,488 @@
+:host {
+  display: block;
+}
+
+/* Reset per i pulsanti di rimozione per evitare interferenze */
+.remove-coordinate-btn,
+.remove-date-btn {
+  /* Reset di base */
+  all: unset;
+  box-sizing: border-box;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  
+  /* Stili custom */
+  width: 32px !important;
+  height: 32px !important;
+  background-color: #ef4444 !important;
+  color: white !important;
+  border-radius: 50% !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  border: none !important;
+  outline: none !important;
+  
+  /* Posizionamento del contenuto */
+  text-align: center !important;
+  line-height: 1 !important;
+}
+
+.remove-coordinate-btn:hover,
+.remove-date-btn:hover {
+  background-color: #dc2626 !important;
+  transform: scale(1.1) !important;
+}
+
+.remove-coordinate-btn svg,
+.remove-date-btn svg {
+  flex-shrink: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Overlay per sfondo scuro */
+.offcanvas-overlay {
+  @apply fixed inset-0 bg-black bg-opacity-50 z-[999] opacity-0 invisible transition-all duration-300 ease-out;
+}
+
+.offcanvas-overlay.active {
+  @apply opacity-100 visible;
+}
+
+/* Offcanvas principale */
+.offcanvas {
+  @apply fixed top-0 right-0 w-96 h-full bg-white z-[1000] flex flex-col shadow-2xl;
+  @apply transform translate-x-full transition-transform duration-300 ease-out;
+  border-left: 1px solid #e5e7eb;
+}
+
+.offcanvas.active {
+  @apply transform translate-x-0;
+}
+
+/* Header dell'offcanvas */
+.offcanvas-header {
+  @apply flex justify-between items-center p-6 border-b border-gray-200 bg-gradient-to-r from-indigo-50 to-purple-50;
+}
+
+.offcanvas-header h3 {
+  @apply text-xl font-bold text-gray-800 tracking-tight;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.close-button {
+  @apply bg-white border border-gray-200 rounded-xl p-2 transition-all duration-200 ease-out;
+  @apply hover:border-red-300 hover:bg-red-50 hover:shadow-lg hover:scale-105;
+  @apply active:scale-95 relative overflow-hidden;
+}
+
+.close-button::before {
+  content: '';
+  @apply absolute inset-0 bg-gradient-to-r from-red-400 to-red-600 opacity-0 transition-all duration-300 ease-out;
+}
+
+.close-button:hover::before {
+  @apply opacity-10;
+}
+
+.close-button svg {
+  @apply w-5 h-5 text-gray-600 transition-all duration-200 ease-out relative z-10;
+}
+
+.close-button:hover svg {
+  @apply text-red-600 transform rotate-90;
+}
+
+/* Contenuto dell'offcanvas */
+.offcanvas-content {
+  @apply flex-1 p-6 overflow-y-auto bg-gradient-to-b from-gray-50 to-white;
+}
+
+/* Footer dell'offcanvas */
+.offcanvas-footer {
+  @apply p-6 border-t border-gray-200 bg-white flex gap-3 justify-end;
+}
+
+.offcanvas-footer button {
+  @apply px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-300 ease-out;
+  @apply border border-gray-200 bg-white text-gray-700 relative overflow-hidden;
+  @apply hover:shadow-lg hover:scale-105 active:scale-95;
+  position: relative;
+  z-index: 1;
+}
+
+.offcanvas-footer button span {
+  position: relative;
+  z-index: 2;
+}
+
+.offcanvas-footer button::before {
+  content: '';
+  @apply absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-600 opacity-0 transition-all duration-300 ease-out;
+  z-index: 0;
+}
+
+.offcanvas-footer button:hover::before {
+  @apply opacity-100;
+}
+
+.offcanvas-footer button:hover {
+  @apply text-white border-transparent;
+}
+
+.offcanvas-footer button:first-child {
+  @apply bg-gradient-to-r from-indigo-500 to-purple-600 text-white border-transparent;
+  @apply hover:from-indigo-600 hover:to-purple-700;
+}
+
+.offcanvas-footer button:first-child::before {
+  @apply bg-gradient-to-r from-indigo-600 to-purple-700;
+}
+
+/* Stili per i filtri */
+.filtri-regione, .filtri-software, .filtri-ambiente, 
+.filtri-codice-regione, .filtri-coordinate, .filtri-versione,
+.filtri-data-aggiornamento, .filtri-data-creazione {
+  @apply mb-6;
+}
+
+.filtri-regione button, .filtri-software button, .filtri-ambiente button,
+.filtri-codice-regione button, .filtri-coordinate button, .filtri-versione button,
+.filtri-data-aggiornamento button, .filtri-data-creazione button {
+  @apply w-full p-4 rounded-xl font-semibold text-left transition-all duration-300 ease-out;
+  @apply bg-white border border-gray-200 text-gray-700 relative overflow-hidden;
+  @apply hover:border-indigo-300 hover:shadow-lg hover:shadow-indigo-100 hover:scale-[1.02];
+  @apply active:scale-[0.98];
+  position: relative;
+  z-index: 1;
+}
+
+.filtri-regione button span, .filtri-software button span, .filtri-ambiente button span,
+.filtri-codice-regione button span, .filtri-coordinate button span, .filtri-versione button span,
+.filtri-data-aggiornamento button span, .filtri-data-creazione button span {
+  position: relative;
+  z-index: 2;
+}
+
+/* Stato attivo - quando il filtro è selezionato */
+.filtri-regione button.active, .filtri-software button.active, .filtri-ambiente button.active,
+.filtri-codice-regione button.active, .filtri-coordinate button.active, .filtri-versione button.active,
+.filtri-data-aggiornamento button.active, .filtri-data-creazione button.active {
+  @apply bg-gradient-to-r from-indigo-500 to-purple-600 text-white border-transparent;
+  @apply shadow-lg shadow-indigo-200;
+}
+
+.filtri-regione button.active:hover, .filtri-software button.active:hover, .filtri-ambiente button.active:hover,
+.filtri-codice-regione button.active:hover, .filtri-coordinate button.active:hover, .filtri-versione button.active:hover,
+.filtri-data-aggiornamento button.active:hover, .filtri-data-creazione button.active:hover {
+  @apply from-indigo-600 to-purple-700 scale-[1.02];
+}
+
+.filtri-regione button::before, .filtri-software button::before, .filtri-ambiente button::before,
+.filtri-codice-regione button::before, .filtri-coordinate button::before, .filtri-versione button::before,
+.filtri-data-aggiornamento button::before, .filtri-data-creazione button::before {
+  content: '';
+  @apply absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-600 opacity-0 transition-all duration-300 ease-out;
+}
+
+/* Solo per i bottoni NON attivi - hover effect */
+.filtri-regione button:not(.active):hover::before, 
+.filtri-software button:not(.active):hover::before, 
+.filtri-ambiente button:not(.active):hover::before,
+.filtri-codice-regione button:not(.active):hover::before,
+.filtri-coordinate button:not(.active):hover::before,
+.filtri-versione button:not(.active):hover::before,
+.filtri-data-aggiornamento button:not(.active):hover::before,
+.filtri-data-creazione button:not(.active):hover::before {
+  @apply opacity-5;
+}
+
+.filtri-regione button:not(.active):hover, 
+.filtri-software button:not(.active):hover, 
+.filtri-ambiente button:not(.active):hover,
+.filtri-codice-regione button:not(.active):hover,
+.filtri-coordinate button:not(.active):hover,
+.filtri-versione button:not(.active):hover,
+.filtri-data-aggiornamento button:not(.active):hover,
+.filtri-data-creazione button:not(.active):hover {
+  @apply text-indigo-700;
+}
+
+.filter-regione, .filter-software, .filter-ambiente,
+.filter-codice-regione, .filter-coordinate, .filter-versione,
+.filter-data-aggiornamento, .filter-data-creazione {
+  @apply mt-3 transform transition-all duration-300 ease-out;
+}
+
+.filter-regione > div, .filter-software > div, .filter-ambiente > div,
+.filter-codice-regione > div, .filter-coordinate > div, .filter-versione > div,
+.filter-data-aggiornamento > div, .filter-data-creazione > div {
+  @apply bg-white rounded-xl p-4 border border-gray-200 shadow-sm;
+  @apply animate-slideDown;
+}
+
+.filter-regione p, .filter-software p, .filter-ambiente p,
+.filter-codice-regione p, .filter-coordinate p, .filter-versione p,
+.filter-data-aggiornamento p, .filter-data-creazione p {
+  @apply text-sm font-medium text-gray-600 mb-3;
+}
+
+.filter-regione select, .filter-software select, .filter-ambiente select,
+.filter-codice-regione select, .filter-coordinate select, .filter-versione select,
+.filter-data-aggiornamento select, .filter-data-creazione select {
+  @apply w-full p-3 rounded-lg border border-gray-300 bg-white text-gray-700;
+  @apply focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none;
+  @apply transition-all duration-200 ease-out;
+  @apply hover:border-indigo-400 hover:shadow-md;
+}
+
+.filter-regione select:focus, .filter-software select:focus, .filter-ambiente select:focus,
+.filter-codice-regione select:focus, .filter-coordinate select:focus, .filter-versione select:focus,
+.filter-data-aggiornamento select:focus, .filter-data-creazione select:focus {
+  @apply transform scale-[1.02];
+}
+
+/* Animazioni */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes buttonPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-slideDown {
+  animation: slideDown 0.3s ease-out;
+}
+
+/* Animazione di click per tutti i pulsanti */
+.filtri-regione button:active, 
+.filtri-software button:active, 
+.filtri-ambiente button:active,
+.offcanvas-footer button:active {
+  animation: buttonPulse 0.15s ease-out;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .offcanvas {
+    @apply w-full;
+  }
+  
+  .offcanvas-header {
+    @apply p-4;
+  }
+  
+  .offcanvas-content {
+    @apply p-4;
+  }
+  
+  .offcanvas-footer {
+    @apply p-4 flex-col gap-2;
+  }
+  
+  .offcanvas-footer button {
+    @apply w-full;
+  }
+}
+
+/* Scrollbar personalizzata */
+.offcanvas-content::-webkit-scrollbar {
+  @apply w-2;
+}
+
+.offcanvas-content::-webkit-scrollbar-track {
+  @apply bg-gray-100 rounded-full;
+}
+
+.offcanvas-content::-webkit-scrollbar-thumb {
+  @apply bg-gradient-to-b from-indigo-400 to-purple-500 rounded-full;
+}
+
+.offcanvas-content::-webkit-scrollbar-thumb:hover {
+  @apply from-indigo-500 to-purple-600;
+}
+
+/* Stili per checkbox group */
+.checkbox-group {
+  @apply max-h-48 overflow-y-auto space-y-2;
+}
+
+.checkbox-group::-webkit-scrollbar {
+  @apply w-1;
+}
+
+.checkbox-group::-webkit-scrollbar-track {
+  @apply bg-gray-100 rounded-full;
+}
+
+.checkbox-group::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 rounded-full;
+}
+
+.checkbox-group::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400;
+}
+
+.checkbox-label {
+  @apply flex items-center p-2 rounded-lg cursor-pointer transition-all duration-200 ease-out;
+  @apply hover:bg-indigo-50 hover:shadow-sm;
+}
+
+.checkbox-label input[type="checkbox"] {
+  @apply w-4 h-4 mr-3 text-indigo-600 bg-white border-2 border-gray-300 rounded focus:ring-indigo-500 focus:ring-2;
+  @apply transition-all duration-200 ease-out cursor-pointer;
+}
+
+.checkbox-label input[type="checkbox"]:checked {
+  @apply bg-indigo-600 border-indigo-600;
+}
+
+.checkbox-label input[type="checkbox"]:hover {
+  @apply border-indigo-400 scale-105;
+}
+
+.checkbox-label span {
+  @apply text-sm text-gray-700 select-none transition-colors duration-200 ease-out;
+}
+
+.checkbox-label:hover span {
+  @apply text-indigo-700;
+}
+
+.checkbox-label input[type="checkbox"]:checked + span {
+  @apply text-indigo-800 font-medium;
+}
+
+/* Coordinate input styles */
+.coordinate-input-group {
+  @apply space-y-3;
+}
+
+.coordinate-inputs {
+  @apply flex flex-col gap-3 p-3 bg-gray-50 rounded-lg border;
+}
+
+.input-pair {
+  @apply flex items-center gap-2;
+}
+
+.input-pair label {
+  @apply text-sm font-medium text-gray-700 min-w-[20px];
+}
+
+.coordinate-input {
+  @apply flex-1 p-2 border border-gray-300 rounded-md text-gray-700;
+  @apply focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none;
+  @apply transition-all duration-200 ease-out;
+}
+
+.add-coordinate-btn {
+  @apply w-full mt-2 px-4 py-2 bg-indigo-500 text-white rounded-md;
+  @apply hover:bg-indigo-600 transition-colors duration-200;
+  @apply focus:outline-none focus:ring-2 focus:ring-indigo-200;
+}
+
+.selected-coordinates {
+  @apply mt-3 p-3 bg-gray-50 rounded-lg border;
+}
+
+.selected-coordinates h4 {
+  @apply text-sm font-medium text-gray-700 mb-2;
+}
+
+.coordinate-list {
+  @apply space-y-2;
+}
+
+.coordinate-item {
+  @apply flex justify-between items-center p-3 bg-white rounded-lg border border-gray-200 shadow-sm;
+  min-height: 48px;
+}
+
+.coordinate-item span {
+  @apply text-sm text-gray-700 font-medium;
+}
+
+/* Version input styles */
+.number-input-group {
+  @apply space-y-2;
+}
+
+.version-input {
+  @apply w-full p-3 border border-gray-300 rounded-lg text-gray-700;
+  @apply focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none;
+  @apply transition-all duration-200 ease-out;
+}
+
+/* Date input styles */
+.date-input-group {
+  @apply flex gap-2 mb-3;
+}
+
+.date-range-input-group {
+  @apply space-y-3;
+}
+
+.date-range-inputs {
+  @apply flex flex-col gap-3 p-3 bg-gray-50 rounded-lg border;
+}
+
+.date-input-pair {
+  @apply flex items-center gap-2;
+}
+
+.date-input-pair label {
+  @apply text-sm font-medium text-gray-700 min-w-[80px];
+}
+
+.date-input {
+  @apply flex-1 p-3 border border-gray-300 rounded-lg text-gray-700;
+  @apply focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none;
+  @apply transition-all duration-200 ease-out;
+}
+
+.add-date-btn {
+  @apply px-4 py-2 bg-indigo-500 text-white rounded-lg;
+  @apply hover:bg-indigo-600 transition-colors duration-200;
+  @apply focus:outline-none focus:ring-2 focus:ring-indigo-200;
+}
+
+.selected-dates {
+  @apply mt-3 p-3 bg-gray-50 rounded-lg border;
+}
+
+.selected-dates h4 {
+  @apply text-sm font-medium text-gray-700 mb-2;
+}
+
+.date-list {
+  @apply space-y-2;
+}
+
+.date-item {
+  @apply flex justify-between items-center p-3 bg-white rounded-lg border border-gray-200 shadow-sm;
+  min-height: 48px;
+}
+
+.date-item span {
+  @apply text-sm text-gray-700 font-medium;
+}

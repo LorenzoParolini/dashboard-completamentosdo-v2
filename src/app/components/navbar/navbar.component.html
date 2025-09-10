@@ -9,14 +9,14 @@
 
     <!-- Dashboard Button (separato) -->
     <div class="dashboard-container">
-      <button class="nav-button dashboard-button" routerLink="/" routerLinkActive="nav-button-active" [routerLinkActiveOptions]="{exact: true}">
+      <button class="nav-button dashboard-button" routerLink="/" routerLinkActive="nav-button-active" [routerLinkActiveOptions]="{exact: true}" (click)="onClickDashboard()">
         Dashboard
       </button>
     </div>
 
     <!-- Altri Navigation Buttons -->
     <div class="nav-buttons-container">
-      <button class="nav-button icon-button" routerLink="/regione" routerLinkActive="nav-button-active">
+      <button class="nav-button icon-button" routerLink="/regione" routerLinkActive="nav-button-active" (click)="onClickRegione()">
         <div class="icon-container">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
@@ -27,7 +27,7 @@
           <span>Regioni</span>
         </div>
       </button>
-      <button class="nav-button icon-button" routerLink="/cliente" routerLinkActive="nav-button-active">
+      <button class="nav-button icon-button" routerLink="/cliente" routerLinkActive="nav-button-active" (click)="onClickCliente()">
         <div class="icon-container">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -38,7 +38,7 @@
           <span>Clienti</span>
         </div>
       </button>
-      <button class="nav-button icon-button" routerLink="/software" routerLinkActive="nav-button-active">
+      <button class="nav-button icon-button" routerLink="/software" routerLinkActive="nav-button-active" (click)="onClickSoftware()">
         <div class="icon-container">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
@@ -50,7 +50,7 @@
           <span>Software</span>
         </div>
       </button>
-      <button class="nav-button icon-button" routerLink="/ambiente" routerLinkActive="nav-button-active">
+      <button class="nav-button icon-button" routerLink="/ambiente" routerLinkActive="nav-button-active" (click)="onClickAmbiente()">
         <div class="icon-container">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
@@ -81,6 +81,8 @@
 
 <!-- Filter Offcanvas -->
 <app-filter-offcanvas 
+  [currentView]="currentView"
   [isOpen]="isFilterOffcanvasOpen" 
-  (onClose)="closeFilterOffcanvas()">
+  (onClose)="closeFilterOffcanvas()"
+  (onFiltersApplied)="onFiltersApplied($event)">
 </app-filter-offcanvas>

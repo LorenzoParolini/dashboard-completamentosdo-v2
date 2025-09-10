@@ -7,6 +7,17 @@
 - [x]  aggiungere modale dettagli
 - [ ]  aggiungere ricerca funzionante
 - [ ] aggiungere filtri
+	- sezioni filtri possibili
+		- regione (dashboard e clienti) -> checklist scelta multipla
+		- software (dashboard e clienti) -> checklist scelta multipla
+		- codice-regione (regione) -> checklist scelta multipla
+		- coordinate (regione) -> scelta multipla ogni scelta rappresenta due input:
+			- X -> input numero
+			- Y -> input numero
+		- ambienti (software) -> checklist scelta multipla
+		- versione (software) -> input numero
+		- data ultimo aggiornamento (software) -> scelta multipla di date
+		- data creazione (ambiente) -> scelta multipla di date
 - [ ] aggiunge alert conferma prima di elimina
 - [ ] aggiungere alert conferma prima di annulla modifica/aggiungi
 - [ ] aggiungere barra modali minimalizzate
