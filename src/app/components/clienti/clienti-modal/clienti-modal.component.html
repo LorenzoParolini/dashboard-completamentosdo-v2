@@ -6,12 +6,19 @@
         <h2 class="modal-title">{{ cliente ? 'Modifica Cliente' : 'Aggiungi Cliente' }}</h2>
         <span class="modal-subtitle">{{ cliente ? 'Aggiorna i dati del cliente' : 'Inserisci i dati del nuovo cliente' }}</span>
       </div>
-      <button class="close-button" (click)="closeModal()" aria-label="Chiudi modale">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
-      </button>
+      <div class="modal-actions">
+        <button class="minimize-button" (click)="minimizeModal()" aria-label="Minimizza modale">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+        </button>
+        <button class="close-button" (click)="closeModal()" aria-label="Chiudi modale">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
     </div>
 
     <!-- Content -->
@@ -37,6 +44,7 @@
                 name="descrizione"
                 placeholder="Inserisci la descrizione del cliente"
                 class="form-input"
+                (input)="onFieldChange()"
                 required
               />
             </div>

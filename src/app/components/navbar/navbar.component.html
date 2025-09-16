@@ -64,7 +64,7 @@
     </div>
     
     <!-- Search Bar -->
-    <app-searchbar></app-searchbar>
+    <app-searchbar [currentView]="currentView"></app-searchbar>
 
     <!-- Filter Button -->
     <div class="filter-container">
@@ -75,6 +75,8 @@
           </svg>
         </div>
       </button>
+      <!-- Badge per filtri attivi posizionato sul container -->
+      <span class="filter-badge" *ngIf="activeFiltersCount > 0">{{ activeFiltersCount }}</span>
     </div>
   </div>
 </nav>

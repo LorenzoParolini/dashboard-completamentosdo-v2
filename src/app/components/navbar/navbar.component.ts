@@ -1,18 +1,55 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { SearchbarComponent } from './searchbar/searchbar.component';
 import { FilterOffcanvasComponent } from './filter-offcanvas/filter-offcanvas.component';
+import { FilterService } from '../../services/filter.service';
+import { FilterCriteria } from '../../services/filter-utils.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, SearchbarComponent, FilterOffcanvasComponent],
+  imports: [RouterLink, RouterLinkActive, SearchbarComponent, FilterOffcanvasComponent, CommonModule],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnInit, OnDestroy {
   isFilterOffcanvasOpen = false;
   currentView: 'D' | 'R' | 'C' | 'S' | 'A' = 'D';
+  activeFiltersCount = 0;
+  private filterSubscription: Subscription = new Subscription();
+
+  constructor(private filterService: FilterService) {}
+
+  ngOnInit() {
+    // Subscribe ai cambiamenti dei filtri per contare quelli attivi
+    this.filterSubscription = this.filterService.filters$.subscribe(filters => {
+      this.activeFiltersCount = this.countActiveFilters(filters);
+    });
+  }
+
+  ngOnDestroy() {
+    this.filterSubscription.unsubscribe();
+  }
+
+  /**
+   * Conta il numero di filtri attivi
+   */
+  private countActiveFilters(filters: FilterCriteria): number {
+    let count = 0;
+    
+    if (filters.regioni && filters.regioni.length > 0) count++;
+    if (filters.software && filters.software.length > 0) count++;
+    if (filters.ambienti && filters.ambienti.length > 0) count++;
+    if (filters.codiciRegione && filters.codiciRegione.length > 0) count++;
+    if (filters.coordinate && filters.coordinate.length > 0) count++;
+    if (filters.versione && filters.versione.trim() !== '') count++;
+    if (filters.dataAggiornamento && filters.dataAggiornamento.length > 0) count++;
+    if (filters.dataCreazione && filters.dataCreazione.length > 0) count++;
+    
+    return count;
+  }
 
   toggleMenu() {
     // Logica per aprire/chiudere il menu
@@ -27,9 +64,25 @@ export class NavbarComponent {
     this.isFilterOffcanvasOpen = false;
   }
 
-  onFiltersApplied(filters: {regioni: string[], software: string[], ambienti: string[]}) {
+  onFiltersApplied(filters: {
+    regioni: string[], 
+    software: string[], 
+    ambienti: string[],
+    codiciRegione: string[],
+    coordinate: { x: number, y: number }[],
+    versione: string,
+    dataAggiornamento: { inizio: Date, fine: Date }[],
+    dataCreazione: { inizio: Date, fine: Date }[]
+  }) {
     console.log('Filtri applicati:', filters);
-    // Qui puoi implementare la logica per applicare i filtri ai dati
+    
+    // Preserve the current search query when updating other filters
+    const currentFilters = this.filterService.getCurrentFilters();
+    
+    this.filterService.updateFilters({
+      ...filters,
+      searchQuery: currentFilters.searchQuery
+    });
     this.isFilterOffcanvasOpen = false;
   }
 

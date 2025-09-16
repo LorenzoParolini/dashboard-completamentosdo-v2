@@ -30,7 +30,7 @@
   <!-- Content Section -->
   <div class="page-content">
     <ng-container *ngIf="!loading; else loadingBlock">
-      <div class="data-table-container" *ngIf="ambienti.length > 0; else noDataBlock">
+      <div class="data-table-container" *ngIf="filteredAmbienti.length > 0; else noDataBlock">
         <div class="table-wrapper">
           <table class="data-table">
             <thead class="table-header">
@@ -43,7 +43,7 @@
               </tr>
             </thead>
             <tbody class="table-body">
-              <tr class="table-row" *ngFor="let ambiente of ambienti">
+              <tr class="table-row" *ngFor="let ambiente of filteredAmbienti">
                 <td class="table-td id-column">{{ ambiente.id }}</td>
                 <td class="table-td">{{ ambiente.descrizione }}</td>
                 <td class="table-td">

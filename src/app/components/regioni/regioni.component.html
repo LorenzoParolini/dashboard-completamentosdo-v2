@@ -29,7 +29,7 @@
   <!-- Content Section -->
   <div class="page-content">
     <ng-container *ngIf="!loading; else loadingBlock">
-      <div class="data-table-container" *ngIf="regioni.length > 0; else noDataBlock">
+      <div class="data-table-container" *ngIf="filteredRegioni.length > 0; else noDataBlock">
         <div class="table-wrapper">
           <table class="data-table">
             <thead class="table-header">
@@ -42,7 +42,7 @@
               </tr>
             </thead>
             <tbody class="table-body">
-              <tr class="table-row" *ngFor="let regione of regioni">
+              <tr class="table-row" *ngFor="let regione of filteredRegioni">
                 <td class="table-td id-column">{{ regione.id }}</td>
                 <td class="table-td">{{ regione.descrizione }}</td>
                 <td class="table-td">

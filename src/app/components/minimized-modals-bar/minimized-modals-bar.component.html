@@ -1,0 +1,10 @@
+<div class="minimized-modals-bar" *ngIf="(minimizedModals$ | async)?.length">
+  <div class="modals-container">
+    <app-minimized-modal-item
+      *ngFor="let modal of minimizedModals$ | async; trackBy: trackByModalId"
+      [modal]="modal"
+      (restore)="onRestoreModal($event)"
+      (close)="onCloseModal($event)">
+    </app-minimized-modal-item>
+  </div>
+</div>

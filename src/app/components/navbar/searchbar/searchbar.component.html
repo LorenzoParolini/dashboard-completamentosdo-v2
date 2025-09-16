@@ -3,10 +3,12 @@
   <input
     type="text"
     class="search-input"
-    placeholder="Search..."
+    [placeholder]="placeholder"
     [(ngModel)]="searchQuery"
+    (input)="onSearchChange()"
+    (keyup.enter)="onSearchSubmit()"
   />
-  <button class="search-button">
+  <button class="search-button" (click)="onSearchSubmit()">
     <svg
       width="20"
       height="20"

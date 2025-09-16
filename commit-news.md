@@ -2,5 +2,8 @@
 
 ### Cosa c'è di nuovo?
 
-- aggiunti prossimi stemp in [[TODO]]
-- aggiunta sidebar per i filtri
+- aggiunta ricerca funzionante
+- aggiunta filtri
+- aggiunti alert conferma prima di elimina
+- aggiunti alert conferma prima di annulla modifica/aggiungi
+- aggiunta barra modali minimalizzate

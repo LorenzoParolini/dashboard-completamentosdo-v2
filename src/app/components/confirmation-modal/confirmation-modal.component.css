@@ -1,0 +1,138 @@
+:host {
+  @apply block;
+}
+
+/* Modal Backdrop */
+.modal-backdrop {
+  @apply fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50 p-5 backdrop-blur-sm;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal-container {
+  @apply bg-white rounded-2xl shadow-2xl max-w-[95vw] max-h-[95vh] w-full max-w-md flex flex-col overflow-hidden;
+  animation: slideIn 0.25s ease-out;
+}
+
+/* Header */
+.modal-header {
+  @apply flex justify-between items-center px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-red-500 to-red-600 text-white;
+}
+
+.modal-title-section {
+  @apply flex flex-col gap-1;
+}
+
+.modal-title {
+  @apply text-xl font-bold m-0 leading-tight;
+}
+
+.modal-subtitle {
+  @apply text-sm opacity-90 font-normal;
+}
+
+.close-button {
+  @apply bg-white bg-opacity-10 border-0 rounded-lg w-9 h-9 flex items-center justify-center cursor-pointer text-white transition-all duration-200;
+}
+
+.close-button:hover {
+  @apply bg-white bg-opacity-20 transform scale-105;
+}
+
+/* Content */
+.modal-content {
+  @apply flex-1 overflow-y-auto p-6 bg-white;
+}
+
+.warning-section {
+  @apply flex flex-col items-center text-center gap-4 mb-6;
+}
+
+.warning-icon {
+  @apply text-red-500;
+}
+
+.warning-icon.icon-warning {
+  @apply text-yellow-500;
+}
+
+.warning-icon.icon-info {
+  @apply text-blue-500;
+}
+
+.warning-icon.icon-danger {
+  @apply text-red-500;
+}
+
+.warning-content {
+  @apply w-full;
+}
+
+.warning-message {
+  @apply text-lg text-gray-700 leading-relaxed;
+}
+
+/* Form Actions */
+.form-actions {
+  @apply flex gap-3 justify-end;
+}
+
+.btn-secondary {
+  @apply px-6 py-3 bg-gray-100 text-gray-700 border-0 rounded-lg font-medium cursor-pointer transition-all duration-200 flex items-center gap-2;
+}
+
+.btn-secondary:hover {
+  @apply bg-gray-200 transform scale-105;
+}
+
+.btn-danger {
+  @apply px-6 py-3 bg-red-600 text-white border-0 rounded-lg font-medium cursor-pointer transition-all duration-200 flex items-center gap-2;
+}
+
+.btn-danger:hover {
+  @apply bg-red-700 transform scale-105;
+}
+
+.btn-danger:active {
+  @apply bg-red-800 transform scale-95;
+}
+
+.btn-warning {
+  @apply px-6 py-3 bg-yellow-600 text-white border-0 rounded-lg font-medium cursor-pointer transition-all duration-200 flex items-center gap-2;
+}
+
+.btn-warning:hover {
+  @apply bg-yellow-700 transform scale-105;
+}
+
+.btn-warning:active {
+  @apply bg-yellow-800 transform scale-95;
+}
+
+.btn-primary {
+  @apply px-6 py-3 bg-blue-600 text-white border-0 rounded-lg font-medium cursor-pointer transition-all duration-200 flex items-center gap-2;
+}
+
+.btn-primary:hover {
+  @apply bg-blue-700 transform scale-105;
+}
+
+.btn-primary:active {
+  @apply bg-blue-800 transform scale-95;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { 
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

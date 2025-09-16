@@ -8,30 +8,12 @@
   /* Reset di base */
   all: unset;
   box-sizing: border-box;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  
-  /* Stili custom */
-  width: 32px !important;
-  height: 32px !important;
-  background-color: #ef4444 !important;
-  color: white !important;
-  border-radius: 50% !important;
-  cursor: pointer !important;
-  transition: all 0.2s ease !important;
-  border: none !important;
-  outline: none !important;
-  
-  /* Posizionamento del contenuto */
-  text-align: center !important;
-  line-height: 1 !important;
+  @apply flex items-center justify-center w-8 h-8 bg-red-500 text-white rounded-full cursor-pointer transition-all duration-200 border-none outline-none text-center leading-none;
 }
 
 .remove-coordinate-btn:hover,
 .remove-date-btn:hover {
-  background-color: #dc2626 !important;
-  transform: scale(1.1) !important;
+  @apply bg-red-600 scale-110;
 }
 
 .remove-coordinate-btn svg,

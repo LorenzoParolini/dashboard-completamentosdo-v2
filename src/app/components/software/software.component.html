@@ -30,7 +30,7 @@
   <!-- Content Section -->
   <div class="page-content">
     <ng-container *ngIf="!loading; else loadingBlock">
-      <div class="data-table-container" *ngIf="software.length > 0; else noDataBlock">
+      <div class="data-table-container" *ngIf="filteredSoftware.length > 0; else noDataBlock">
         <div class="table-wrapper">
           <table class="data-table">
             <thead class="table-header">
@@ -45,7 +45,7 @@
               </tr>
             </thead>
             <tbody class="table-body">
-              <tr class="table-row" *ngFor="let sw of software">
+              <tr class="table-row" *ngFor="let sw of filteredSoftware">
                 <td class="table-td id-column">{{ sw.id }}</td>
                 <td class="table-td">{{ sw.descrizione }}</td>
                 <td class="table-td">

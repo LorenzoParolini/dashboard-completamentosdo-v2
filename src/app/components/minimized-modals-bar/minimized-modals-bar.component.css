@@ -1,0 +1,53 @@
+.minimized-modals-bar {
+  @apply fixed bottom-0 left-0 right-0 z-40 bg-transparent pointer-events-none max-h-[120px];
+}
+
+.modals-container {
+  @apply flex items-end justify-start gap-2 p-4 pointer-events-auto overflow-x-auto overflow-y-hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+  -ms-overflow-style: scrollbar;
+  /* Smooth scrolling */
+  scroll-behavior: smooth;
+}
+
+/* Scrollbar personalizzata per Webkit browsers */
+.modals-container::-webkit-scrollbar {
+  height: 6px;
+}
+
+.modals-container::-webkit-scrollbar-track {
+  background: rgba(243, 244, 246, 0.5);
+  border-radius: 3px;
+}
+
+.modals-container::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.5);
+  border-radius: 3px;
+  transition: background-color 0.2s ease;
+}
+
+.modals-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(107, 114, 128, 0.7);
+}
+
+/* Assicuriamoci che le modali minimizzate siano visibili sopra tutto */
+.modals-container > * {
+  @apply flex-shrink-0 min-w-[280px] max-w-[320px];
+}
+
+/* Animazione di entrata per nuove modali minimizzate */
+@keyframes slideInFromBottom {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modals-container > app-minimized-modal-item {
+  animation: slideInFromBottom 0.3s ease-out;
+}

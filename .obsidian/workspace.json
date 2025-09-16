@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "TODO.md",
+                "file": "commit-news.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "TODO"
+              "title": "commit-news"
             }
           }
         ]
@@ -171,8 +171,19 @@
   },
   "active": "932f3afa7fdc95c1",
   "lastOpenFiles": [
-    "commit-news.md",
     "TODO.md",
+    "src/app/components/minimized-modals-bar/minimized-modals-bar.component.css",
+    "src/app/components/minimized-modals-bar/minimized-modals-bar.component.html",
+    "src/app/components/minimized-modals-bar/minimized-modals-bar.component.ts",
+    "src/app/components/minimized-modals-bar",
+    "src/app/components/minimized-modal-item/minimized-modal-item.component.css",
+    "src/app/components/minimized-modal-item/minimized-modal-item.component.html",
+    "src/app/components/minimized-modal-item/minimized-modal-item.component.ts",
+    "src/app/components/minimized-modal-item",
+    "src/app/services/minimized-modals.service.ts",
+    "src/app/services/form-state.service.ts",
+    "GUIDA_BARRA_DI_RICERCA.md",
+    "commit-news.md",
     "README.md"
   ]
 }

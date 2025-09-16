@@ -5,10 +5,10 @@
   </div>
 
   <app-loading-spinner *ngIf="loading"></app-loading-spinner>
-  <div class="clienti-grid" *ngIf="!loading && clienti.length > 0; else noClienti">
+  <div class="clienti-grid" *ngIf="!loading && filteredClienti.length > 0; else noClienti">
     <div 
       class="cliente-card" 
-      *ngFor="let cliente of clienti"
+      *ngFor="let cliente of filteredClienti"
       (mouseenter)="showDetails(cliente)"
       (mouseleave)="selectedCliente = null"
       (click)="openModal(cliente)"

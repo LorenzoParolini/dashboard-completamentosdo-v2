@@ -30,6 +30,18 @@
   @apply text-sm opacity-90 font-normal;
 }
 
+.modal-actions {
+  @apply flex items-center gap-2;
+}
+
+.minimize-button {
+  @apply bg-white bg-opacity-10 border-0 rounded-lg w-10 h-10 flex items-center justify-center cursor-pointer text-white transition-all duration-200;
+}
+
+.minimize-button:hover {
+  @apply bg-white bg-opacity-20 transform scale-105;
+}
+
 .close-button {
   @apply bg-white bg-opacity-10 border-0 rounded-lg w-10 h-10 flex items-center justify-center cursor-pointer text-white transition-all duration-200;
 }
