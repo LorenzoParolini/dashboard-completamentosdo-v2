@@ -4,6 +4,11 @@
   background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
 }
 
+/* Dark theme support for page container */
+:host-context(.dark) .page-container {
+  background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+}
+
 /* Header Section */
 .page-header {
   @apply mb-8;
@@ -13,13 +18,17 @@
   @apply flex justify-between items-start rounded-xl p-6 mb-8;
 }
 
-
 .title-section {
   @apply flex flex-col;
 }
 
 .page-title {
   @apply text-3xl font-bold text-gray-800 flex items-center gap-3 mb-2;
+}
+
+/* Dark theme support for page title */
+:host-context(.dark) .page-title {
+  @apply text-gray-100;
 }
 
 .page-title svg {
@@ -31,9 +40,19 @@
   @apply text-gray-600 text-lg font-medium;
 }
 
+/* Dark theme support for page subtitle */
+:host-context(.dark) .page-subtitle {
+  @apply text-gray-300;
+}
+
 /* Content Section */
 .page-content {
   @apply bg-white rounded-xl shadow-lg overflow-hidden border border-indigo-100;
+}
+
+/* Dark theme support for page content */
+:host-context(.dark) .page-content {
+  @apply bg-gray-800 border-gray-700 shadow-xl;
 }
 
 /* Table Styling */
@@ -53,6 +72,11 @@
   background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
 }
 
+/* Dark theme support for table header */
+:host-context(.dark) .table-header {
+  background: linear-gradient(135deg, #4338ca 0%, #7c3aed 100%);
+}
+
 .table-th {
   @apply px-6 py-4 text-left text-sm font-semibold text-white tracking-wider;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
@@ -62,8 +86,18 @@
   @apply bg-white;
 }
 
+/* Dark theme support for table body */
+:host-context(.dark) .table-body {
+  @apply bg-gray-800;
+}
+
 .table-row {
   @apply border-b border-gray-100 transition-all duration-200;
+}
+
+/* Dark theme support for table row */
+:host-context(.dark) .table-row {
+  @apply border-gray-700;
 }
 
 .table-row:hover {
@@ -72,24 +106,55 @@
   box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
 }
 
+/* Dark theme support for table row hover */
+:host-context(.dark) .table-row:hover {
+  @apply bg-gradient-to-r from-indigo-900/30 to-purple-900/30;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+
 .table-td {
   @apply px-6 py-4 text-sm text-gray-900;
+}
+
+/* Dark theme support for table td */
+:host-context(.dark) .table-td {
+  @apply text-gray-100;
 }
 
 .id-column {
   @apply font-mono font-semibold text-indigo-600;
 }
 
+/* Dark theme support for id column */
+:host-context(.dark) .id-column {
+  @apply text-indigo-400;
+}
+
 .note-text {
   @apply text-sm text-gray-700 italic;
+}
+
+/* Dark theme support for note text */
+:host-context(.dark) .note-text {
+  @apply text-white;
 }
 
 .version-badge {
   @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200;
 }
 
+/* Dark theme support for version badge - maintaining blue/purple highlighting */
+:host-context(.dark) .version-badge {
+  @apply bg-gradient-to-r from-indigo-900/50 to-purple-900/50 text-indigo-400 border border-indigo-600;
+}
+
 .date-text {
   @apply text-sm text-gray-600 font-mono;
+}
+
+/* Dark theme support for date text */
+:host-context(.dark) .date-text {
+  @apply text-white;
 }
 
 .ambiente-list {
@@ -100,12 +165,27 @@
   @apply text-sm text-gray-700;
 }
 
+/* Dark theme support for ambiente item */
+:host-context(.dark) .ambiente-item {
+  @apply text-white;
+}
+
 .ambiente-separator {
   @apply text-gray-400;
 }
 
+/* Dark theme support for ambiente separator */
+:host-context(.dark) .ambiente-separator {
+  @apply text-gray-500;
+}
+
 .no-data {
   @apply text-gray-400 italic;
+}
+
+/* Dark theme support for no data */
+:host-context(.dark) .no-data {
+  @apply text-gray-400;
 }
 
 .actions-column {
@@ -180,6 +260,12 @@
   @apply hover:scale-110 hover:shadow-lg;
 }
 
+/* Dark theme support for edit button */
+:host-context(.dark) .edit-button {
+  @apply border-amber-600 bg-gradient-to-r from-amber-900/50 to-orange-900/50 text-amber-400;
+  @apply hover:from-amber-800/60 hover:to-orange-800/60 hover:border-amber-500;
+}
+
 .edit-button:hover .icon-container {
   @apply transform rotate-12;
 }
@@ -188,6 +274,12 @@
   @apply border-red-300 bg-gradient-to-r from-red-50 to-pink-50 text-red-700;
   @apply hover:from-red-100 hover:to-pink-100 hover:border-red-400 focus:ring-red-500;
   @apply hover:scale-110 hover:shadow-lg;
+}
+
+/* Dark theme support for delete button */
+:host-context(.dark) .delete-button {
+  @apply border-red-600 bg-gradient-to-r from-red-900/50 to-pink-900/50 text-red-400;
+  @apply hover:from-red-800/60 hover:to-pink-800/60 hover:border-red-500;
 }
 
 .delete-button:hover .icon-container {

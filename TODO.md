@@ -21,5 +21,5 @@
 - [X]  aggiunge alert conferma prima di elimina
 - [X]  aggiungere alert conferma prima di annulla modifica/aggiungi
 - [X]  aggiungere barra modali minimalizzate
-- [ ]  aggiungere switch tema chiaro/scuro
+- [X]  aggiungere switch tema chiaro/scuro
 - [ ]  *(opzionale): sezione feedback*

@@ -3,6 +3,11 @@
   @apply p-6 min-h-screen bg-gray-50;
 }
 
+/* Dark theme support for homepage */
+:host-context(.dark) .homepage-container {
+  @apply bg-gray-900;
+}
+
 .homepage-header {
   @apply text-center mb-8;
 }
@@ -19,6 +24,11 @@
   @apply text-lg text-gray-600 italic;
 }
 
+/* Dark theme support for subtitle */
+:host-context(.dark) .homepage-subtitle {
+  @apply text-gray-300;
+}
+
 /* Grid Layout */
 .clienti-grid {
   @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
@@ -31,9 +41,20 @@
   background: linear-gradient(135deg, rgba(99, 102, 241, 0.01) 0%, rgba(139, 92, 246, 0.02) 100%);
 }
 
+/* Dark theme support for cliente card */
+:host-context(.dark) .cliente-card {
+  @apply bg-gray-800 border-gray-700 hover:shadow-2xl;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.08) 100%);
+}
+
 .cliente-card:hover {
   transform: translateY(-4px);
   @apply border-indigo-600 shadow-2xl shadow-indigo-100;
+}
+
+/* Dark theme hover for cliente card */
+:host-context(.dark) .cliente-card:hover {
+  @apply border-indigo-500 shadow-2xl shadow-indigo-900/30;
 }
 
 .cliente-card:hover .click-indicator {
@@ -70,8 +91,18 @@
   @apply text-xl font-bold text-gray-800;
 }
 
+/* Dark theme support for card title */
+:host-context(.dark) .card-title {
+  @apply text-gray-100;
+}
+
 .regione-badge {
   @apply inline-block px-3 py-1.5 bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 text-sm font-semibold rounded-full w-fit border border-indigo-200;
+}
+
+/* Dark theme support for regione badge */
+:host-context(.dark) .regione-badge {
+  @apply bg-gradient-to-r from-indigo-900/50 to-purple-900/50 text-indigo-300 border-indigo-700;
 }
 
 .card-body {
@@ -86,6 +117,11 @@
   @apply text-gray-600 font-mono text-sm bg-gray-100 px-3 py-1.5 rounded-lg border border-gray-200;
 }
 
+/* Dark theme support for regione code */
+:host-context(.dark) .regione-code {
+  @apply text-gray-300 bg-gray-700 border-gray-600;
+}
+
 .software-count {
   @apply flex justify-between items-center;
 }
@@ -94,8 +130,18 @@
   @apply text-gray-600 text-sm font-medium;
 }
 
+/* Dark theme support for software label */
+:host-context(.dark) .software-label {
+  @apply text-gray-300;
+}
+
 .software-number {
   @apply bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 px-3 py-1.5 rounded-full text-sm font-semibold border border-green-200;
+}
+
+/* Dark theme support for software number */
+:host-context(.dark) .software-number {
+  @apply bg-gradient-to-r from-green-900/50 to-emerald-900/50 text-green-300 border-green-700;
 }
 
 /* Detailed Information Card */
@@ -103,6 +149,13 @@
   @apply absolute inset-0 bg-white p-6 opacity-0 pointer-events-none transform translate-y-4 overflow-y-auto z-30 rounded-xl;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
+  backdrop-filter: blur(10px);
+}
+
+/* Dark theme support for details card */
+:host-context(.dark) .details-card {
+  @apply bg-gray-800;
+  background: linear-gradient(135deg, rgba(31, 41, 55, 0.95) 0%, rgba(17, 24, 39, 0.95) 100%);
   backdrop-filter: blur(10px);
 }
 
@@ -114,12 +167,27 @@
   @apply flex justify-between items-start mb-6 border-b border-gray-200 pb-4;
 }
 
+/* Dark theme support for details header */
+:host-context(.dark) .details-header {
+  @apply border-gray-700;
+}
+
 .details-title {
   @apply text-xl font-bold text-gray-800;
 }
 
+/* Dark theme support for details title */
+:host-context(.dark) .details-title {
+  @apply text-gray-100;
+}
+
 .click-hint {
   @apply text-xs text-indigo-600 font-semibold bg-indigo-50 px-3 py-1.5 rounded-full border border-indigo-200;
+}
+
+/* Dark theme support for click hint */
+:host-context(.dark) .click-hint {
+  @apply text-indigo-300 bg-indigo-900/50 border-indigo-700;
 }
 
 .details-content {
@@ -130,16 +198,36 @@
   @apply border-b border-gray-100 pb-4 last:border-b-0;
 }
 
+/* Dark theme support for detail section */
+:host-context(.dark) .detail-section {
+  @apply border-gray-700;
+}
+
 .detail-section-title {
   @apply text-base font-semibold text-gray-700 mb-3 flex items-center gap-2;
+}
+
+/* Dark theme support for detail section title */
+:host-context(.dark) .detail-section-title {
+  @apply text-gray-200;
 }
 
 .detail-text {
   @apply text-gray-700 text-sm leading-relaxed;
 }
 
+/* Dark theme support for detail text */
+:host-context(.dark) .detail-text {
+  @apply text-gray-300;
+}
+
 .coordinates {
   @apply text-xs text-indigo-600 font-mono bg-indigo-50 px-2 py-1 rounded mt-1 inline-block;
+}
+
+/* Dark theme support for coordinates */
+:host-context(.dark) .coordinates {
+  @apply text-indigo-300 bg-indigo-900/50;
 }
 
 /* Software Preview */
@@ -151,29 +239,64 @@
   @apply flex justify-between items-center bg-gradient-to-r from-gray-50 to-slate-50 px-4 py-3 rounded-lg border border-gray-200 transition-all duration-200;
 }
 
+/* Dark theme support for software preview item */
+:host-context(.dark) .software-preview-item {
+  @apply bg-gradient-to-r from-gray-700 to-gray-800 border-gray-600;
+}
+
 .software-preview-item:hover {
   @apply border-indigo-300 shadow-sm;
+}
+
+/* Dark theme support for software preview item hover */
+:host-context(.dark) .software-preview-item:hover {
+  @apply border-indigo-400;
 }
 
 .software-preview-name {
   @apply font-semibold text-gray-800;
 }
 
+/* Dark theme support for software preview name */
+:host-context(.dark) .software-preview-name {
+  @apply text-gray-200;
+}
+
 .software-preview-version {
   @apply text-xs bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 px-2 py-1 rounded-full font-semibold border border-green-200;
+}
+
+/* Dark theme support for software preview version */
+:host-context(.dark) .software-preview-version {
+  @apply bg-gradient-to-r from-green-900/50 to-emerald-900/50 text-green-300 border-green-700;
 }
 
 .software-more {
   @apply text-sm text-indigo-600 font-semibold italic px-4 py-2 bg-indigo-50 rounded-lg border border-indigo-200;
 }
 
+/* Dark theme support for software more */
+:host-context(.dark) .software-more {
+  @apply text-indigo-300 bg-indigo-900/50 border-indigo-700;
+}
+
 .no-software {
   @apply text-gray-500 italic text-center py-6 bg-gray-50 rounded-lg border border-gray-200;
+}
+
+/* Dark theme support for no software */
+:host-context(.dark) .no-software {
+  @apply text-gray-400 bg-gray-700 border-gray-600;
 }
 
 /* No Data State */
 .no-data {
   @apply text-center py-12 text-gray-500;
+}
+
+/* Dark theme support for no data */
+:host-context(.dark) .no-data {
+  @apply text-gray-400;
 }
 
 .no-data-text {

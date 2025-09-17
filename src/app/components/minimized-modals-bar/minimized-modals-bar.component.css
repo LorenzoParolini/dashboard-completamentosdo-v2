@@ -21,14 +21,29 @@
   border-radius: 3px;
 }
 
+/* Dark theme support for scrollbar track */
+:host-context(.dark) .modals-container::-webkit-scrollbar-track {
+  background: rgba(75, 85, 99, 0.5);
+}
+
 .modals-container::-webkit-scrollbar-thumb {
   background: rgba(156, 163, 175, 0.5);
   border-radius: 3px;
   transition: background-color 0.2s ease;
 }
 
+/* Dark theme support for scrollbar thumb */
+:host-context(.dark) .modals-container::-webkit-scrollbar-thumb {
+  background: rgba(107, 114, 128, 0.7);
+}
+
 .modals-container::-webkit-scrollbar-thumb:hover {
   background: rgba(107, 114, 128, 0.7);
+}
+
+/* Dark theme support for scrollbar thumb hover */
+:host-context(.dark) .modals-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.9);
 }
 
 /* Assicuriamoci che le modali minimizzate siano visibili sopra tutto */

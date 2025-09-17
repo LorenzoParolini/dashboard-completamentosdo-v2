@@ -13,6 +13,11 @@
   animation: slideIn 0.25s ease-out;
 }
 
+/* Dark theme support for modal container */
+:host-context(.dark) .modal-container {
+  @apply bg-gray-800 shadow-2xl shadow-black/50;
+}
+
 /* Header */
 .modal-header {
   @apply flex justify-between items-center px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-red-500 to-red-600 text-white;
@@ -43,6 +48,11 @@
   @apply flex-1 overflow-y-auto p-6 bg-white;
 }
 
+/* Dark theme support for modal content */
+:host-context(.dark) .modal-content {
+  @apply bg-gray-800;
+}
+
 .warning-section {
   @apply flex flex-col items-center text-center gap-4 mb-6;
 }
@@ -63,12 +73,22 @@
   @apply text-red-500;
 }
 
+/* Stile per l'immagine di warning */
+.warning-image {
+  @apply object-contain filter drop-shadow-md;
+}
+
 .warning-content {
   @apply w-full;
 }
 
 .warning-message {
   @apply text-lg text-gray-700 leading-relaxed;
+}
+
+/* Dark theme support for warning message */
+:host-context(.dark) .warning-message {
+  @apply text-gray-100;
 }
 
 /* Form Actions */

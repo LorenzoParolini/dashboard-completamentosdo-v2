@@ -80,9 +80,10 @@
   </div>
 
   <ng-template #noClienti>
-    <div class="no-data">
-      <p *ngIf="!loading" class="no-data-text">Nessun cliente trovato</p>
-    </div>
+    <app-empty-state 
+      message="Nessun cliente trovato"
+      description="Non ci sono clienti da visualizzare">
+    </app-empty-state>
   </ng-template>
 
   <!-- Modale dettagli -->

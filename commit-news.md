@@ -2,8 +2,7 @@
 
 ### Cosa c'è di nuovo?
 
-- aggiunta ricerca funzionante
-- aggiunta filtri
-- aggiunti alert conferma prima di elimina
-- aggiunti alert conferma prima di annulla modifica/aggiungi
-- aggiunta barra modali minimalizzate
+- aggiunta dark mode
+- migliorato stile della navbar
+- aggiunta flat image quando non ci sono dati da mostrare
+- aggiuntaflat image alla confirmation modal

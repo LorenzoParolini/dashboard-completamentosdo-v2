@@ -7,11 +7,12 @@ import { FilterUtilsService, FilterCriteria } from '../../services/filter-utils.
 import { Cliente } from '../../models/cliente.model';
 
 import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
+import { EmptyStateComponent } from '../empty-state/empty-state.component';
 import { DetailsModalComponent } from './details-modal/details-modal.component';
 
 @Component({
   selector: 'app-main',
-  imports: [CommonModule, LoadingSpinnerComponent, DetailsModalComponent],
+  imports: [CommonModule, LoadingSpinnerComponent, EmptyStateComponent, DetailsModalComponent],
   templateUrl: './main.component.html',
   styleUrl: './main.component.css'
 })

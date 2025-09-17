@@ -32,6 +32,11 @@
   border-radius: 4px;
 }
 
+/* Dark theme support for loader */
+:host-context(.dark) .loader:after {
+  @apply bg-gray-200;
+}
+
 @keyframes bxSpin {
   17% {
     border-bottom-right-radius: 3px;

@@ -12,6 +12,11 @@
   @apply w-full px-6 py-3 pr-14 rounded-xl border border-gray-200 text-gray-700 placeholder-gray-500 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200;
 }
 
+/* Dark theme support for search input */
+:host-context(.dark) .search-input {
+  @apply bg-gray-800 border-gray-600 text-gray-100 placeholder-gray-400 focus:ring-indigo-400;
+}
+
 .search-button {
   @apply absolute right-2 p-2.5 rounded-lg transition-all duration-200 hover:bg-indigo-600 bg-gradient-to-r from-indigo-500 to-purple-600 shadow-md;
   transition: transform 0.18s cubic-bezier(0.4, 0, 0.2, 1);

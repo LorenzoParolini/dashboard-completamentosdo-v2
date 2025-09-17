@@ -2,8 +2,18 @@
   @apply flex items-center justify-between bg-white border border-gray-300 rounded-lg shadow-lg cursor-pointer transition-all duration-200 p-3 m-0 min-w-[280px] max-w-[320px] h-auto min-h-[60px];
 }
 
+/* Dark theme support for minimized modal */
+:host-context(.dark) .minimized-modal {
+  @apply bg-gray-800 border-gray-600;
+}
+
 .minimized-modal:hover {
   @apply shadow-xl -translate-y-0.5 border-gray-400;
+}
+
+/* Dark theme support for minimized modal hover */
+:host-context(.dark) .minimized-modal:hover {
+  @apply border-gray-500;
 }
 
 .modal-header-mini {
@@ -14,20 +24,45 @@
   @apply text-sm font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded flex-shrink-0 border border-blue-200;
 }
 
+/* Dark theme support for type indicator */
+:host-context(.dark) .type-indicator {
+  @apply text-blue-300 bg-blue-900/50 border-blue-700;
+}
+
 .section-label {
   @apply text-xs font-semibold text-gray-500 uppercase tracking-wider flex-shrink-0 bg-gray-50 px-1.5 py-0.5 rounded border border-gray-300;
+}
+
+/* Dark theme support for section label */
+:host-context(.dark) .section-label {
+  @apply text-gray-300 bg-gray-700 border-gray-600;
 }
 
 .modal-description {
   @apply text-sm text-gray-700 font-medium whitespace-nowrap overflow-hidden text-ellipsis flex-1 mx-2 min-w-0 max-w-[150px];
 }
 
+/* Dark theme support for modal description */
+:host-context(.dark) .modal-description {
+  @apply text-gray-200;
+}
+
 .close-btn {
   @apply flex items-center justify-center w-7 h-7 rounded-full border-none bg-gray-50 text-gray-400 transition-all duration-150 flex-shrink-0 cursor-pointer border border-gray-300;
 }
 
+/* Dark theme support for close button */
+:host-context(.dark) .close-btn {
+  @apply bg-gray-700 text-gray-400 border-gray-600;
+}
+
 .close-btn:hover {
   @apply bg-red-50 text-red-500 border-red-200 scale-110;
+}
+
+/* Dark theme support for close button hover */
+:host-context(.dark) .close-btn:hover {
+  @apply bg-red-900/50 text-red-400 border-red-700;
 }
 
 /* Indicatore visivo per modali di modifica vs aggiunta */

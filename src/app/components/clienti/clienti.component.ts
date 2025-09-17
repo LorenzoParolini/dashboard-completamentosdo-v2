@@ -6,13 +6,14 @@ import { FilterService } from '../../services/filter.service';
 import { FilterUtilsService, FilterCriteria } from '../../services/filter-utils.service';
 import { CommonModule } from '@angular/common';
 import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
+import { EmptyStateComponent } from '../empty-state/empty-state.component';
 import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ClientiModalComponent } from './clienti-modal/clienti-modal.component';
 import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-modal.component';
 
 @Component({
   selector: 'app-clienti',
-  imports: [CommonModule, LoadingSpinnerComponent, NgbModule, ClientiModalComponent, ConfirmationModalComponent],
+  imports: [CommonModule, LoadingSpinnerComponent, EmptyStateComponent, NgbModule, ClientiModalComponent, ConfirmationModalComponent],
   templateUrl: './clienti.component.html',
   styleUrl: './clienti.component.css',
 })

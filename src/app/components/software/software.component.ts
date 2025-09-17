@@ -6,13 +6,14 @@ import { FilterService } from '../../services/filter.service';
 import { FilterUtilsService, FilterCriteria } from '../../services/filter-utils.service';
 import { CommonModule } from '@angular/common';
 import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
+import { EmptyStateComponent } from '../empty-state/empty-state.component';
 import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { SoftwareModalComponent } from './software-modal/software-modal.component';
 import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-modal.component';
 
 @Component({
   selector: 'app-software',
-  imports: [CommonModule, LoadingSpinnerComponent, NgbModule, SoftwareModalComponent, ConfirmationModalComponent],
+  imports: [CommonModule, LoadingSpinnerComponent, EmptyStateComponent, NgbModule, SoftwareModalComponent, ConfirmationModalComponent],
   templateUrl: './software.component.html',
   styleUrl: './software.component.css',
 })

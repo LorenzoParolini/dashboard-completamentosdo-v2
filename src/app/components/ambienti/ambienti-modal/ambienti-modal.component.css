@@ -13,9 +13,19 @@
   animation: slideIn 0.25s ease-out;
 }
 
+/* Dark theme support for modal container */
+:host-context(.dark) .modal-container {
+  @apply bg-gray-800 shadow-2xl shadow-black/50;
+}
+
 /* Header */
 .modal-header {
   @apply flex justify-between items-center px-8 py-6 border-b border-gray-200 bg-gradient-to-r from-indigo-500 to-purple-600 text-white;
+}
+
+/* Dark theme support for modal header */
+:host-context(.dark) .modal-header {
+  @apply border-gray-700;
 }
 
 .modal-title-section {
@@ -55,20 +65,45 @@
   @apply flex-1 overflow-y-auto p-0 bg-gray-50;
 }
 
+/* Dark theme support for modal content */
+:host-context(.dark) .modal-content {
+  @apply bg-gray-900;
+}
+
 .form-section {
   @apply bg-white mx-8 my-8 rounded-xl overflow-hidden shadow-sm;
+}
+
+/* Dark theme support for form section */
+:host-context(.dark) .form-section {
+  @apply bg-gray-800 shadow-xl;
 }
 
 .section-header {
   @apply bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b border-gray-200;
 }
 
+/* Dark theme support for section header */
+:host-context(.dark) .section-header {
+  @apply bg-gradient-to-r from-gray-700 to-gray-800 border-gray-600;
+}
+
 .section-title {
   @apply text-lg font-semibold m-0 text-gray-800 flex items-center gap-3;
 }
 
+/* Dark theme support for section title */
+:host-context(.dark) .section-title {
+  @apply text-gray-100;
+}
+
 .section-title svg {
   @apply text-indigo-600;
+}
+
+/* Dark theme support for section title svg */
+:host-context(.dark) .section-title svg {
+  @apply text-indigo-400;
 }
 
 /* Form */
@@ -92,12 +127,29 @@
   @apply text-sm font-semibold text-gray-700 uppercase tracking-wider;
 }
 
+/* Dark theme support for form label */
+:host-context(.dark) .form-label {
+  @apply text-gray-300;
+}
+
 .form-input, .form-textarea {
   @apply px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-gray-50;
 }
 
+/* Dark theme support for form inputs */
+:host-context(.dark) .form-input,
+:host-context(.dark) .form-textarea {
+  @apply border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400;
+}
+
 .form-input:focus, .form-textarea:focus {
   @apply bg-white shadow-md;
+}
+
+/* Dark theme support for form inputs focus */
+:host-context(.dark) .form-input:focus,
+:host-context(.dark) .form-textarea:focus {
+  @apply bg-gray-600 border-indigo-400 ring-indigo-400;
 }
 
 .form-textarea {
@@ -109,8 +161,18 @@
   @apply flex justify-end gap-3 pt-6 border-t border-gray-200;
 }
 
+/* Dark theme support for form actions */
+:host-context(.dark) .form-actions {
+  @apply border-gray-600;
+}
+
 .btn-secondary {
   @apply px-6 py-3 border border-gray-300 rounded-lg font-medium text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 transition-all duration-200;
+}
+
+/* Dark theme support for btn secondary */
+:host-context(.dark) .btn-secondary {
+  @apply border-gray-600 text-gray-200 bg-gray-700 hover:bg-gray-600 hover:border-gray-500;
 }
 
 .btn-primary {

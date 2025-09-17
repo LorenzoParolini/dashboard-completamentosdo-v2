@@ -98,27 +98,10 @@
     </ng-template>
 
     <ng-template #noDataBlock>
-      <div class="no-data-container">
-        <div class="no-data-icon">
-          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-            <circle cx="12" cy="7" r="4"></circle>
-          </svg>
-        </div>
-        <h3 class="no-data-title">Nessun cliente trovato</h3>
-        <p class="no-data-text">Inizia aggiungendo il primo cliente al sistema</p>
-        <button class="no-data-action icon-button" (click)="openClienteModal()">
-          <div class="icon-container">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="12" y1="5" x2="12" y2="19"></line>
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-            </svg>
-          </div>
-          <div class="text-container">
-            <span>Aggiungi Primo Cliente</span>
-          </div>
-        </button>
-      </div>
+      <app-empty-state 
+        message="Nessun cliente trovato"
+        description="Inizia aggiungendo il primo cliente al sistema">
+      </app-empty-state>
     </ng-template>
   </div>
 </div>
