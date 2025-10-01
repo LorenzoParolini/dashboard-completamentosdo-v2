@@ -1,43 +1,96 @@
 import { Injectable } from '@angular/core';
-import { Regione } from '../models/regione.model';
-import { delay, Observable, of } from 'rxjs';
-
-export const regioni: Regione[] = [
-    { id: '1', descrizione: 'Lombardia', codice: 'LOM', coordinate: { x: 45.4668, y: 9.1905 } },
-    { id: '2', descrizione: 'Lazio', codice: 'LAZ', coordinate: { x: 41.9028, y: 12.4964 } },
-    { id: '3', descrizione: 'Sicilia', codice: 'SIC', coordinate: { x: 37.5999, y: 14.0154 } },
-    { id: '4', descrizione: 'Veneto', codice: 'VEN', coordinate: { x: 45.4343, y: 12.3388 } },
-    { id: '5', descrizione: 'Piemonte', codice: 'PIE', coordinate: { x: 45.0703, y: 7.6869 } },
-    { id: '6', descrizione: 'Emilia-Romagna', codice: 'EMR', coordinate: { x: 44.4949, y: 11.3426 } },
-    { id: '7', descrizione: 'Toscana', codice: 'TOS', coordinate: { x: 43.7696, y: 11.2558 } },
-    { id: '8', descrizione: 'Campania', codice: 'CAM', coordinate: { x: 40.8518, y: 14.2681 } },
-    { id: '9', descrizione: 'Puglia', codice: 'PUG', coordinate: { x: 41.1171, y: 16.8719 } },
-    { id: '10', descrizione: 'Calabria', codice: 'CAL', coordinate: { x: 38.9050, y: 16.5947 } },
-];
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
+import { Regione, RegioneDTO } from '../models/regione.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RegioniService {
+  private readonly baseUrl = 'http://localhost:8085/api/regioni';
+  
+  private readonly httpOptions = {
+    headers: new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    })
+  };
 
+  constructor(private http: HttpClient) { }
+
+  // GET - Recupera tutte le regioni
   getAllRegioni(): Observable<Regione[]> {
-  return of(regioni).pipe(delay(500));
-}
-
-  getRegioneById(id: string): Regione | undefined {
-    return regioni.find(regione => regione.id === id);
+    return this.http.get<Regione[]>(this.baseUrl)
+      .pipe(
+        tap(regioni => console.log('Regioni caricate:', regioni)),
+        catchError(this.handleError)
+      );
   }
 
-  deleteRegione(id: string) {
-    const index = regioni.findIndex(regione => regione.id === id);
-    if (index !== -1) {
-      regioni.splice(index, 1);
+  // POST - Crea nuova regione
+  createRegione(regione: RegioneDTO): Observable<RegioneDTO> {
+    return this.http.post<RegioneDTO>(this.baseUrl, regione, this.httpOptions)
+      .pipe(
+        tap(nuovaRegione => console.log('Regione creata:', nuovaRegione)),
+        catchError(this.handleError)
+      );
+  }
+
+  // PUT - Aggiorna regione
+  updateRegione(id: number, regione: RegioneDTO): Observable<RegioneDTO> {
+    const url = `${this.baseUrl}/${id}`;
+    return this.http.put<RegioneDTO>(url, regione, this.httpOptions)
+      .pipe(
+        tap(regioneAggiornata => console.log('Regione aggiornata:', regioneAggiornata)),
+        catchError(this.handleError)
+      );
+  }
+
+  // DELETE - Elimina regione
+  deleteRegione(id: number): Observable<any> {
+    const url = `${this.baseUrl}/${id}`;
+    return this.http.delete(url, this.httpOptions)
+      .pipe(
+        tap(() => console.log(`Regione con ID ${id} eliminata`)),
+        catchError(this.handleError)
+      );
+  }
+
+  // GET - Recupera regione per ID
+  getRegioneById(id: number): Observable<Regione> {
+    const url = `${this.baseUrl}/${id}`;
+    return this.http.get<Regione>(url)
+      .pipe(
+        tap(regione => console.log('Regione caricata:', regione)),
+        catchError(this.handleError)
+      );
+  }
+
+  // Gestione errori
+  private handleError(error: HttpErrorResponse): Observable<never> {
+    let errorMessage = 'Errore sconosciuto';
+    
+    if (error.error instanceof ErrorEvent) {
+      errorMessage = `Errore client: ${error.error.message}`;
+    } else {
+      errorMessage = `Errore server ${error.status}: ${error.message}`;
+      
+      switch (error.status) {
+        case 404:
+          errorMessage = 'Risorsa non trovata';
+          break;
+        case 400:
+          errorMessage = 'Dati non validi';
+          break;
+        case 500:
+          errorMessage = 'Errore interno del server';
+          break;
+      }
     }
+    
+    console.error('Errore HTTP:', errorMessage, error);
+    return throwError(() => new Error(errorMessage));
   }
-
-  length(): number {
-    return regioni.length;
-  }
-
 }
 

@@ -25,7 +25,7 @@ export class SoftwareModalComponent implements OnInit {
   @Input() isRestoredFromMinimized?: boolean = false;
 
   nuovoSoftware: Software = {
-    id: '',
+    id: 0,
     descrizione: '',
     note: '',
     ambienti: [],
@@ -34,13 +34,13 @@ export class SoftwareModalComponent implements OnInit {
   };
 
   // Campo per il menu a tendina
-  ambienteSelezionatoId: string = '';
+  ambienteSelezionatoId: number = 0;
 
   // Mock data per le select
   ambientiDisponibili: Ambiente[] = [];
 
   private originalData: Software = {
-    id: '',
+    id: 0,
     descrizione: '',
     note: '',
     ambienti: [],
@@ -60,7 +60,9 @@ export class SoftwareModalComponent implements OnInit {
   }
 
   getLength(): number {
-    return this.softwareService.length();
+    // Il metodo length non esiste più nel nuovo servizio HTTP
+    // Restituiamo un valore di default per ora
+    return 0;
   }
 
   ngOnInit() {
@@ -84,8 +86,8 @@ export class SoftwareModalComponent implements OnInit {
     } else {
       // Inizializza l'ID solo qui, quando il servizio è disponibile
       // Solo se non abbiamo già dati ripristinati
-      if (!this.isRestoredFromMinimized && this.nuovoSoftware.id === '') {
-        this.nuovoSoftware.id = (this.getLength() + 1).toString();
+      if (!this.isRestoredFromMinimized && this.nuovoSoftware.id === 0) {
+        this.nuovoSoftware.id = this.getLength() + 1;
       }
       this.originalData = {
         ...this.nuovoSoftware,
@@ -182,18 +184,18 @@ export class SoftwareModalComponent implements OnInit {
         this.onFieldChange();
       }
       // Resetta la selezione
-      this.ambienteSelezionatoId = '';
+      this.ambienteSelezionatoId = 0;
     }
   }
 
   // Rimuove un ambiente dalla lista
-  rimuoviAmbiente(ambienteId: string) {
+  rimuoviAmbiente(ambienteId: number) {
     this.nuovoSoftware.ambienti = this.nuovoSoftware.ambienti.filter(a => a.id !== ambienteId);
     this.onFieldChange();
   }
 
   // Controlla se un ambiente è già stato selezionato
-  isAmbienteGiaSelezionato(ambienteId: string): boolean {
+  isAmbienteGiaSelezionato(ambienteId: number): boolean {
     return this.nuovoSoftware.ambienti.some(a => a.id === ambienteId);
   }
 
@@ -202,7 +204,7 @@ export class SoftwareModalComponent implements OnInit {
     const modalId = this.modalId || this.minimizedModalsService.generateModalId(
       'software', 
       this.software ? 'edit' : 'add',
-      this.software?.id
+      this.software?.id?.toString()
     );
 
     const description = this.nuovoSoftware.descrizione || 

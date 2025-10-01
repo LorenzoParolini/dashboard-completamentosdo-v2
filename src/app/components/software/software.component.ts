@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { Software as SoftwareModel } from '../../models/software.model';
+import { Software as SoftwareModel, SoftwareDTO, SoftwareInputDTO } from '../../models/software.model';
 import { SoftwareService } from '../../services/software.service';
 import { FilterService } from '../../services/filter.service';
 import { FilterUtilsService, FilterCriteria } from '../../services/filter-utils.service';
@@ -13,7 +13,7 @@ import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-m
 
 @Component({
   selector: 'app-software',
-  imports: [CommonModule, LoadingSpinnerComponent, EmptyStateComponent, NgbModule, SoftwareModalComponent, ConfirmationModalComponent],
+  imports: [CommonModule, LoadingSpinnerComponent, EmptyStateComponent, NgbModule],
   templateUrl: './software.component.html',
   styleUrl: './software.component.css',
 })
@@ -21,6 +21,7 @@ export class SoftwareComponent implements OnInit, OnDestroy {
   software: SoftwareModel[] = [];
   filteredSoftware: SoftwareModel[] = [];
   loading: boolean = false;
+  error: string | null = null;
   currentFilters: FilterCriteria = {
     regioni: [],
     software: [],
@@ -32,6 +33,7 @@ export class SoftwareComponent implements OnInit, OnDestroy {
     dataCreazione: [],
     searchQuery: ''
   };
+  private subscriptions: Subscription = new Subscription();
   private filterSubscription: Subscription = new Subscription();
 
   constructor(
@@ -42,25 +44,18 @@ export class SoftwareComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.loading = true;
-    this.software = [];
+    console.log('Componente software inizializzato, caricamento software...');
+    this.loadSoftware();
     
     // Subscribe to filter changes
     this.filterSubscription = this.filterService.filters$.subscribe(filters => {
       this.currentFilters = filters;
       this.applyFilters();
     });
-
-    setTimeout(() => {
-      this.softwareService.getAllSoftware().subscribe((data) => {
-        this.software = data;
-        this.applyFilters();
-        this.loading = false;
-      });
-    }, 1200);
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
     this.filterSubscription.unsubscribe();
   }
 
@@ -74,7 +69,87 @@ export class SoftwareComponent implements OnInit, OnDestroy {
     return this.filterUtilsService.shouldShowSoftware(software, this.currentFilters);
   }
 
-  onDeleteSoftware(id_software_da_eliminare: string) {
+  // Carica software dal backend
+  loadSoftware(): void {
+    this.loading = true;
+    this.error = null;
+    
+    const loadSub = this.softwareService.getAllSoftware().subscribe({
+      next: (data: SoftwareModel[]) => {
+        this.software = data;
+        this.applyFilters();
+        this.loading = false;
+        console.log('Software caricati nel componente:', data);
+      },
+      error: (error: Error) => {
+        this.error = error.message;
+        this.loading = false;
+        console.error('Errore nel caricamento software:', error);
+      }
+    });
+    
+    this.subscriptions.add(loadSub);
+  }
+
+  // Crea nuovo software (con oggetti completi)
+  onCreateSoftware(softwareData: SoftwareDTO): void {
+    const createSub = this.softwareService.createSoftware(softwareData).subscribe({
+      next: (softwareCreato: SoftwareDTO) => {
+        console.log('Software creato con successo:', softwareCreato);
+        this.loadSoftware();
+      },
+      error: (error: Error) => {
+        this.error = `Errore nella creazione: ${error.message}`;
+        console.error('Errore creazione software:', error);
+      }
+    });
+    
+    this.subscriptions.add(createSub);
+  }
+
+  // Crea nuovo software (con solo ID per le relazioni)
+  onCreateSoftwareWithIds(softwareData: SoftwareInputDTO): void {
+    const createSub = this.softwareService.createSoftwareWithIds(softwareData).subscribe({
+      next: (softwareCreato: SoftwareModel) => {
+        console.log('Software creato con IDs con successo:', softwareCreato);
+        this.loadSoftware();
+      },
+      error: (error: Error) => {
+        this.error = `Errore nella creazione: ${error.message}`;
+        console.error('Errore creazione software:', error);
+      }
+    });
+    
+    this.subscriptions.add(createSub);
+  }
+
+  // Aggiorna software
+  onUpdateSoftware(id: number, softwareData: SoftwareDTO): void {
+    const updateSub = this.softwareService.updateSoftware(id, softwareData).subscribe({
+      next: (softwareAggiornato: SoftwareDTO) => {
+        console.log('Software aggiornato con successo:', softwareAggiornato);
+        this.loadSoftware();
+      },
+      error: (error: Error) => {
+        this.error = `Errore nell'aggiornamento: ${error.message}`;
+        console.error('Errore aggiornamento software:', error);
+      }
+    });
+    
+    this.subscriptions.add(updateSub);
+  }
+
+  // Refresh manuale
+  onRefresh(): void {
+    this.loadSoftware();
+  }
+
+  // TrackBy per performance
+  trackBySoftwareId(index: number, software: SoftwareModel): number {
+    return software.id;
+  }
+
+  onDeleteSoftware(id_software_da_eliminare: number) {
     const modalRef = this.modalService.open(ConfirmationModalComponent, {
       backdrop: true,
       keyboard: true,
@@ -92,9 +167,18 @@ export class SoftwareComponent implements OnInit, OnDestroy {
     modalRef.result.then(
       (confirmed: boolean) => {
         if (confirmed) {
-          this.softwareService.deleteSoftware(id_software_da_eliminare);
-          this.software = this.software.filter(s => s.id !== id_software_da_eliminare);
-          this.applyFilters(); // Riapplica i filtri dopo l'eliminazione
+          const deleteSub = this.softwareService.deleteSoftware(id_software_da_eliminare).subscribe({
+            next: () => {
+              console.log('Software eliminato con successo');
+              this.loadSoftware();
+            },
+            error: (error: Error) => {
+              this.error = `Errore nell'eliminazione: ${error.message}`;
+              console.error('Errore eliminazione software:', error);
+            }
+          });
+          
+          this.subscriptions.add(deleteSub);
         }
       },
       () => {

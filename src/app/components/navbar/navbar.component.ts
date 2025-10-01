@@ -77,9 +77,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   onFiltersApplied(filters: {
-    regioni: string[], 
-    software: string[], 
-    ambienti: string[],
+    regioni: number[], 
+    software: number[], 
+    ambienti: number[],
     codiciRegione: string[],
     coordinate: { x: number, y: number }[],
     versione: string,

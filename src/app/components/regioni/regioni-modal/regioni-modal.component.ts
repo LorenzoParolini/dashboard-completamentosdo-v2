@@ -24,14 +24,14 @@ export class RegioniModalComponent implements OnInit {
   @Input() isRestoredFromMinimized?: boolean = false;
 
   nuovaRegione: Regione = {
-    id: '',
+    id: 0,
     descrizione: '',
     codice: '',
     coordinate: { x: 0, y: 0 }
   };
 
   private originalData: Regione = {
-    id: '',
+    id: 0,
     descrizione: '',
     codice: '',
     coordinate: { x: 0, y: 0 }
@@ -48,7 +48,8 @@ export class RegioniModalComponent implements OnInit {
   }
 
   getLength(): number {
-    return this.regioniService.length();
+    // For now return 0 as this method isn't needed with backend
+    return 0;
   }
 
   ngOnInit() {
@@ -73,8 +74,8 @@ export class RegioniModalComponent implements OnInit {
     } else {
       // Inizializza l'ID solo qui, quando il servizio è disponibile
       // Solo se non abbiamo già dati ripristinati
-      if (!this.isRestoredFromMinimized && this.nuovaRegione.id === '') {
-        this.nuovaRegione.id = (this.getLength() + 1).toString();
+      if (!this.isRestoredFromMinimized && this.nuovaRegione.id === 0) {
+        this.nuovaRegione.id = 0; // Backend will assign ID
       }
     }
     
@@ -167,7 +168,7 @@ export class RegioniModalComponent implements OnInit {
     const modalId = this.modalId || this.minimizedModalsService.generateModalId(
       'regioni', 
       this.regione ? 'edit' : 'add',
-      this.regione?.id
+      this.regione?.id?.toString()
     );
 
     const description = this.nuovaRegione.descrizione || 

@@ -27,22 +27,22 @@ export class ClientiModalComponent implements OnInit {
   @Input() isRestoredFromMinimized?: boolean = false;
 
   nuovoCliente: Cliente = {
-    id: '',
+    id: 0,
     descrizione: '',
-    regione: { id: '', descrizione: '', codice: '', coordinate: { x: 0, y: 0 } },
+    regione: { id: 0, descrizione: '', codice: '', coordinate: { x: 0, y: 0 } },
     software: []
   };
 
   // Campo per il menu a tendina
-  softwareSelezionatoId: string = '';
+  softwareSelezionatoId: number = 0;
 
   regioniDisponibili: Regione[] = [];
   softwareDisponibili: Software[] = [];
 
   private originalData: Cliente = {
-    id: '',
+    id: 0,
     descrizione: '',
-    regione: { id: '', descrizione: '', codice: '', coordinate: { x: 0, y: 0 } },
+    regione: { id: 0, descrizione: '', codice: '', coordinate: { x: 0, y: 0 } },
     software: []
   };
 
@@ -59,7 +59,8 @@ export class ClientiModalComponent implements OnInit {
   }
 
   getLength(): number {
-    return this.clientiService.length();
+    // For now return 0 as this method isn't needed with backend
+    return 0;
   }
 
   ngOnInit() {
@@ -96,8 +97,8 @@ export class ClientiModalComponent implements OnInit {
     if (!this.cliente) {
       // Inizializza l'ID solo qui, quando il servizio è disponibile
       // Solo se non abbiamo già dati ripristinati
-      if (!this.isRestoredFromMinimized && this.nuovoCliente.id === '') {
-        this.nuovoCliente.id = (this.getLength() + 1).toString();
+      if (!this.isRestoredFromMinimized && this.nuovoCliente.id === 0) {
+        this.nuovoCliente.id = 0; // Backend will assign ID
       }
       this.originalData = {
         ...this.nuovoCliente,
@@ -192,7 +193,7 @@ export class ClientiModalComponent implements OnInit {
       this.nuovoCliente.regione = regione;
     } else {
       // Se non viene trovata la regione, reimposta la regione vuota
-      this.nuovoCliente.regione = { id: '', descrizione: '', codice: '', coordinate: { x: 0, y: 0 } };
+      this.nuovoCliente.regione = { id: 0, descrizione: '', codice: '', coordinate: { x: 0, y: 0 } };
     }
     this.onFieldChange();
   }
@@ -206,18 +207,18 @@ export class ClientiModalComponent implements OnInit {
         this.onFieldChange();
       }
       // Resetta la selezione
-      this.softwareSelezionatoId = '';
+      this.softwareSelezionatoId = 0;
     }
   }
 
   // Rimuove un software dalla lista
-  rimuoviSoftware(softwareId: string) {
+  rimuoviSoftware(softwareId: number) {
     this.nuovoCliente.software = this.nuovoCliente.software.filter(s => s.id !== softwareId);
     this.onFieldChange();
   }
 
   // Controlla se un software è già stato selezionato
-  isSoftwareGiaSelezionato(softwareId: string): boolean {
+  isSoftwareGiaSelezionato(softwareId: number): boolean {
     return this.nuovoCliente.software.some(s => s.id === softwareId);
   }
 
@@ -226,7 +227,7 @@ export class ClientiModalComponent implements OnInit {
     const modalId = this.modalId || this.minimizedModalsService.generateModalId(
       'clienti', 
       this.cliente ? 'edit' : 'add',
-      this.cliente?.id
+      this.cliente?.id?.toString()
     );
 
     const description = this.nuovoCliente.descrizione || 

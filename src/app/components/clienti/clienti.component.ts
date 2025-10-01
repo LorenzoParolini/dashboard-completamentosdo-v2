@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { Cliente } from '../../models/cliente.model';
+import { Cliente, ClienteDTO, ClienteInputDTO } from '../../models/cliente.model';
 import { ClientiService } from '../../services/clienti.service';
 import { FilterService } from '../../services/filter.service';
 import { FilterUtilsService, FilterCriteria } from '../../services/filter-utils.service';
@@ -13,7 +13,7 @@ import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-m
 
 @Component({
   selector: 'app-clienti',
-  imports: [CommonModule, LoadingSpinnerComponent, EmptyStateComponent, NgbModule, ClientiModalComponent, ConfirmationModalComponent],
+  imports: [CommonModule, LoadingSpinnerComponent, EmptyStateComponent, NgbModule],
   templateUrl: './clienti.component.html',
   styleUrl: './clienti.component.css',
 })
@@ -21,6 +21,7 @@ export class ClientiComponent implements OnInit, OnDestroy {
   clienti: Cliente[] = [];
   filteredClienti: Cliente[] = [];
   loading: boolean = false;
+  error: string | null = null;
   currentFilters: FilterCriteria = {
     regioni: [],
     software: [],
@@ -32,6 +33,7 @@ export class ClientiComponent implements OnInit, OnDestroy {
     dataCreazione: [],
     searchQuery: ''
   };
+  private subscriptions: Subscription = new Subscription();
   private filterSubscription: Subscription = new Subscription();
 
   constructor(
@@ -42,25 +44,18 @@ export class ClientiComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.loading = true;
-    this.clienti = [];
+    console.log('Componente clienti inizializzato, caricamento clienti...');
+    this.loadClienti();
     
     // Subscribe to filter changes
     this.filterSubscription = this.filterService.filters$.subscribe(filters => {
       this.currentFilters = filters;
       this.applyFilters();
     });
-
-    setTimeout(() => {
-      this.clientiService.getAllClienti().subscribe((data) => {
-        this.clienti = data;
-        this.applyFilters();
-        this.loading = false;
-      });
-    }, 1200);
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
     this.filterSubscription.unsubscribe();
   }
 
@@ -74,7 +69,87 @@ export class ClientiComponent implements OnInit, OnDestroy {
     return this.filterUtilsService.shouldShowCliente(cliente, this.currentFilters);
   }
 
-  onDeleteCliente(id_cliente_da_eliminare: string) {
+  // Carica clienti dal backend
+  loadClienti(): void {
+    this.loading = true;
+    this.error = null;
+    
+    const loadSub = this.clientiService.getAllClienti().subscribe({
+      next: (data: Cliente[]) => {
+        this.clienti = data;
+        this.applyFilters();
+        this.loading = false;
+        console.log('Clienti caricati nel componente:', data);
+      },
+      error: (error: Error) => {
+        this.error = error.message;
+        this.loading = false;
+        console.error('Errore nel caricamento clienti:', error);
+      }
+    });
+    
+    this.subscriptions.add(loadSub);
+  }
+
+  // Crea nuovo cliente (con oggetti completi)
+  onCreateCliente(clienteData: ClienteDTO): void {
+    const createSub = this.clientiService.createCliente(clienteData).subscribe({
+      next: (clienteCreato: ClienteDTO) => {
+        console.log('Cliente creato con successo:', clienteCreato);
+        this.loadClienti();
+      },
+      error: (error: Error) => {
+        this.error = `Errore nella creazione: ${error.message}`;
+        console.error('Errore creazione cliente:', error);
+      }
+    });
+    
+    this.subscriptions.add(createSub);
+  }
+
+  // Crea nuovo cliente (con solo ID per le relazioni)
+  onCreateClienteWithIds(clienteData: ClienteInputDTO): void {
+    const createSub = this.clientiService.createClienteWithIds(clienteData).subscribe({
+      next: (clienteCreato: Cliente) => {
+        console.log('Cliente creato con IDs con successo:', clienteCreato);
+        this.loadClienti();
+      },
+      error: (error: Error) => {
+        this.error = `Errore nella creazione: ${error.message}`;
+        console.error('Errore creazione cliente:', error);
+      }
+    });
+    
+    this.subscriptions.add(createSub);
+  }
+
+  // Aggiorna cliente
+  onUpdateCliente(id: number, clienteData: ClienteDTO): void {
+    const updateSub = this.clientiService.updateCliente(id, clienteData).subscribe({
+      next: (clienteAggiornato: ClienteDTO) => {
+        console.log('Cliente aggiornato con successo:', clienteAggiornato);
+        this.loadClienti();
+      },
+      error: (error: Error) => {
+        this.error = `Errore nell'aggiornamento: ${error.message}`;
+        console.error('Errore aggiornamento cliente:', error);
+      }
+    });
+    
+    this.subscriptions.add(updateSub);
+  }
+
+  // Refresh manuale
+  onRefresh(): void {
+    this.loadClienti();
+  }
+
+  // TrackBy per performance
+  trackByClienteId(index: number, cliente: Cliente): number {
+    return cliente.id;
+  }
+
+  onDeleteCliente(id_cliente_da_eliminare: number) {
     const modalRef = this.modalService.open(ConfirmationModalComponent, {
       backdrop: true,
       keyboard: true,
@@ -92,9 +167,18 @@ export class ClientiComponent implements OnInit, OnDestroy {
     modalRef.result.then(
       (confirmed: boolean) => {
         if (confirmed) {
-          this.clientiService.deleteCliente(id_cliente_da_eliminare);
-          this.clienti = this.clienti.filter(c => c.id !== id_cliente_da_eliminare);
-          this.applyFilters(); // Riapplica i filtri dopo l'eliminazione
+          const deleteSub = this.clientiService.deleteCliente(id_cliente_da_eliminare).subscribe({
+            next: () => {
+              console.log('Cliente eliminato con successo');
+              this.loadClienti();
+            },
+            error: (error: Error) => {
+              this.error = `Errore nell'eliminazione: ${error.message}`;
+              console.error('Errore eliminazione cliente:', error);
+            }
+          });
+          
+          this.subscriptions.add(deleteSub);
         }
       },
       () => {

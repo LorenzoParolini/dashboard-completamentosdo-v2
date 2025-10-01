@@ -21,9 +21,9 @@ export class FilterOffcanvasComponent implements OnInit {
   @Input() currentView: 'D' | 'R' | 'C' | 'S' | 'A' = 'D';
   @Output() onClose = new EventEmitter<void>();
   @Output() onFiltersApplied = new EventEmitter<{
-    regioni: string[], 
-    software: string[], 
-    ambienti: string[],
+    regioni: number[], 
+    software: number[], 
+    ambienti: number[],
     codiciRegione: string[],
     coordinate: { x: number, y: number }[],
     versione: string,
@@ -45,9 +45,9 @@ export class FilterOffcanvasComponent implements OnInit {
   ambienti: Ambiente[] = [];
   codiciRegione: string[] = [];
 
-  selectedRegioni: string[] = [];
-  selectedSoftware: string[] = [];
-  selectedAmbienti: string[] = [];
+  selectedRegioni: number[] = [];
+  selectedSoftware: number[] = [];
+  selectedAmbienti: number[] = [];
   selectedCodiciRegione: string[] = [];
   selectedCoordinate: { x: number, y: number }[] = [];
   selectedVersione: string = '';
@@ -114,7 +114,7 @@ export class FilterOffcanvasComponent implements OnInit {
     this.isSelectedDataCreazione = !this.isSelectedDataCreazione;
   }
 
-  onRegioneChange(regioneId: string, event: any) {
+  onRegioneChange(regioneId: number, event: any) {
     if (event.target.checked) {
       this.selectedRegioni.push(regioneId);
     } else {
@@ -125,7 +125,7 @@ export class FilterOffcanvasComponent implements OnInit {
     }
   }
 
-  onSoftwareChange(softwareId: string, event: any) {
+  onSoftwareChange(softwareId: number, event: any) {
     if (event.target.checked) {
       this.selectedSoftware.push(softwareId);
     } else {
@@ -136,7 +136,7 @@ export class FilterOffcanvasComponent implements OnInit {
     }
   }
 
-  onAmbienteChange(ambienteId: string, event: any) {
+  onAmbienteChange(ambienteId: number, event: any) {
     if (event.target.checked) {
       this.selectedAmbienti.push(ambienteId);
     } else {
@@ -158,15 +158,15 @@ export class FilterOffcanvasComponent implements OnInit {
     }
   }
 
-  isRegioneSelected(regioneId: string): boolean {
+  isRegioneSelected(regioneId: number): boolean {
     return this.selectedRegioni.includes(regioneId);
   }
 
-  isSoftwareSelected(softwareId: string): boolean {
+  isSoftwareSelected(softwareId: number): boolean {
     return this.selectedSoftware.includes(softwareId);
   }
 
-  isAmbienteSelected(ambienteId: string): boolean {
+  isAmbienteSelected(ambienteId: number): boolean {
     return this.selectedAmbienti.includes(ambienteId);
   }
 
