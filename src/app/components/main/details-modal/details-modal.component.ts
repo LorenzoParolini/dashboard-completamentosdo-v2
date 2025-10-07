@@ -25,11 +25,11 @@ export class DetailsModalComponent {
     this.closeModal.emit();
   }
 
-  trackBySoftwareId(index: number, software: Software): number {
+  trackBySoftwareId(index: number, software: Software): string {
     return software.id;
   }
 
-  trackByAmbienteId(index: number, ambiente: Ambiente): number {
+  trackByAmbienteId(index: number, ambiente: Ambiente): string {
     return ambiente.id;
   }
 }

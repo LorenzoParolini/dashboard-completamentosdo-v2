@@ -13,7 +13,7 @@ import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-m
 
 @Component({
   selector: 'app-clienti',
-  imports: [CommonModule, LoadingSpinnerComponent, EmptyStateComponent, NgbModule],
+  imports: [CommonModule, LoadingSpinnerComponent, EmptyStateComponent, NgbModule, ClientiModalComponent, ConfirmationModalComponent],
   templateUrl: './clienti.component.html',
   styleUrl: './clienti.component.css',
 })
@@ -51,18 +51,13 @@ export class ClientiComponent implements OnInit, OnDestroy {
       this.applyFilters();
     });
 
-    // Carica i clienti dal backend
-    this.clientiService.getAllClienti().subscribe({
-      next: (data) => {
+    setTimeout(() => {
+      this.clientiService.getAllClienti().subscribe((data) => {
         this.clienti = data;
         this.applyFilters();
         this.loading = false;
-      },
-      error: (error) => {
-        console.error('Errore nel caricamento dei clienti:', error);
-        this.loading = false;
-      }
-    });
+      });
+    }, 1200);
   }
 
   ngOnDestroy() {
@@ -79,7 +74,7 @@ export class ClientiComponent implements OnInit, OnDestroy {
     return this.filterUtilsService.shouldShowCliente(cliente, this.currentFilters);
   }
 
-  onDeleteCliente(id_cliente_da_eliminare: number) {
+  onDeleteCliente(id_cliente_da_eliminare: string) {
     const modalRef = this.modalService.open(ConfirmationModalComponent, {
       backdrop: true,
       keyboard: true,
@@ -97,15 +92,9 @@ export class ClientiComponent implements OnInit, OnDestroy {
     modalRef.result.then(
       (confirmed: boolean) => {
         if (confirmed) {
-          this.clientiService.deleteCliente(id_cliente_da_eliminare).subscribe({
-            next: () => {
-              this.clienti = this.clienti.filter(c => c.id !== id_cliente_da_eliminare);
-              this.applyFilters(); // Riapplica i filtri dopo l'eliminazione
-            },
-            error: (error) => {
-              console.error('Errore nell\'eliminazione del cliente:', error);
-            }
-          });
+          this.clientiService.deleteCliente(id_cliente_da_eliminare);
+          this.clienti = this.clienti.filter(c => c.id !== id_cliente_da_eliminare);
+          this.applyFilters(); // Riapplica i filtri dopo l'eliminazione
         }
       },
       () => {
@@ -129,29 +118,12 @@ export class ClientiComponent implements OnInit, OnDestroy {
     modalRef.result.then(
       (result: Cliente) => {
         if (cliente) {
-          // Aggiorna cliente esistente
-          this.clientiService.updateCliente(result).subscribe({
-            next: (updatedCliente) => {
-              const idx = this.clienti.findIndex((c) => c.id === updatedCliente.id);
-              if (idx !== -1) this.clienti[idx] = updatedCliente;
-              this.applyFilters();
-            },
-            error: (error) => {
-              console.error('Errore nell\'aggiornamento del cliente:', error);
-            }
-          });
+          const idx = this.clienti.findIndex((c) => c.id === result.id);
+          if (idx !== -1) this.clienti[idx] = result;
         } else {
-          // Aggiungi nuovo cliente
-          this.clientiService.addCliente(result).subscribe({
-            next: (newCliente) => {
-              this.clienti.push(newCliente);
-              this.applyFilters();
-            },
-            error: (error) => {
-              console.error('Errore nell\'aggiunta del cliente:', error);
-            }
-          });
+          this.clienti.push(result);
         }
+        this.applyFilters(); // Riapplica i filtri dopo la modifica/aggiunta
       },
       () => {}
     );

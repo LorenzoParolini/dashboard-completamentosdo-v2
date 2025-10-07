@@ -25,7 +25,7 @@ export class SoftwareModalComponent implements OnInit {
   @Input() isRestoredFromMinimized?: boolean = false;
 
   nuovoSoftware: Software = {
-    id: 0,
+    id: '',
     descrizione: '',
     note: '',
     ambienti: [],
@@ -34,13 +34,13 @@ export class SoftwareModalComponent implements OnInit {
   };
 
   // Campo per il menu a tendina
-  ambienteSelezionatoId: number = 0;
+  ambienteSelezionatoId: string = '';
 
   // Mock data per le select
   ambientiDisponibili: Ambiente[] = [];
 
   private originalData: Software = {
-    id: 0,
+    id: '',
     descrizione: '',
     note: '',
     ambienti: [],
@@ -59,12 +59,8 @@ export class SoftwareModalComponent implements OnInit {
   ) {
   }
 
-  private nextId: number = 1;
-
-  private setNextId(): void {
-    this.softwareService.getAllSoftware().subscribe(software => {
-      this.nextId = software.length > 0 ? Math.max(...software.map(s => s.id)) + 1 : 1;
-    });
+  getLength(): number {
+    return this.softwareService.length();
   }
 
   ngOnInit() {
@@ -88,9 +84,8 @@ export class SoftwareModalComponent implements OnInit {
     } else {
       // Inizializza l'ID solo qui, quando il servizio è disponibile
       // Solo se non abbiamo già dati ripristinati
-      if (!this.isRestoredFromMinimized && this.nuovoSoftware.id === 0) {
-        this.setNextId();
-        this.nuovoSoftware.id = this.nextId;
+      if (!this.isRestoredFromMinimized && this.nuovoSoftware.id === '') {
+        this.nuovoSoftware.id = (this.getLength() + 1).toString();
       }
       this.originalData = {
         ...this.nuovoSoftware,
@@ -180,25 +175,25 @@ export class SoftwareModalComponent implements OnInit {
 
   // Chiamata quando cambia la selezione nel dropdown
   onAmbienteSelezionato() {
-    if (this.ambienteSelezionatoId && this.ambienteSelezionatoId !== 0) {
+    if (this.ambienteSelezionatoId) {
       const ambienteSelezionato = this.ambientiDisponibili.find(a => a.id === this.ambienteSelezionatoId);
       if (ambienteSelezionato && !this.nuovoSoftware.ambienti.find(a => a.id === this.ambienteSelezionatoId)) {
         this.nuovoSoftware.ambienti.push(ambienteSelezionato);
         this.onFieldChange();
       }
       // Resetta la selezione
-      this.ambienteSelezionatoId = 0;
+      this.ambienteSelezionatoId = '';
     }
   }
 
   // Rimuove un ambiente dalla lista
-  rimuoviAmbiente(ambienteId: number) {
+  rimuoviAmbiente(ambienteId: string) {
     this.nuovoSoftware.ambienti = this.nuovoSoftware.ambienti.filter(a => a.id !== ambienteId);
     this.onFieldChange();
   }
 
   // Controlla se un ambiente è già stato selezionato
-  isAmbienteGiaSelezionato(ambienteId: number): boolean {
+  isAmbienteGiaSelezionato(ambienteId: string): boolean {
     return this.nuovoSoftware.ambienti.some(a => a.id === ambienteId);
   }
 

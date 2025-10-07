@@ -34,7 +34,7 @@
           <table class="data-table">
             <thead class="table-header">
               <tr>
-                <th class="table-th">#</th>
+                <th class="table-th"></th>
                 <th class="table-th">Descrizione</th>
                 <th class="table-th">Regione</th>
                 <th class="table-th">Software</th>
@@ -42,8 +42,8 @@
               </tr>
             </thead>
             <tbody class="table-body">
-              <tr class="table-row" *ngFor="let cliente of filteredClienti; let i = index">
-                <td class="table-td id-column">{{ i + 1 }}</td>
+              <tr class="table-row" *ngFor="let cliente of filteredClienti">
+                <td class="table-td id-column">{{ cliente.id }}</td>
                 <td class="table-td">{{ cliente.descrizione }}</td>
                 <td class="table-td">
                   <span class="region-badge">{{ cliente.regione.descrizione }}</span>

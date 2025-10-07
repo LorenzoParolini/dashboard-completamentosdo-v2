@@ -24,14 +24,14 @@ export class RegioniModalComponent implements OnInit {
   @Input() isRestoredFromMinimized?: boolean = false;
 
   nuovaRegione: Regione = {
-    id: 0,
+    id: '',
     descrizione: '',
     codice: '',
     coordinate: { x: 0, y: 0 }
   };
 
   private originalData: Regione = {
-    id: 0,
+    id: '',
     descrizione: '',
     codice: '',
     coordinate: { x: 0, y: 0 }
@@ -47,12 +47,8 @@ export class RegioniModalComponent implements OnInit {
   ) {
   }
 
-  private nextId: number = 1;
-
-  private setNextId(): void {
-    this.regioniService.getAllRegioni().subscribe(regioni => {
-      this.nextId = regioni.length > 0 ? Math.max(...regioni.map(r => r.id)) + 1 : 1;
-    });
+  getLength(): number {
+    return this.regioniService.length();
   }
 
   ngOnInit() {
@@ -77,9 +73,8 @@ export class RegioniModalComponent implements OnInit {
     } else {
       // Inizializza l'ID solo qui, quando il servizio è disponibile
       // Solo se non abbiamo già dati ripristinati
-      if (!this.isRestoredFromMinimized && this.nuovaRegione.id === 0) {
-        this.setNextId();
-        this.nuovaRegione.id = this.nextId;
+      if (!this.isRestoredFromMinimized && this.nuovaRegione.id === '') {
+        this.nuovaRegione.id = (this.getLength() + 1).toString();
       }
     }
     

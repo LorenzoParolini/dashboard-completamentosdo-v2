@@ -54,7 +54,7 @@ export class MinimizedModalsService {
     }
   }
 
-  generateModalId(section: string, type: 'add' | 'edit', itemId?: string | number): string {
+  generateModalId(section: string, type: 'add' | 'edit', itemId?: string): string {
     return `${section}-${type}-${itemId || 'new'}-${Date.now()}`;
   }
 

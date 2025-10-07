@@ -13,7 +13,7 @@ import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-m
 
 @Component({
   selector: 'app-ambienti',
-  imports: [CommonModule, LoadingSpinnerComponent, EmptyStateComponent, NgbModule],
+  imports: [CommonModule, LoadingSpinnerComponent, EmptyStateComponent, NgbModule, AmbientiModalComponent, ConfirmationModalComponent],
   templateUrl: './ambienti.component.html',
   styleUrl: './ambienti.component.css',
 })
@@ -51,18 +51,13 @@ export class AmbientiComponent implements OnInit, OnDestroy {
       this.applyFilters();
     });
 
-    // Carica gli ambienti dal backend
-    this.ambientiService.getAllAmbienti().subscribe({
-      next: (data) => {
+    setTimeout(() => {
+      this.ambientiService.getAllAmbienti().subscribe((data) => {
         this.ambienti = data;
         this.applyFilters();
         this.loading = false;
-      },
-      error: (error) => {
-        console.error('Errore nel caricamento degli ambienti:', error);
-        this.loading = false;
-      }
-    });
+      });
+    }, 1200);
   }
 
   ngOnDestroy() {
@@ -79,7 +74,7 @@ export class AmbientiComponent implements OnInit, OnDestroy {
     return this.filterUtilsService.shouldShowAmbiente(ambiente, this.currentFilters);
   }
 
-  onDeleteAmbiente(id_ambiente_da_eliminare: number) {
+  onDeleteAmbiente(id_ambiente_da_eliminare: string) {
     const modalRef = this.modalService.open(ConfirmationModalComponent, {
       backdrop: true,
       keyboard: true,
@@ -97,15 +92,9 @@ export class AmbientiComponent implements OnInit, OnDestroy {
     modalRef.result.then(
       (confirmed: boolean) => {
         if (confirmed) {
-          this.ambientiService.deleteAmbiente(id_ambiente_da_eliminare).subscribe({
-            next: () => {
-              this.ambienti = this.ambienti.filter(a => a.id !== id_ambiente_da_eliminare);
-              this.applyFilters(); // Riapplica i filtri dopo l'eliminazione
-            },
-            error: (error) => {
-              console.error('Errore nell\'eliminazione dell\'ambiente:', error);
-            }
-          });
+          this.ambientiService.deleteAmbiente(id_ambiente_da_eliminare);
+          this.ambienti = this.ambienti.filter(a => a.id !== id_ambiente_da_eliminare);
+          this.applyFilters(); // Riapplica i filtri dopo l'eliminazione
         }
       },
       () => {
@@ -129,29 +118,12 @@ export class AmbientiComponent implements OnInit, OnDestroy {
     modalRef.result.then(
       (result: Ambiente) => {
         if (ambiente) {
-          // Aggiorna ambiente esistente
-          this.ambientiService.updateAmbiente(result).subscribe({
-            next: (updatedAmbiente) => {
-              const idx = this.ambienti.findIndex((a) => a.id === updatedAmbiente.id);
-              if (idx !== -1) this.ambienti[idx] = updatedAmbiente;
-              this.applyFilters();
-            },
-            error: (error) => {
-              console.error('Errore nell\'aggiornamento dell\'ambiente:', error);
-            }
-          });
+          const idx = this.ambienti.findIndex((a) => a.id === result.id);
+          if (idx !== -1) this.ambienti[idx] = result;
         } else {
-          // Aggiungi nuovo ambiente
-          this.ambientiService.addAmbiente(result).subscribe({
-            next: (newAmbiente) => {
-              this.ambienti.push(newAmbiente);
-              this.applyFilters();
-            },
-            error: (error) => {
-              console.error('Errore nell\'aggiunta dell\'ambiente:', error);
-            }
-          });
+          this.ambienti.push(result);
         }
+        this.applyFilters(); // Riapplica i filtri dopo la modifica/aggiunta
       },
       () => {}
     );

@@ -13,7 +13,7 @@ import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-m
 
 @Component({
   selector: 'app-regioni',
-  imports: [CommonModule, LoadingSpinnerComponent, EmptyStateComponent, NgbModule],
+  imports: [CommonModule, LoadingSpinnerComponent, EmptyStateComponent, NgbModule, RegioniModalComponent, ConfirmationModalComponent],
   templateUrl: './regioni.component.html',
   styleUrl: './regioni.component.css',
 })
@@ -51,17 +51,10 @@ export class RegioniComponent implements OnInit, OnDestroy {
       this.applyFilters();
     });
 
-    // Carica le regioni dal backend
-    this.regioniService.getAllRegioni().subscribe({
-      next: (data) => {
-        this.regioni = data;
-        this.applyFilters();
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('Errore nel caricamento delle regioni:', error);
-        this.loading = false;
-      }
+    this.regioniService.getAllRegioni().subscribe((data) => {
+      this.regioni = data;
+      this.applyFilters();
+      this.loading = false;
     });
   }
 
@@ -79,7 +72,7 @@ export class RegioniComponent implements OnInit, OnDestroy {
     return this.filterUtilsService.shouldShowRegione(regione, this.currentFilters);
   }
 
-  onDeleteRegione(id_regione_da_eliminare: number) {
+  onDeleteRegione(id_regione_da_eliminare: string) {
     const modalRef = this.modalService.open(ConfirmationModalComponent, {
       backdrop: true,
       keyboard: true,
@@ -97,15 +90,9 @@ export class RegioniComponent implements OnInit, OnDestroy {
     modalRef.result.then(
       (confirmed: boolean) => {
         if (confirmed) {
-          this.regioniService.deleteRegione(id_regione_da_eliminare).subscribe({
-            next: () => {
-              this.regioni = this.regioni.filter(r => r.id !== id_regione_da_eliminare);
-              this.applyFilters(); // Riapplica i filtri dopo l'eliminazione
-            },
-            error: (error) => {
-              console.error('Errore nell\'eliminazione della regione:', error);
-            }
-          });
+          this.regioniService.deleteRegione(id_regione_da_eliminare);
+          this.regioni = this.regioni.filter(r => r.id !== id_regione_da_eliminare);
+          this.applyFilters(); // Riapplica i filtri dopo l'eliminazione
         }
       },
       () => {
@@ -131,29 +118,14 @@ export class RegioniComponent implements OnInit, OnDestroy {
     modalRef.result.then(
       (result: Regione) => {
         if (regione) {
-          // Aggiorna regione esistente
-          this.regioniService.updateRegione(result).subscribe({
-            next: (updatedRegione) => {
-              const idx = this.regioni.findIndex((r) => r.id === updatedRegione.id);
-              if (idx !== -1) this.regioni[idx] = updatedRegione;
-              this.applyFilters();
-            },
-            error: (error) => {
-              console.error('Errore nell\'aggiornamento della regione:', error);
-            }
-          });
+          // Modifica: aggiorna la regione nella lista
+          const idx = this.regioni.findIndex((r) => r.id === result.id);
+          if (idx !== -1) this.regioni[idx] = result;
         } else {
-          // Aggiungi nuova regione
-          this.regioniService.addRegione(result).subscribe({
-            next: (newRegione) => {
-              this.regioni.push(newRegione);
-              this.applyFilters();
-            },
-            error: (error) => {
-              console.error('Errore nell\'aggiunta della regione:', error);
-            }
-          });
+          // Aggiunta: aggiungi la nuova regione
+          this.regioni.push(result);
         }
+        this.applyFilters(); // Riapplica i filtri dopo la modifica/aggiunta
       },
       () => {}
     );

@@ -1,21 +1,17 @@
-import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { Software } from '../models/software.model';
 import { Ambiente } from '../models/ambiente.model';
-import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
-import { throwError } from 'rxjs';
-import { catchError, tap, map } from 'rxjs/operators';
 
 const ambientiBase: Ambiente[] = [
-  { id: 1, descrizione: 'DEV', dataCreazione: new Date('2024-01-10'), note: 'Ambiente di sviluppo' },
-  { id: 2, descrizione: 'TEST', dataCreazione: new Date('2024-02-15'), note: 'Ambiente di test funzionale' },
-  { id: 3, descrizione: 'PROD', dataCreazione: new Date('2024-03-20'), note: 'Ambiente di produzione' },
+  { id: 'a1', descrizione: 'DEV', dataCreazione: new Date('2024-01-10'), note: 'Ambiente di sviluppo' },
+  { id: 'a2', descrizione: 'TEST', dataCreazione: new Date('2024-02-15'), note: 'Ambiente di test funzionale' },
+  { id: 'a3', descrizione: 'PROD', dataCreazione: new Date('2024-03-20'), note: 'Ambiente di produzione' },
 ];
 
 export const software: Software[] = [
   {
-    id: 1,
+    id: '1',
     descrizione: 'Gestionale ERP',
     note: 'Software gestionale aziendale',
     ambienti: ambientiBase,
@@ -23,7 +19,7 @@ export const software: Software[] = [
     dataUltimoAggiornamento: new Date('2024-07-01'),
   },
   {
-    id: 2,
+    id: '2',
     descrizione: 'CRM Web',
     note: 'Gestione clienti e contatti',
     ambienti: ambientiBase,
@@ -36,83 +32,24 @@ export const software: Software[] = [
   providedIn: 'root'
 })
 export class SoftwareService {
-
-  private readonly apiUrl = 'http://localhost:8085/api/software';
-  
-  private readonly httpOptions = {
-    headers: new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    })
-  };
-
-  // Gestione degli errori HTTP
-  private handleError(error: HttpErrorResponse): Observable<never> {
-    let errorMessage = 'Errore sconosciuto';
-    
-    // Check if we're in browser environment and ErrorEvent exists
-    if (typeof ErrorEvent !== 'undefined' && error.error instanceof ErrorEvent) {
-      errorMessage = `Errore client: ${error.error.message}`;
-    } else if (error.status) {
-      errorMessage = `Errore server ${error.status}: ${error.message}`;
-      
-      switch (error.status) {
-        case 404:
-          errorMessage = 'Risorsa non trovata';
-          break;
-        case 400:
-          errorMessage = 'Dati non validi';
-          break;
-        case 403:
-          errorMessage = 'Accesso negato - Controlla CORS o autenticazione';
-          break;
-        case 500:
-          errorMessage = 'Errore interno del server';
-          break;
-      }
-    }
-    
-    console.error('Errore HTTP:', errorMessage, error);
-    return throwError(() => new Error(errorMessage));
-  }
-  
-  constructor(
-    private http: HttpClient,
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) { }
   
   getAllSoftware(): Observable<Software[]> {
-    return this.http.get<Software[]>(this.apiUrl).pipe(
-      tap(data => console.log('Fetched software:', data)),
-      catchError(this.handleError)
-    );
+    // Mock implementation - sostituire con chiamata HTTP reale
+    return of(software);
   }
 
-  getSoftwareById(id: number): Observable<Software | undefined> {
-    return this.getAllSoftware().pipe(
-      map(software => software.find(soft => soft.id === id)),
-      catchError(this.handleError)
-    );
+  getSoftwareById(id: string): Software | undefined {
+    return software.find(soft => soft.id === id);
   }
 
-  addSoftware(software: Software): Observable<Software> {
-    return this.http.post<Software>(this.apiUrl, software, this.httpOptions).pipe(
-      tap(newSoftware => console.log('Added software:', newSoftware)),
-      catchError(this.handleError)
-    );
+  deleteSoftware(id: string) {
+    const index = software.findIndex(soft => soft.id === id);
+    if (index !== -1) {
+      software.splice(index, 1);
+    }
   }
 
-  updateSoftware(software: Software): Observable<Software> {
-    return this.http.put<Software>(`${this.apiUrl}/${software.id}`, software, this.httpOptions).pipe(
-      tap(updatedSoftware => console.log('Updated software:', updatedSoftware)),
-      catchError(this.handleError)
-    );
-  }
-
-  deleteSoftware(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`, this.httpOptions).pipe(
-      tap(() => console.log('Deleted software with id:', id)),
-      catchError(this.handleError)
-    );
+  length(): number {
+    return software.length;
   }
 }

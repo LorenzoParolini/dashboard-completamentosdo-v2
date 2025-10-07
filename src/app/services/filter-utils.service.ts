@@ -5,9 +5,9 @@ import { Ambiente } from '../models/ambiente.model';
 import { Cliente } from '../models/cliente.model';
 
 export interface FilterCriteria {
-  regioni: number[];
-  software: number[];
-  ambienti: number[];
+  regioni: string[];
+  software: string[];
+  ambienti: string[];
   codiciRegione: string[];
   coordinate: { x: number, y: number }[];
   versione: string;

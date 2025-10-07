@@ -34,7 +34,7 @@
           <table class="data-table">
             <thead class="table-header">
               <tr>
-                <th class="table-th">#</th>
+                <th class="table-th"></th>
                 <th class="table-th">Descrizione</th>
                 <th class="table-th">Codice</th>
                 <th class="table-th">Coordinate</th>
@@ -42,8 +42,8 @@
               </tr>
             </thead>
             <tbody class="table-body">
-              <tr class="table-row" *ngFor="let regione of filteredRegioni; let i = index">
-                <td class="table-td id-column">{{ i + 1 }}</td>
+              <tr class="table-row" *ngFor="let regione of filteredRegioni">
+                <td class="table-td id-column">{{ regione.id }}</td>
                 <td class="table-td">{{ regione.descrizione }}</td>
                 <td class="table-td">
                   <span class="code-badge">{{ regione.codice }}</span>

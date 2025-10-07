@@ -77,9 +77,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   onFiltersApplied(filters: {
-    regioni: number[], 
-    software: number[], 
-    ambienti: number[],
+    regioni: string[], 
+    software: string[], 
+    ambienti: string[],
     codiciRegione: string[],
     coordinate: { x: number, y: number }[],
     versione: string,
@@ -100,37 +100,22 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   onClickDashboard() {
     this.currentView = 'D';
-    this.refreshPage();
   }
 
   onClickRegione() {
     this.currentView = 'R';
-    this.refreshPage();
   }
 
   onClickCliente() {
     this.currentView = 'C';
-    this.refreshPage();
   }
 
   onClickSoftware() {
     this.currentView = 'S';
-    this.refreshPage();
   }
 
   onClickAmbiente() {
     this.currentView = 'A';
-    this.refreshPage();
-  }
-
-  /**
-   * Refresh della pagina del browser
-   */
-  private refreshPage(): void {
-    // Piccolo delay per permettere alla navigazione di completarsi
-    setTimeout(() => {
-      window.location.reload();
-    }, 100);
   }
 
   /**

@@ -35,7 +35,7 @@
           <table class="data-table">
             <thead class="table-header">
               <tr>
-                <th class="table-th">#</th>
+                <th class="table-th"></th>
                 <th class="table-th">Descrizione</th>
                 <th class="table-th">Note</th>
                 <th class="table-th">Data Creazione</th>
@@ -43,8 +43,8 @@
               </tr>
             </thead>
             <tbody class="table-body">
-              <tr class="table-row" *ngFor="let ambiente of filteredAmbienti; let i = index">
-                <td class="table-td id-column">{{ i + 1 }}</td>
+              <tr class="table-row" *ngFor="let ambiente of filteredAmbienti">
+                <td class="table-td id-column">{{ ambiente.id }}</td>
                 <td class="table-td">{{ ambiente.descrizione }}</td>
                 <td class="table-td">
                   <span class="note-text" *ngIf="ambiente.note; else noNote">{{ ambiente.note }}</span>

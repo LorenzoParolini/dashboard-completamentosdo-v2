@@ -27,22 +27,22 @@ export class ClientiModalComponent implements OnInit {
   @Input() isRestoredFromMinimized?: boolean = false;
 
   nuovoCliente: Cliente = {
-    id: 0,
+    id: '',
     descrizione: '',
-    regione: { id: 0, descrizione: '', codice: '', coordinate: { x: 0, y: 0 } },
+    regione: { id: '', descrizione: '', codice: '', coordinate: { x: 0, y: 0 } },
     software: []
   };
 
   // Campo per il menu a tendina
-  softwareSelezionatoId: number = 0;
+  softwareSelezionatoId: string = '';
 
   regioniDisponibili: Regione[] = [];
   softwareDisponibili: Software[] = [];
 
   private originalData: Cliente = {
-    id: 0,
+    id: '',
     descrizione: '',
-    regione: { id: 0, descrizione: '', codice: '', coordinate: { x: 0, y: 0 } },
+    regione: { id: '', descrizione: '', codice: '', coordinate: { x: 0, y: 0 } },
     software: []
   };
 
@@ -58,12 +58,8 @@ export class ClientiModalComponent implements OnInit {
   ) {
   }
 
-  private nextId: number = 1;
-
-  private setNextId(): void {
-    this.clientiService.getAllClienti().subscribe(clienti => {
-      this.nextId = clienti.length > 0 ? Math.max(...clienti.map(c => c.id)) + 1 : 1;
-    });
+  getLength(): number {
+    return this.clientiService.length();
   }
 
   ngOnInit() {
@@ -100,9 +96,8 @@ export class ClientiModalComponent implements OnInit {
     if (!this.cliente) {
       // Inizializza l'ID solo qui, quando il servizio è disponibile
       // Solo se non abbiamo già dati ripristinati
-      if (!this.isRestoredFromMinimized && this.nuovoCliente.id === 0) {
-        this.setNextId();
-        this.nuovoCliente.id = this.nextId;
+      if (!this.isRestoredFromMinimized && this.nuovoCliente.id === '') {
+        this.nuovoCliente.id = (this.getLength() + 1).toString();
       }
       this.originalData = {
         ...this.nuovoCliente,
@@ -191,38 +186,38 @@ export class ClientiModalComponent implements OnInit {
   }
 
   onRegioneChange(event: any) {
-    const regioneId = Number(event.target.value);
+    const regioneId = event.target.value;
     const regione = this.regioniDisponibili.find(r => r.id === regioneId);
     if (regione) {
       this.nuovoCliente.regione = regione;
     } else {
       // Se non viene trovata la regione, reimposta la regione vuota
-      this.nuovoCliente.regione = { id: 0, descrizione: '', codice: '', coordinate: { x: 0, y: 0 } };
+      this.nuovoCliente.regione = { id: '', descrizione: '', codice: '', coordinate: { x: 0, y: 0 } };
     }
     this.onFieldChange();
   }
 
   // Chiamata quando cambia la selezione nel dropdown software
   onSoftwareSelezionato() {
-    if (this.softwareSelezionatoId && this.softwareSelezionatoId !== 0) {
+    if (this.softwareSelezionatoId) {
       const softwareSelezionato = this.softwareDisponibili.find(s => s.id === this.softwareSelezionatoId);
       if (softwareSelezionato && !this.nuovoCliente.software.find(s => s.id === this.softwareSelezionatoId)) {
         this.nuovoCliente.software.push(softwareSelezionato);
         this.onFieldChange();
       }
       // Resetta la selezione
-      this.softwareSelezionatoId = 0;
+      this.softwareSelezionatoId = '';
     }
   }
 
   // Rimuove un software dalla lista
-  rimuoviSoftware(softwareId: number) {
+  rimuoviSoftware(softwareId: string) {
     this.nuovoCliente.software = this.nuovoCliente.software.filter(s => s.id !== softwareId);
     this.onFieldChange();
   }
 
   // Controlla se un software è già stato selezionato
-  isSoftwareGiaSelezionato(softwareId: number): boolean {
+  isSoftwareGiaSelezionato(softwareId: string): boolean {
     return this.nuovoCliente.software.some(s => s.id === softwareId);
   }
 

@@ -13,7 +13,7 @@ import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-m
 
 @Component({
   selector: 'app-software',
-  imports: [CommonModule, LoadingSpinnerComponent, EmptyStateComponent, NgbModule],
+  imports: [CommonModule, LoadingSpinnerComponent, EmptyStateComponent, NgbModule, SoftwareModalComponent, ConfirmationModalComponent],
   templateUrl: './software.component.html',
   styleUrl: './software.component.css',
 })
@@ -51,18 +51,13 @@ export class SoftwareComponent implements OnInit, OnDestroy {
       this.applyFilters();
     });
 
-    // Carica il software dal backend
-    this.softwareService.getAllSoftware().subscribe({
-      next: (data) => {
+    setTimeout(() => {
+      this.softwareService.getAllSoftware().subscribe((data) => {
         this.software = data;
         this.applyFilters();
         this.loading = false;
-      },
-      error: (error) => {
-        console.error('Errore nel caricamento del software:', error);
-        this.loading = false;
-      }
-    });
+      });
+    }, 1200);
   }
 
   ngOnDestroy() {
@@ -79,7 +74,7 @@ export class SoftwareComponent implements OnInit, OnDestroy {
     return this.filterUtilsService.shouldShowSoftware(software, this.currentFilters);
   }
 
-  onDeleteSoftware(id_software_da_eliminare: number) {
+  onDeleteSoftware(id_software_da_eliminare: string) {
     const modalRef = this.modalService.open(ConfirmationModalComponent, {
       backdrop: true,
       keyboard: true,
@@ -97,15 +92,9 @@ export class SoftwareComponent implements OnInit, OnDestroy {
     modalRef.result.then(
       (confirmed: boolean) => {
         if (confirmed) {
-          this.softwareService.deleteSoftware(id_software_da_eliminare).subscribe({
-            next: () => {
-              this.software = this.software.filter(s => s.id !== id_software_da_eliminare);
-              this.applyFilters(); // Riapplica i filtri dopo l'eliminazione
-            },
-            error: (error) => {
-              console.error('Errore nell\'eliminazione del software:', error);
-            }
-          });
+          this.softwareService.deleteSoftware(id_software_da_eliminare);
+          this.software = this.software.filter(s => s.id !== id_software_da_eliminare);
+          this.applyFilters(); // Riapplica i filtri dopo l'eliminazione
         }
       },
       () => {
@@ -129,29 +118,12 @@ export class SoftwareComponent implements OnInit, OnDestroy {
     modalRef.result.then(
       (result: SoftwareModel) => {
         if (software) {
-          // Aggiorna software esistente
-          this.softwareService.updateSoftware(result).subscribe({
-            next: (updatedSoftware) => {
-              const idx = this.software.findIndex((s) => s.id === updatedSoftware.id);
-              if (idx !== -1) this.software[idx] = updatedSoftware;
-              this.applyFilters();
-            },
-            error: (error) => {
-              console.error('Errore nell\'aggiornamento del software:', error);
-            }
-          });
+          const idx = this.software.findIndex((s) => s.id === result.id);
+          if (idx !== -1) this.software[idx] = result;
         } else {
-          // Aggiungi nuovo software
-          this.softwareService.addSoftware(result).subscribe({
-            next: (newSoftware) => {
-              this.software.push(newSoftware);
-              this.applyFilters();
-            },
-            error: (error) => {
-              console.error('Errore nell\'aggiunta del software:', error);
-            }
-          });
+          this.software.push(result);
         }
+        this.applyFilters(); // Riapplica i filtri dopo la modifica/aggiunta
       },
       () => {}
     );
