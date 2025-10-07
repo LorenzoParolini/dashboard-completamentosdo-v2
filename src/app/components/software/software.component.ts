@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { Software as SoftwareModel, SoftwareDTO, SoftwareInputDTO } from '../../models/software.model';
+import { Software as SoftwareModel } from '../../models/software.model';
 import { SoftwareService } from '../../services/software.service';
 import { FilterService } from '../../services/filter.service';
 import { FilterUtilsService, FilterCriteria } from '../../services/filter-utils.service';
@@ -21,7 +21,6 @@ export class SoftwareComponent implements OnInit, OnDestroy {
   software: SoftwareModel[] = [];
   filteredSoftware: SoftwareModel[] = [];
   loading: boolean = false;
-  error: string | null = null;
   currentFilters: FilterCriteria = {
     regioni: [],
     software: [],
@@ -33,7 +32,6 @@ export class SoftwareComponent implements OnInit, OnDestroy {
     dataCreazione: [],
     searchQuery: ''
   };
-  private subscriptions: Subscription = new Subscription();
   private filterSubscription: Subscription = new Subscription();
 
   constructor(
@@ -44,18 +42,30 @@ export class SoftwareComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    console.log('Componente software inizializzato, caricamento software...');
-    this.loadSoftware();
+    this.loading = true;
+    this.software = [];
     
     // Subscribe to filter changes
     this.filterSubscription = this.filterService.filters$.subscribe(filters => {
       this.currentFilters = filters;
       this.applyFilters();
     });
+
+    // Carica il software dal backend
+    this.softwareService.getAllSoftware().subscribe({
+      next: (data) => {
+        this.software = data;
+        this.applyFilters();
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Errore nel caricamento del software:', error);
+        this.loading = false;
+      }
+    });
   }
 
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
+  ngOnDestroy() {
     this.filterSubscription.unsubscribe();
   }
 
@@ -67,86 +77,6 @@ export class SoftwareComponent implements OnInit, OnDestroy {
 
   shouldShowSoftware(software: SoftwareModel): boolean {
     return this.filterUtilsService.shouldShowSoftware(software, this.currentFilters);
-  }
-
-  // Carica software dal backend
-  loadSoftware(): void {
-    this.loading = true;
-    this.error = null;
-    
-    const loadSub = this.softwareService.getAllSoftware().subscribe({
-      next: (data: SoftwareModel[]) => {
-        this.software = data;
-        this.applyFilters();
-        this.loading = false;
-        console.log('Software caricati nel componente:', data);
-      },
-      error: (error: Error) => {
-        this.error = error.message;
-        this.loading = false;
-        console.error('Errore nel caricamento software:', error);
-      }
-    });
-    
-    this.subscriptions.add(loadSub);
-  }
-
-  // Crea nuovo software (con oggetti completi)
-  onCreateSoftware(softwareData: SoftwareDTO): void {
-    const createSub = this.softwareService.createSoftware(softwareData).subscribe({
-      next: (softwareCreato: SoftwareDTO) => {
-        console.log('Software creato con successo:', softwareCreato);
-        this.loadSoftware();
-      },
-      error: (error: Error) => {
-        this.error = `Errore nella creazione: ${error.message}`;
-        console.error('Errore creazione software:', error);
-      }
-    });
-    
-    this.subscriptions.add(createSub);
-  }
-
-  // Crea nuovo software (con solo ID per le relazioni)
-  onCreateSoftwareWithIds(softwareData: SoftwareInputDTO): void {
-    const createSub = this.softwareService.createSoftwareWithIds(softwareData).subscribe({
-      next: (softwareCreato: SoftwareModel) => {
-        console.log('Software creato con IDs con successo:', softwareCreato);
-        this.loadSoftware();
-      },
-      error: (error: Error) => {
-        this.error = `Errore nella creazione: ${error.message}`;
-        console.error('Errore creazione software:', error);
-      }
-    });
-    
-    this.subscriptions.add(createSub);
-  }
-
-  // Aggiorna software
-  onUpdateSoftware(id: number, softwareData: SoftwareDTO): void {
-    const updateSub = this.softwareService.updateSoftware(id, softwareData).subscribe({
-      next: (softwareAggiornato: SoftwareDTO) => {
-        console.log('Software aggiornato con successo:', softwareAggiornato);
-        this.loadSoftware();
-      },
-      error: (error: Error) => {
-        this.error = `Errore nell'aggiornamento: ${error.message}`;
-        console.error('Errore aggiornamento software:', error);
-      }
-    });
-    
-    this.subscriptions.add(updateSub);
-  }
-
-  // Refresh manuale
-  onRefresh(): void {
-    this.loadSoftware();
-  }
-
-  // TrackBy per performance
-  trackBySoftwareId(index: number, software: SoftwareModel): number {
-    return software.id;
   }
 
   onDeleteSoftware(id_software_da_eliminare: number) {
@@ -167,18 +97,15 @@ export class SoftwareComponent implements OnInit, OnDestroy {
     modalRef.result.then(
       (confirmed: boolean) => {
         if (confirmed) {
-          const deleteSub = this.softwareService.deleteSoftware(id_software_da_eliminare).subscribe({
+          this.softwareService.deleteSoftware(id_software_da_eliminare).subscribe({
             next: () => {
-              console.log('Software eliminato con successo');
-              this.loadSoftware();
+              this.software = this.software.filter(s => s.id !== id_software_da_eliminare);
+              this.applyFilters(); // Riapplica i filtri dopo l'eliminazione
             },
-            error: (error: Error) => {
-              this.error = `Errore nell'eliminazione: ${error.message}`;
-              console.error('Errore eliminazione software:', error);
+            error: (error) => {
+              console.error('Errore nell\'eliminazione del software:', error);
             }
           });
-          
-          this.subscriptions.add(deleteSub);
         }
       },
       () => {
@@ -202,12 +129,29 @@ export class SoftwareComponent implements OnInit, OnDestroy {
     modalRef.result.then(
       (result: SoftwareModel) => {
         if (software) {
-          const idx = this.software.findIndex((s) => s.id === result.id);
-          if (idx !== -1) this.software[idx] = result;
+          // Aggiorna software esistente
+          this.softwareService.updateSoftware(result).subscribe({
+            next: (updatedSoftware) => {
+              const idx = this.software.findIndex((s) => s.id === updatedSoftware.id);
+              if (idx !== -1) this.software[idx] = updatedSoftware;
+              this.applyFilters();
+            },
+            error: (error) => {
+              console.error('Errore nell\'aggiornamento del software:', error);
+            }
+          });
         } else {
-          this.software.push(result);
+          // Aggiungi nuovo software
+          this.softwareService.addSoftware(result).subscribe({
+            next: (newSoftware) => {
+              this.software.push(newSoftware);
+              this.applyFilters();
+            },
+            error: (error) => {
+              console.error('Errore nell\'aggiunta del software:', error);
+            }
+          });
         }
-        this.applyFilters(); // Riapplica i filtri dopo la modifica/aggiunta
       },
       () => {}
     );

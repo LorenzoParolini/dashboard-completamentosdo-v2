@@ -58,9 +58,12 @@ export class ClientiModalComponent implements OnInit {
   ) {
   }
 
-  getLength(): number {
-    // For now return 0 as this method isn't needed with backend
-    return 0;
+  private nextId: number = 1;
+
+  private setNextId(): void {
+    this.clientiService.getAllClienti().subscribe(clienti => {
+      this.nextId = clienti.length > 0 ? Math.max(...clienti.map(c => c.id)) + 1 : 1;
+    });
   }
 
   ngOnInit() {
@@ -98,7 +101,8 @@ export class ClientiModalComponent implements OnInit {
       // Inizializza l'ID solo qui, quando il servizio è disponibile
       // Solo se non abbiamo già dati ripristinati
       if (!this.isRestoredFromMinimized && this.nuovoCliente.id === 0) {
-        this.nuovoCliente.id = 0; // Backend will assign ID
+        this.setNextId();
+        this.nuovoCliente.id = this.nextId;
       }
       this.originalData = {
         ...this.nuovoCliente,
@@ -187,7 +191,7 @@ export class ClientiModalComponent implements OnInit {
   }
 
   onRegioneChange(event: any) {
-    const regioneId = event.target.value;
+    const regioneId = Number(event.target.value);
     const regione = this.regioniDisponibili.find(r => r.id === regioneId);
     if (regione) {
       this.nuovoCliente.regione = regione;
@@ -200,7 +204,7 @@ export class ClientiModalComponent implements OnInit {
 
   // Chiamata quando cambia la selezione nel dropdown software
   onSoftwareSelezionato() {
-    if (this.softwareSelezionatoId) {
+    if (this.softwareSelezionatoId && this.softwareSelezionatoId !== 0) {
       const softwareSelezionato = this.softwareDisponibili.find(s => s.id === this.softwareSelezionatoId);
       if (softwareSelezionato && !this.nuovoCliente.software.find(s => s.id === this.softwareSelezionatoId)) {
         this.nuovoCliente.software.push(softwareSelezionato);
@@ -227,7 +231,7 @@ export class ClientiModalComponent implements OnInit {
     const modalId = this.modalId || this.minimizedModalsService.generateModalId(
       'clienti', 
       this.cliente ? 'edit' : 'add',
-      this.cliente?.id?.toString()
+      this.cliente?.id
     );
 
     const description = this.nuovoCliente.descrizione || 

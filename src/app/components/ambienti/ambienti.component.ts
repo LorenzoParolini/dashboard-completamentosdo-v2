@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { Ambiente, AmbienteDTO } from '../../models/ambiente.model';
+import { Ambiente } from '../../models/ambiente.model';
 import { AmbientiService } from '../../services/ambienti.service';
 import { FilterService } from '../../services/filter.service';
 import { FilterUtilsService, FilterCriteria } from '../../services/filter-utils.service';
@@ -21,7 +21,6 @@ export class AmbientiComponent implements OnInit, OnDestroy {
   ambienti: Ambiente[] = [];
   filteredAmbienti: Ambiente[] = [];
   loading: boolean = false;
-  error: string | null = null;
   currentFilters: FilterCriteria = {
     regioni: [],
     software: [],
@@ -33,7 +32,6 @@ export class AmbientiComponent implements OnInit, OnDestroy {
     dataCreazione: [],
     searchQuery: ''
   };
-  private subscriptions: Subscription = new Subscription();
   private filterSubscription: Subscription = new Subscription();
 
   constructor(
@@ -44,18 +42,30 @@ export class AmbientiComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    console.log('Componente inizializzato, caricamento ambienti...');
-    this.loadAmbienti();
+    this.loading = true;
+    this.ambienti = [];
     
     // Subscribe to filter changes
     this.filterSubscription = this.filterService.filters$.subscribe(filters => {
       this.currentFilters = filters;
       this.applyFilters();
     });
+
+    // Carica gli ambienti dal backend
+    this.ambientiService.getAllAmbienti().subscribe({
+      next: (data) => {
+        this.ambienti = data;
+        this.applyFilters();
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Errore nel caricamento degli ambienti:', error);
+        this.loading = false;
+      }
+    });
   }
 
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
+  ngOnDestroy() {
     this.filterSubscription.unsubscribe();
   }
 
@@ -67,80 +77,6 @@ export class AmbientiComponent implements OnInit, OnDestroy {
 
   shouldShowAmbiente(ambiente: Ambiente): boolean {
     return this.filterUtilsService.shouldShowAmbiente(ambiente, this.currentFilters);
-  }
-
-  // Carica ambienti dal backend
-  loadAmbienti(): void {
-    this.loading = true;
-    this.error = null;
-    
-    const loadSub = this.ambientiService.getAllAmbienti().subscribe({
-      next: (data: Ambiente[]) => {
-        this.ambienti = data;
-        this.applyFilters();
-        this.loading = false;
-        console.log('Ambienti caricati nel componente:', data);
-      },
-      error: (error: Error) => {
-        this.error = error.message;
-        this.loading = false;
-        console.error('Errore nel caricamento ambienti:', error);
-      }
-    });
-    
-    this.subscriptions.add(loadSub);
-  }
-
-  // Crea nuovo ambiente
-  onCreateAmbiente(ambienteData: { descrizione: string; note: string }): void {
-    const nuovoAmbiente: AmbienteDTO = {
-      descrizione: ambienteData.descrizione,
-      note: ambienteData.note
-    };
-
-    const createSub = this.ambientiService.createAmbiente(nuovoAmbiente).subscribe({
-      next: (ambienteCreato: AmbienteDTO) => {
-        console.log('Ambiente creato con successo:', ambienteCreato);
-        this.loadAmbienti();
-      },
-      error: (error: Error) => {
-        this.error = `Errore nella creazione: ${error.message}`;
-        console.error('Errore creazione ambiente:', error);
-      }
-    });
-    
-    this.subscriptions.add(createSub);
-  }
-
-  // Aggiorna ambiente
-  onUpdateAmbiente(id: number, ambienteData: { descrizione: string; note: string }): void {
-    const ambienteAggiornato: AmbienteDTO = {
-      descrizione: ambienteData.descrizione,
-      note: ambienteData.note
-    };
-
-    const updateSub = this.ambientiService.updateAmbiente(id, ambienteAggiornato).subscribe({
-      next: (ambienteAggiornato: AmbienteDTO) => {
-        console.log('Ambiente aggiornato con successo:', ambienteAggiornato);
-        this.loadAmbienti();
-      },
-      error: (error: Error) => {
-        this.error = `Errore nell'aggiornamento: ${error.message}`;
-        console.error('Errore aggiornamento ambiente:', error);
-      }
-    });
-    
-    this.subscriptions.add(updateSub);
-  }
-
-  // Refresh manuale
-  onRefresh(): void {
-    this.loadAmbienti();
-  }
-
-  // TrackBy per performance
-  trackByAmbienteId(index: number, ambiente: Ambiente): number {
-    return ambiente.id;
   }
 
   onDeleteAmbiente(id_ambiente_da_eliminare: number) {
@@ -161,18 +97,15 @@ export class AmbientiComponent implements OnInit, OnDestroy {
     modalRef.result.then(
       (confirmed: boolean) => {
         if (confirmed) {
-          const deleteSub = this.ambientiService.deleteAmbiente(id_ambiente_da_eliminare).subscribe({
+          this.ambientiService.deleteAmbiente(id_ambiente_da_eliminare).subscribe({
             next: () => {
-              console.log('Ambiente eliminato con successo');
-              this.loadAmbienti();
+              this.ambienti = this.ambienti.filter(a => a.id !== id_ambiente_da_eliminare);
+              this.applyFilters(); // Riapplica i filtri dopo l'eliminazione
             },
-            error: (error: Error) => {
-              this.error = `Errore nell'eliminazione: ${error.message}`;
-              console.error('Errore eliminazione ambiente:', error);
+            error: (error) => {
+              console.error('Errore nell\'eliminazione dell\'ambiente:', error);
             }
           });
-          
-          this.subscriptions.add(deleteSub);
         }
       },
       () => {
@@ -196,12 +129,29 @@ export class AmbientiComponent implements OnInit, OnDestroy {
     modalRef.result.then(
       (result: Ambiente) => {
         if (ambiente) {
-          const idx = this.ambienti.findIndex((a) => a.id === result.id);
-          if (idx !== -1) this.ambienti[idx] = result;
+          // Aggiorna ambiente esistente
+          this.ambientiService.updateAmbiente(result).subscribe({
+            next: (updatedAmbiente) => {
+              const idx = this.ambienti.findIndex((a) => a.id === updatedAmbiente.id);
+              if (idx !== -1) this.ambienti[idx] = updatedAmbiente;
+              this.applyFilters();
+            },
+            error: (error) => {
+              console.error('Errore nell\'aggiornamento dell\'ambiente:', error);
+            }
+          });
         } else {
-          this.ambienti.push(result);
+          // Aggiungi nuovo ambiente
+          this.ambientiService.addAmbiente(result).subscribe({
+            next: (newAmbiente) => {
+              this.ambienti.push(newAmbiente);
+              this.applyFilters();
+            },
+            error: (error) => {
+              console.error('Errore nell\'aggiunta dell\'ambiente:', error);
+            }
+          });
         }
-        this.applyFilters(); // Riapplica i filtri dopo la modifica/aggiunta
       },
       () => {}
     );

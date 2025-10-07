@@ -47,9 +47,12 @@ export class RegioniModalComponent implements OnInit {
   ) {
   }
 
-  getLength(): number {
-    // For now return 0 as this method isn't needed with backend
-    return 0;
+  private nextId: number = 1;
+
+  private setNextId(): void {
+    this.regioniService.getAllRegioni().subscribe(regioni => {
+      this.nextId = regioni.length > 0 ? Math.max(...regioni.map(r => r.id)) + 1 : 1;
+    });
   }
 
   ngOnInit() {
@@ -75,7 +78,8 @@ export class RegioniModalComponent implements OnInit {
       // Inizializza l'ID solo qui, quando il servizio è disponibile
       // Solo se non abbiamo già dati ripristinati
       if (!this.isRestoredFromMinimized && this.nuovaRegione.id === 0) {
-        this.nuovaRegione.id = 0; // Backend will assign ID
+        this.setNextId();
+        this.nuovaRegione.id = this.nextId;
       }
     }
     
@@ -168,7 +172,7 @@ export class RegioniModalComponent implements OnInit {
     const modalId = this.modalId || this.minimizedModalsService.generateModalId(
       'regioni', 
       this.regione ? 'edit' : 'add',
-      this.regione?.id?.toString()
+      this.regione?.id
     );
 
     const description = this.nuovaRegione.descrizione || 

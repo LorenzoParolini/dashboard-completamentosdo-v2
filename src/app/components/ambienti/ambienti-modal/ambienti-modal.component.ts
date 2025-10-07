@@ -52,9 +52,12 @@ export class AmbientiModalComponent implements OnInit {
   ) {
   }
 
-  getLength(): number {
-    // For now return 0 as this method isn't needed with backend
-    return 0;
+  private nextId: number = 1;
+
+  private setNextId(): void {
+    this.ambientiService.getAllAmbienti().subscribe(ambienti => {
+      this.nextId = ambienti.length > 0 ? Math.max(...ambienti.map(a => a.id)) + 1 : 1;
+    });
   }
 
   ngOnInit() {
@@ -72,7 +75,8 @@ export class AmbientiModalComponent implements OnInit {
       // Inizializza l'ID solo qui, quando il servizio è disponibile
       // Solo se non abbiamo già dati ripristinati
       if (!this.isRestoredFromMinimized && this.nuovoAmbiente.id === 0) {
-        this.nuovoAmbiente.id = 0; // Backend will assign ID
+        this.setNextId();
+        this.nuovoAmbiente.id = this.nextId;
       }
       this.originalData = {
         ...this.nuovoAmbiente
@@ -151,7 +155,7 @@ export class AmbientiModalComponent implements OnInit {
     const modalId = this.modalId || this.minimizedModalsService.generateModalId(
       'ambienti', 
       this.ambiente ? 'edit' : 'add',
-      this.ambiente?.id?.toString()
+      this.ambiente?.id
     );
 
     const description = this.nuovoAmbiente.descrizione || 

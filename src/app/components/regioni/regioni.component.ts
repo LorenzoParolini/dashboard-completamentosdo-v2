@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { Regione, RegioneDTO } from '../../models/regione.model';
+import { Regione } from '../../models/regione.model';
 import { RegioniService } from '../../services/regioni.service';
 import { FilterService } from '../../services/filter.service';
 import { FilterUtilsService, FilterCriteria } from '../../services/filter-utils.service';
@@ -21,7 +21,6 @@ export class RegioniComponent implements OnInit, OnDestroy {
   regioni: Regione[] = [];
   filteredRegioni: Regione[] = [];
   loading: boolean = false;
-  error: string | null = null;
   currentFilters: FilterCriteria = {
     regioni: [],
     software: [],
@@ -33,7 +32,6 @@ export class RegioniComponent implements OnInit, OnDestroy {
     dataCreazione: [],
     searchQuery: ''
   };
-  private subscriptions: Subscription = new Subscription();
   private filterSubscription: Subscription = new Subscription();
 
   constructor(
@@ -44,18 +42,30 @@ export class RegioniComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    console.log('Componente regioni inizializzato, caricamento regioni...');
-    this.loadRegioni();
+    this.loading = true;
+    this.regioni = [];
     
     // Subscribe to filter changes
     this.filterSubscription = this.filterService.filters$.subscribe(filters => {
       this.currentFilters = filters;
       this.applyFilters();
     });
+
+    // Carica le regioni dal backend
+    this.regioniService.getAllRegioni().subscribe({
+      next: (data) => {
+        this.regioni = data;
+        this.applyFilters();
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Errore nel caricamento delle regioni:', error);
+        this.loading = false;
+      }
+    });
   }
 
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
+  ngOnDestroy() {
     this.filterSubscription.unsubscribe();
   }
 
@@ -67,80 +77,6 @@ export class RegioniComponent implements OnInit, OnDestroy {
 
   shouldShowRegione(regione: Regione): boolean {
     return this.filterUtilsService.shouldShowRegione(regione, this.currentFilters);
-  }
-
-  // Carica regioni dal backend
-  loadRegioni(): void {
-    this.loading = true;
-    this.error = null;
-    
-    const loadSub = this.regioniService.getAllRegioni().subscribe({
-      next: (data: Regione[]) => {
-        this.regioni = data;
-        this.applyFilters();
-        this.loading = false;
-        console.log('Regioni caricate nel componente:', data);
-      },
-      error: (error: Error) => {
-        this.error = error.message;
-        this.loading = false;
-        console.error('Errore nel caricamento regioni:', error);
-      }
-    });
-    
-    this.subscriptions.add(loadSub);
-  }
-
-  // Crea nuova regione
-  onCreateRegione(regioneData: { descrizione: string; codice: string }): void {
-    const nuovaRegione: RegioneDTO = {
-      descrizione: regioneData.descrizione,
-      codice: regioneData.codice
-    };
-
-    const createSub = this.regioniService.createRegione(nuovaRegione).subscribe({
-      next: (regioneCreata: RegioneDTO) => {
-        console.log('Regione creata con successo:', regioneCreata);
-        this.loadRegioni();
-      },
-      error: (error: Error) => {
-        this.error = `Errore nella creazione: ${error.message}`;
-        console.error('Errore creazione regione:', error);
-      }
-    });
-    
-    this.subscriptions.add(createSub);
-  }
-
-  // Aggiorna regione
-  onUpdateRegione(id: number, regioneData: { descrizione: string; codice: string }): void {
-    const regioneAggiornata: RegioneDTO = {
-      descrizione: regioneData.descrizione,
-      codice: regioneData.codice
-    };
-
-    const updateSub = this.regioniService.updateRegione(id, regioneAggiornata).subscribe({
-      next: (regioneAggiornata: RegioneDTO) => {
-        console.log('Regione aggiornata con successo:', regioneAggiornata);
-        this.loadRegioni();
-      },
-      error: (error: Error) => {
-        this.error = `Errore nell'aggiornamento: ${error.message}`;
-        console.error('Errore aggiornamento regione:', error);
-      }
-    });
-    
-    this.subscriptions.add(updateSub);
-  }
-
-  // Refresh manuale
-  onRefresh(): void {
-    this.loadRegioni();
-  }
-
-  // TrackBy per performance
-  trackByRegioneId(index: number, regione: Regione): number {
-    return regione.id;
   }
 
   onDeleteRegione(id_regione_da_eliminare: number) {
@@ -161,18 +97,15 @@ export class RegioniComponent implements OnInit, OnDestroy {
     modalRef.result.then(
       (confirmed: boolean) => {
         if (confirmed) {
-          const deleteSub = this.regioniService.deleteRegione(id_regione_da_eliminare).subscribe({
+          this.regioniService.deleteRegione(id_regione_da_eliminare).subscribe({
             next: () => {
-              console.log('Regione eliminata con successo');
-              this.loadRegioni();
+              this.regioni = this.regioni.filter(r => r.id !== id_regione_da_eliminare);
+              this.applyFilters(); // Riapplica i filtri dopo l'eliminazione
             },
-            error: (error: Error) => {
-              this.error = `Errore nell'eliminazione: ${error.message}`;
-              console.error('Errore eliminazione regione:', error);
+            error: (error) => {
+              console.error('Errore nell\'eliminazione della regione:', error);
             }
           });
-          
-          this.subscriptions.add(deleteSub);
         }
       },
       () => {
@@ -198,14 +131,29 @@ export class RegioniComponent implements OnInit, OnDestroy {
     modalRef.result.then(
       (result: Regione) => {
         if (regione) {
-          // Modifica: aggiorna la regione nella lista
-          const idx = this.regioni.findIndex((r) => r.id === result.id);
-          if (idx !== -1) this.regioni[idx] = result;
+          // Aggiorna regione esistente
+          this.regioniService.updateRegione(result).subscribe({
+            next: (updatedRegione) => {
+              const idx = this.regioni.findIndex((r) => r.id === updatedRegione.id);
+              if (idx !== -1) this.regioni[idx] = updatedRegione;
+              this.applyFilters();
+            },
+            error: (error) => {
+              console.error('Errore nell\'aggiornamento della regione:', error);
+            }
+          });
         } else {
-          // Aggiunta: aggiungi la nuova regione
-          this.regioni.push(result);
+          // Aggiungi nuova regione
+          this.regioniService.addRegione(result).subscribe({
+            next: (newRegione) => {
+              this.regioni.push(newRegione);
+              this.applyFilters();
+            },
+            error: (error) => {
+              console.error('Errore nell\'aggiunta della regione:', error);
+            }
+          });
         }
-        this.applyFilters(); // Riapplica i filtri dopo la modifica/aggiunta
       },
       () => {}
     );

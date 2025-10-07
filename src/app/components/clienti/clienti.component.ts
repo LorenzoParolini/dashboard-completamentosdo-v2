@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { Cliente, ClienteDTO, ClienteInputDTO } from '../../models/cliente.model';
+import { Cliente } from '../../models/cliente.model';
 import { ClientiService } from '../../services/clienti.service';
 import { FilterService } from '../../services/filter.service';
 import { FilterUtilsService, FilterCriteria } from '../../services/filter-utils.service';
@@ -21,7 +21,6 @@ export class ClientiComponent implements OnInit, OnDestroy {
   clienti: Cliente[] = [];
   filteredClienti: Cliente[] = [];
   loading: boolean = false;
-  error: string | null = null;
   currentFilters: FilterCriteria = {
     regioni: [],
     software: [],
@@ -33,7 +32,6 @@ export class ClientiComponent implements OnInit, OnDestroy {
     dataCreazione: [],
     searchQuery: ''
   };
-  private subscriptions: Subscription = new Subscription();
   private filterSubscription: Subscription = new Subscription();
 
   constructor(
@@ -44,18 +42,30 @@ export class ClientiComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    console.log('Componente clienti inizializzato, caricamento clienti...');
-    this.loadClienti();
+    this.loading = true;
+    this.clienti = [];
     
     // Subscribe to filter changes
     this.filterSubscription = this.filterService.filters$.subscribe(filters => {
       this.currentFilters = filters;
       this.applyFilters();
     });
+
+    // Carica i clienti dal backend
+    this.clientiService.getAllClienti().subscribe({
+      next: (data) => {
+        this.clienti = data;
+        this.applyFilters();
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Errore nel caricamento dei clienti:', error);
+        this.loading = false;
+      }
+    });
   }
 
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
+  ngOnDestroy() {
     this.filterSubscription.unsubscribe();
   }
 
@@ -67,86 +77,6 @@ export class ClientiComponent implements OnInit, OnDestroy {
 
   shouldShowCliente(cliente: Cliente): boolean {
     return this.filterUtilsService.shouldShowCliente(cliente, this.currentFilters);
-  }
-
-  // Carica clienti dal backend
-  loadClienti(): void {
-    this.loading = true;
-    this.error = null;
-    
-    const loadSub = this.clientiService.getAllClienti().subscribe({
-      next: (data: Cliente[]) => {
-        this.clienti = data;
-        this.applyFilters();
-        this.loading = false;
-        console.log('Clienti caricati nel componente:', data);
-      },
-      error: (error: Error) => {
-        this.error = error.message;
-        this.loading = false;
-        console.error('Errore nel caricamento clienti:', error);
-      }
-    });
-    
-    this.subscriptions.add(loadSub);
-  }
-
-  // Crea nuovo cliente (con oggetti completi)
-  onCreateCliente(clienteData: ClienteDTO): void {
-    const createSub = this.clientiService.createCliente(clienteData).subscribe({
-      next: (clienteCreato: ClienteDTO) => {
-        console.log('Cliente creato con successo:', clienteCreato);
-        this.loadClienti();
-      },
-      error: (error: Error) => {
-        this.error = `Errore nella creazione: ${error.message}`;
-        console.error('Errore creazione cliente:', error);
-      }
-    });
-    
-    this.subscriptions.add(createSub);
-  }
-
-  // Crea nuovo cliente (con solo ID per le relazioni)
-  onCreateClienteWithIds(clienteData: ClienteInputDTO): void {
-    const createSub = this.clientiService.createClienteWithIds(clienteData).subscribe({
-      next: (clienteCreato: Cliente) => {
-        console.log('Cliente creato con IDs con successo:', clienteCreato);
-        this.loadClienti();
-      },
-      error: (error: Error) => {
-        this.error = `Errore nella creazione: ${error.message}`;
-        console.error('Errore creazione cliente:', error);
-      }
-    });
-    
-    this.subscriptions.add(createSub);
-  }
-
-  // Aggiorna cliente
-  onUpdateCliente(id: number, clienteData: ClienteDTO): void {
-    const updateSub = this.clientiService.updateCliente(id, clienteData).subscribe({
-      next: (clienteAggiornato: ClienteDTO) => {
-        console.log('Cliente aggiornato con successo:', clienteAggiornato);
-        this.loadClienti();
-      },
-      error: (error: Error) => {
-        this.error = `Errore nell'aggiornamento: ${error.message}`;
-        console.error('Errore aggiornamento cliente:', error);
-      }
-    });
-    
-    this.subscriptions.add(updateSub);
-  }
-
-  // Refresh manuale
-  onRefresh(): void {
-    this.loadClienti();
-  }
-
-  // TrackBy per performance
-  trackByClienteId(index: number, cliente: Cliente): number {
-    return cliente.id;
   }
 
   onDeleteCliente(id_cliente_da_eliminare: number) {
@@ -167,18 +97,15 @@ export class ClientiComponent implements OnInit, OnDestroy {
     modalRef.result.then(
       (confirmed: boolean) => {
         if (confirmed) {
-          const deleteSub = this.clientiService.deleteCliente(id_cliente_da_eliminare).subscribe({
+          this.clientiService.deleteCliente(id_cliente_da_eliminare).subscribe({
             next: () => {
-              console.log('Cliente eliminato con successo');
-              this.loadClienti();
+              this.clienti = this.clienti.filter(c => c.id !== id_cliente_da_eliminare);
+              this.applyFilters(); // Riapplica i filtri dopo l'eliminazione
             },
-            error: (error: Error) => {
-              this.error = `Errore nell'eliminazione: ${error.message}`;
-              console.error('Errore eliminazione cliente:', error);
+            error: (error) => {
+              console.error('Errore nell\'eliminazione del cliente:', error);
             }
           });
-          
-          this.subscriptions.add(deleteSub);
         }
       },
       () => {
@@ -202,12 +129,29 @@ export class ClientiComponent implements OnInit, OnDestroy {
     modalRef.result.then(
       (result: Cliente) => {
         if (cliente) {
-          const idx = this.clienti.findIndex((c) => c.id === result.id);
-          if (idx !== -1) this.clienti[idx] = result;
+          // Aggiorna cliente esistente
+          this.clientiService.updateCliente(result).subscribe({
+            next: (updatedCliente) => {
+              const idx = this.clienti.findIndex((c) => c.id === updatedCliente.id);
+              if (idx !== -1) this.clienti[idx] = updatedCliente;
+              this.applyFilters();
+            },
+            error: (error) => {
+              console.error('Errore nell\'aggiornamento del cliente:', error);
+            }
+          });
         } else {
-          this.clienti.push(result);
+          // Aggiungi nuovo cliente
+          this.clientiService.addCliente(result).subscribe({
+            next: (newCliente) => {
+              this.clienti.push(newCliente);
+              this.applyFilters();
+            },
+            error: (error) => {
+              console.error('Errore nell\'aggiunta del cliente:', error);
+            }
+          });
         }
-        this.applyFilters(); // Riapplica i filtri dopo la modifica/aggiunta
       },
       () => {}
     );

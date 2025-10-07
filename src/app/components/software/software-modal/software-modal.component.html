@@ -107,7 +107,7 @@
                 class="form-select"
                 (change)="onAmbienteSelezionato()"
               >
-                <option value="">Seleziona un ambiente da aggiungere</option>
+                <option value="0">Seleziona un ambiente da aggiungere</option>
                 <option 
                   *ngFor="let ambiente of ambientiDisponibili" 
                   [value]="ambiente.id"
