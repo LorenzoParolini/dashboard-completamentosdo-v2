@@ -2,7 +2,5 @@
 
 ### Cosa c'è di nuovo?
 
-- aggiunta dark mode
-- migliorato stile della navbar
-- aggiunta flat image quando non ci sono dati da mostrare
-- aggiuntaflat image alla confirmation modal
+- sistemati alcuni bug visivi
+- aggiunta schermata di errore qunado non raggiunge il server

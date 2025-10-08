@@ -2,24 +2,30 @@
   display: block;
 }
 
-/* Reset per i pulsanti di rimozione per evitare interferenze */
-.remove-coordinate-btn,
-.remove-date-btn {
-  /* Reset di base */
-  all: unset;
-  box-sizing: border-box;
-  @apply flex items-center justify-center w-8 h-8 bg-red-500 text-white rounded-full cursor-pointer transition-all duration-200 border-none outline-none text-center leading-none;
+/* Stili per le chip di selezione multipla */
+.selection-chip {
+  @apply inline-flex items-center gap-2 px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-sm font-medium border border-indigo-200;
+  @apply hover:bg-indigo-200 transition-all duration-200 ease-in-out;
 }
 
-.remove-coordinate-btn:hover,
-.remove-date-btn:hover {
-  @apply bg-red-600 scale-110;
+/* Dark theme support per le chip */
+:host-context(.dark) .selection-chip {
+  @apply bg-indigo-900/30 text-indigo-300 border-indigo-700;
+  @apply hover:bg-indigo-900/50;
 }
 
-.remove-coordinate-btn svg,
-.remove-date-btn svg {
-  flex-shrink: 0 !important;
-  pointer-events: none !important;
+.selection-chip-text {
+  @apply whitespace-nowrap select-none;
+}
+
+.selection-chip-remove {
+  @apply w-4 h-4 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center cursor-pointer transition-colors duration-200;
+  @apply ml-1 flex-shrink-0;
+}
+
+.selection-chip-remove svg {
+  @apply w-2.5 h-2.5 text-white;
+  stroke-width: 2.5;
 }
 
 /* Overlay per sfondo scuro */
@@ -549,28 +555,12 @@
   @apply text-gray-200;
 }
 
-.coordinate-list {
-  @apply space-y-2;
+.coordinate-list,
+.date-list {
+  @apply flex flex-wrap gap-2;
 }
 
-.coordinate-item {
-  @apply flex justify-between items-center p-3 bg-white rounded-lg border border-gray-200 shadow-sm;
-  min-height: 48px;
-}
-
-/* Dark theme support for coordinate items */
-:host-context(.dark) .coordinate-item {
-  @apply bg-gray-800 border-gray-600;
-}
-
-.coordinate-item span {
-  @apply text-sm text-gray-700 font-medium;
-}
-
-/* Dark theme support for coordinate item span */
-:host-context(.dark) .coordinate-item span {
-  @apply text-gray-200;
-}
+/* Gli stili per coordinate-item e date-item sono ora gestiti dalla classe .selection-chip */
 
 /* Version input styles */
 .number-input-group {
@@ -657,24 +647,7 @@
 }
 
 .date-list {
-  @apply space-y-2;
+  @apply flex flex-wrap gap-2;
 }
 
-.date-item {
-  @apply flex justify-between items-center p-3 bg-white rounded-lg border border-gray-200 shadow-sm;
-  min-height: 48px;
-}
-
-/* Dark theme support for date items */
-:host-context(.dark) .date-item {
-  @apply bg-gray-800 border-gray-600;
-}
-
-.date-item span {
-  @apply text-sm text-gray-700 font-medium;
-}
-
-/* Dark theme support for date item span */
-:host-context(.dark) .date-item span {
-  @apply text-gray-200;
-}
+/* Gli stili per date-item sono ora gestiti dalla classe .selection-chip */

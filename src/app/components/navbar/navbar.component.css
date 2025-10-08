@@ -193,13 +193,8 @@
   @apply flex items-center;
 }
 
-.logo-circle {
-  @apply w-14 h-14 rounded-full flex items-center justify-center shadow-md;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-}
-
-.logo-text {
-  @apply text-white font-semibold text-sm;
+.logo-image {
+  @apply w-20 h-20 object-contain;
 } 
 
 /* Filter Container */

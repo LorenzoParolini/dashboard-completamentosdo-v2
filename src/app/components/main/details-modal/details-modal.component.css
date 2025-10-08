@@ -221,12 +221,27 @@
   @apply border-t border-gray-200 pt-5 mt-5;
 }
 
+/* Dark theme support for ambienti section */
+:host-context(.dark) .ambienti-section {
+  @apply border-gray-600;
+}
+
 .ambienti-title {
   @apply text-sm font-semibold text-gray-700 m-0 mb-4 flex items-center gap-2;
 }
 
+/* Dark theme support for ambienti title */
+:host-context(.dark) .ambienti-title {
+  @apply text-gray-300;
+}
+
 .ambienti-title svg {
   @apply text-indigo-600;
+}
+
+/* Dark theme support for ambienti title svg */
+:host-context(.dark) .ambienti-title svg {
+  @apply text-indigo-400;
 }
 
 .ambienti-grid {
@@ -237,8 +252,18 @@
   @apply bg-white border border-gray-200 rounded-lg p-4 transition-all duration-200;
 }
 
+/* Dark theme support for ambiente card */
+:host-context(.dark) .ambiente-card {
+  @apply bg-gray-700 border-gray-600;
+}
+
 .ambiente-card:hover {
   @apply border-purple-600 shadow-md shadow-purple-100;
+}
+
+/* Dark theme support for ambiente card hover */
+:host-context(.dark) .ambiente-card:hover {
+  @apply border-purple-400 shadow-purple-900/50;
 }
 
 .ambiente-header {
@@ -247,6 +272,11 @@
 
 .ambiente-name {
   @apply text-sm font-semibold text-gray-700;
+}
+
+/* Dark theme support for ambiente name */
+:host-context(.dark) .ambiente-name {
+  @apply text-gray-200;
 }
 
 .ambiente-details {
@@ -279,8 +309,18 @@
   @apply text-gray-400;
 }
 
+/* Dark theme support for no data icon */
+:host-context(.dark) .no-data-icon svg {
+  @apply text-gray-500;
+}
+
 .no-data-text {
   @apply text-gray-600 text-sm m-0 italic;
+}
+
+/* Dark theme support for no data text */
+:host-context(.dark) .no-data-text {
+  @apply text-gray-400;
 }
 
 .no-ambienti .no-data-text {

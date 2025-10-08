@@ -134,10 +134,10 @@
                     <div class="selected-coordinates" *ngIf="selectedCoordinate.length > 0">
                         <h4>Coordinate selezionate:</h4>
                         <div class="coordinate-list">
-                            <div *ngFor="let coord of selectedCoordinate; let i = index" class="coordinate-item">
-                                <span>X: {{ coord.x }}, Y: {{ coord.y }}</span>
-                                <button (click)="removeCoordinate(i)" class="remove-coordinate-btn">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <div *ngFor="let coord of selectedCoordinate; let i = index" class="selection-chip">
+                                <span class="selection-chip-text">X: {{ coord.x }}, Y: {{ coord.y }}</span>
+                                <button (click)="removeCoordinate(i)" class="selection-chip-remove">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                         <line x1="18" y1="6" x2="6" y2="18"></line>
                                         <line x1="6" y1="6" x2="18" y2="18"></line>
                                     </svg>
@@ -199,10 +199,10 @@
                 <div class="selected-dates" *ngIf="selectedDataAggiornamento.length > 0">
                     <h4>Intervalli selezionati:</h4>
                     <div class="date-list">
-                        <div *ngFor="let range of selectedDataAggiornamento; let i = index" class="date-item">
-                            <span>{{ range.inizio | date:'dd/MM/yyyy' }} - {{ range.fine | date:'dd/MM/yyyy' }}</span>
-                            <button (click)="removeDataAggiornamento(i)" class="remove-date-btn">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <div *ngFor="let range of selectedDataAggiornamento; let i = index" class="selection-chip">
+                            <span class="selection-chip-text">{{ range.inizio | date:'dd/MM/yyyy' }} - {{ range.fine | date:'dd/MM/yyyy' }}</span>
+                            <button (click)="removeDataAggiornamento(i)" class="selection-chip-remove">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                     <line x1="18" y1="6" x2="6" y2="18"></line>
                                     <line x1="6" y1="6" x2="18" y2="18"></line>
                                 </svg>
@@ -244,10 +244,10 @@
                 <div class="selected-dates" *ngIf="selectedDataCreazione.length > 0">
                     <h4>Intervalli selezionati:</h4>
                     <div class="date-list">
-                        <div *ngFor="let range of selectedDataCreazione; let i = index" class="date-item">
-                            <span>{{ range.inizio | date:'dd/MM/yyyy' }} - {{ range.fine | date:'dd/MM/yyyy' }}</span>
-                            <button (click)="removeDataCreazione(i)" class="remove-date-btn">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <div *ngFor="let range of selectedDataCreazione; let i = index" class="selection-chip">
+                            <span class="selection-chip-text">{{ range.inizio | date:'dd/MM/yyyy' }} - {{ range.fine | date:'dd/MM/yyyy' }}</span>
+                            <button (click)="removeDataCreazione(i)" class="selection-chip-remove">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                     <line x1="18" y1="6" x2="6" y2="18"></line>
                                     <line x1="6" y1="6" x2="18" y2="18"></line>
                                 </svg>

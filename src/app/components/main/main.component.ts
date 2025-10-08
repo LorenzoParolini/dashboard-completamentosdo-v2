@@ -9,10 +9,11 @@ import { Cliente } from '../../models/cliente.model';
 import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
 import { EmptyStateComponent } from '../empty-state/empty-state.component';
 import { DetailsModalComponent } from './details-modal/details-modal.component';
+import { ServerErrorComponent } from '../server-error/server-error.component';
 
 @Component({
   selector: 'app-main',
-  imports: [CommonModule, LoadingSpinnerComponent, EmptyStateComponent, DetailsModalComponent],
+  imports: [CommonModule, LoadingSpinnerComponent, EmptyStateComponent, DetailsModalComponent, ServerErrorComponent],
   templateUrl: './main.component.html',
   styleUrl: './main.component.css'
 })
@@ -21,6 +22,8 @@ export class MainComponent implements OnInit, OnDestroy {
   filteredClienti: Cliente[] = [];
   selectedCliente: Cliente | null = null;
   loading: boolean = true;
+  hasError: boolean = false;
+  errorMessage: string = '';
   isModalOpen: boolean = false;
   modalCliente: Cliente | null = null;
   currentFilters: FilterCriteria = {
@@ -61,13 +64,24 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   loadClienti() {
-    this.clientiService.getAllClienti().subscribe(
-      (data) => {
+    this.loading = true;
+    this.hasError = false;
+    this.errorMessage = '';
+
+    this.clientiService.getAllClienti().subscribe({
+      next: (data) => {
         this.clienti = data;
         this.applyFilters();
         this.loading = false;
+        this.hasError = false;
+      },
+      error: (error) => {
+        console.error('Errore nel caricamento dei clienti:', error);
+        this.loading = false;
+        this.hasError = true;
+        this.errorMessage = error.message || 'Impossibile raggiungere il server';
       }
-    );
+    });
   }
 
   applyFilters() {
@@ -92,5 +106,9 @@ export class MainComponent implements OnInit, OnDestroy {
   closeModal() {
     this.isModalOpen = false;
     this.modalCliente = null;
+  }
+
+  retryLoadClienti() {
+    this.loadClienti();
   }
 }

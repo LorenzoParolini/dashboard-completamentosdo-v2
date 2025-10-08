@@ -7,13 +7,14 @@ import { FilterUtilsService, FilterCriteria } from '../../services/filter-utils.
 import { CommonModule } from '@angular/common';
 import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
 import { EmptyStateComponent } from '../empty-state/empty-state.component';
+import { ServerErrorComponent } from '../server-error/server-error.component';
 import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { SoftwareModalComponent } from './software-modal/software-modal.component';
 import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-modal.component';
 
 @Component({
   selector: 'app-software',
-  imports: [CommonModule, LoadingSpinnerComponent, EmptyStateComponent, NgbModule, SoftwareModalComponent, ConfirmationModalComponent],
+  imports: [CommonModule, LoadingSpinnerComponent, EmptyStateComponent, ServerErrorComponent, NgbModule],
   templateUrl: './software.component.html',
   styleUrl: './software.component.css',
 })
@@ -21,6 +22,8 @@ export class SoftwareComponent implements OnInit, OnDestroy {
   software: SoftwareModel[] = [];
   filteredSoftware: SoftwareModel[] = [];
   loading: boolean = false;
+  hasError: boolean = false;
+  errorMessage: string = '';
   currentFilters: FilterCriteria = {
     regioni: [],
     software: [],
@@ -52,12 +55,29 @@ export class SoftwareComponent implements OnInit, OnDestroy {
     });
 
     setTimeout(() => {
-      this.softwareService.getAllSoftware().subscribe((data) => {
+      this.loadSoftware();
+    }, 1200);
+  }
+
+  loadSoftware() {
+    this.loading = true;
+    this.hasError = false;
+    this.errorMessage = '';
+
+    this.softwareService.getAllSoftware().subscribe({
+      next: (data) => {
         this.software = data;
         this.applyFilters();
         this.loading = false;
-      });
-    }, 1200);
+        this.hasError = false;
+      },
+      error: (error) => {
+        console.error('Errore nel caricamento del software:', error);
+        this.loading = false;
+        this.hasError = true;
+        this.errorMessage = error.message || 'Impossibile raggiungere il server';
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -164,5 +184,9 @@ export class SoftwareComponent implements OnInit, OnDestroy {
       },
       () => {}
     );
+  }
+
+  retryLoadSoftware() {
+    this.loadSoftware();
   }
 }

@@ -29,7 +29,12 @@
   <!-- Content Section -->
   <div class="page-content">
     <ng-container *ngIf="!loading; else loadingBlock">
-      <div class="data-table-container" *ngIf="filteredClienti.length > 0; else noDataBlock">
+      <app-server-error 
+        *ngIf="hasError" 
+        [errorMessage]="errorMessage"
+        (retry)="retryLoadClienti()">
+      </app-server-error>
+      <div class="data-table-container" *ngIf="!hasError && filteredClienti.length > 0; else noDataBlock">
         <div class="table-wrapper">
           <table class="data-table">
             <thead class="table-header">
@@ -99,6 +104,7 @@
 
     <ng-template #noDataBlock>
       <app-empty-state 
+        *ngIf="!hasError"
         message="Nessun cliente trovato"
         description="Inizia aggiungendo il primo cliente al sistema">
       </app-empty-state>

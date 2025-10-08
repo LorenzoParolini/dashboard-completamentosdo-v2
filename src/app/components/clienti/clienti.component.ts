@@ -7,13 +7,14 @@ import { FilterUtilsService, FilterCriteria } from '../../services/filter-utils.
 import { CommonModule } from '@angular/common';
 import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
 import { EmptyStateComponent } from '../empty-state/empty-state.component';
+import { ServerErrorComponent } from '../server-error/server-error.component';
 import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ClientiModalComponent } from './clienti-modal/clienti-modal.component';
 import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-modal.component';
 
 @Component({
   selector: 'app-clienti',
-  imports: [CommonModule, LoadingSpinnerComponent, EmptyStateComponent, NgbModule, ClientiModalComponent, ConfirmationModalComponent],
+  imports: [CommonModule, LoadingSpinnerComponent, EmptyStateComponent, ServerErrorComponent, NgbModule],
   templateUrl: './clienti.component.html',
   styleUrl: './clienti.component.css',
 })
@@ -21,6 +22,8 @@ export class ClientiComponent implements OnInit, OnDestroy {
   clienti: Cliente[] = [];
   filteredClienti: Cliente[] = [];
   loading: boolean = false;
+  hasError: boolean = false;
+  errorMessage: string = '';
   currentFilters: FilterCriteria = {
     regioni: [],
     software: [],
@@ -52,12 +55,29 @@ export class ClientiComponent implements OnInit, OnDestroy {
     });
 
     setTimeout(() => {
-      this.clientiService.getAllClienti().subscribe((data) => {
+      this.loadClienti();
+    }, 1200);
+  }
+
+  loadClienti() {
+    this.loading = true;
+    this.hasError = false;
+    this.errorMessage = '';
+
+    this.clientiService.getAllClienti().subscribe({
+      next: (data) => {
         this.clienti = data;
         this.applyFilters();
         this.loading = false;
-      });
-    }, 1200);
+        this.hasError = false;
+      },
+      error: (error) => {
+        console.error('Errore nel caricamento dei clienti:', error);
+        this.loading = false;
+        this.hasError = true;
+        this.errorMessage = error.message || 'Impossibile raggiungere il server';
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -160,5 +180,9 @@ export class ClientiComponent implements OnInit, OnDestroy {
       },
       () => {}
     );
+  }
+
+  retryLoadClienti() {
+    this.loadClienti();
   }
 }

@@ -5,7 +5,12 @@
   </div>
 
   <app-loading-spinner *ngIf="loading"></app-loading-spinner>
-  <div class="clienti-grid" *ngIf="!loading && filteredClienti.length > 0; else noClienti">
+  <app-server-error 
+    *ngIf="!loading && hasError" 
+    [errorMessage]="errorMessage"
+    (retry)="retryLoadClienti()">
+  </app-server-error>
+  <div class="clienti-grid" *ngIf="!loading && !hasError && filteredClienti.length > 0; else noClienti">
     <div 
       class="cliente-card" 
       *ngFor="let cliente of filteredClienti"
@@ -81,6 +86,7 @@
 
   <ng-template #noClienti>
     <app-empty-state 
+      *ngIf="!hasError"
       message="Nessun cliente trovato"
       description="Non ci sono clienti da visualizzare">
     </app-empty-state>

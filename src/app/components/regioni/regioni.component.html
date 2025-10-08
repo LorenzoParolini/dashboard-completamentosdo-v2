@@ -29,7 +29,12 @@
   <!-- Content Section -->
   <div class="page-content">
     <ng-container *ngIf="!loading; else loadingBlock">
-      <div class="data-table-container" *ngIf="filteredRegioni.length > 0; else noDataBlock">
+      <app-server-error 
+        *ngIf="hasError" 
+        [errorMessage]="errorMessage"
+        (retry)="retryLoadRegioni()">
+      </app-server-error>
+      <div class="data-table-container" *ngIf="!hasError && filteredRegioni.length > 0; else noDataBlock">
         <div class="table-wrapper">
           <table class="data-table">
             <thead class="table-header">
@@ -97,6 +102,7 @@
 
     <ng-template #noDataBlock>
       <app-empty-state 
+        *ngIf="!hasError"
         message="Nessuna regione trovata"
         description="Inizia aggiungendo la prima regione al sistema">
       </app-empty-state>

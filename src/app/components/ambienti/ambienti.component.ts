@@ -7,13 +7,14 @@ import { FilterUtilsService, FilterCriteria } from '../../services/filter-utils.
 import { CommonModule } from '@angular/common';
 import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
 import { EmptyStateComponent } from '../empty-state/empty-state.component';
+import { ServerErrorComponent } from '../server-error/server-error.component';
 import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AmbientiModalComponent } from './ambienti-modal/ambienti-modal.component';
 import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-modal.component';
 
 @Component({
   selector: 'app-ambienti',
-  imports: [CommonModule, LoadingSpinnerComponent, EmptyStateComponent, NgbModule, AmbientiModalComponent, ConfirmationModalComponent],
+  imports: [CommonModule, LoadingSpinnerComponent, EmptyStateComponent, ServerErrorComponent, NgbModule],
   templateUrl: './ambienti.component.html',
   styleUrl: './ambienti.component.css',
 })
@@ -21,6 +22,8 @@ export class AmbientiComponent implements OnInit, OnDestroy {
   ambienti: Ambiente[] = [];
   filteredAmbienti: Ambiente[] = [];
   loading: boolean = false;
+  hasError: boolean = false;
+  errorMessage: string = '';
   currentFilters: FilterCriteria = {
     regioni: [],
     software: [],
@@ -52,12 +55,29 @@ export class AmbientiComponent implements OnInit, OnDestroy {
     });
 
     setTimeout(() => {
-      this.ambientiService.getAllAmbienti().subscribe((data) => {
+      this.loadAmbienti();
+    }, 1200);
+  }
+
+  loadAmbienti() {
+    this.loading = true;
+    this.hasError = false;
+    this.errorMessage = '';
+
+    this.ambientiService.getAllAmbienti().subscribe({
+      next: (data) => {
         this.ambienti = data;
         this.applyFilters();
         this.loading = false;
-      });
-    }, 1200);
+        this.hasError = false;
+      },
+      error: (error) => {
+        console.error('Errore nel caricamento degli ambienti:', error);
+        this.loading = false;
+        this.hasError = true;
+        this.errorMessage = error.message || 'Impossibile raggiungere il server';
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -163,5 +183,9 @@ export class AmbientiComponent implements OnInit, OnDestroy {
       },
       () => {}
     );
+  }
+
+  retryLoadAmbienti() {
+    this.loadAmbienti();
   }
 }

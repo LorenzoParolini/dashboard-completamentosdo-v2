@@ -30,7 +30,12 @@
   <!-- Content Section -->
   <div class="page-content">
     <ng-container *ngIf="!loading; else loadingBlock">
-      <div class="data-table-container" *ngIf="filteredSoftware.length > 0; else noDataBlock">
+      <app-server-error 
+        *ngIf="hasError" 
+        [errorMessage]="errorMessage"
+        (retry)="retryLoadSoftware()">
+      </app-server-error>
+      <div class="data-table-container" *ngIf="!hasError && filteredSoftware.length > 0; else noDataBlock">
         <div class="table-wrapper">
           <table class="data-table">
             <thead class="table-header">
@@ -111,6 +116,7 @@
 
     <ng-template #noDataBlock>
       <app-empty-state 
+        *ngIf="!hasError"
         message="Nessun software trovato"
         description="Inizia aggiungendo il primo software al sistema">
       </app-empty-state>

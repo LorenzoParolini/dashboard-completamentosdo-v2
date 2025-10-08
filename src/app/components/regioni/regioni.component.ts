@@ -7,13 +7,14 @@ import { FilterUtilsService, FilterCriteria } from '../../services/filter-utils.
 import { CommonModule } from '@angular/common';
 import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
 import { EmptyStateComponent } from '../empty-state/empty-state.component';
+import { ServerErrorComponent } from '../server-error/server-error.component';
 import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { RegioniModalComponent } from './regioni-modal/regioni-modal.component';
 import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-modal.component';
 
 @Component({
   selector: 'app-regioni',
-  imports: [CommonModule, LoadingSpinnerComponent, EmptyStateComponent, NgbModule, RegioniModalComponent, ConfirmationModalComponent],
+  imports: [CommonModule, LoadingSpinnerComponent, EmptyStateComponent, ServerErrorComponent, NgbModule],
   templateUrl: './regioni.component.html',
   styleUrl: './regioni.component.css',
 })
@@ -21,6 +22,8 @@ export class RegioniComponent implements OnInit, OnDestroy {
   regioni: Regione[] = [];
   filteredRegioni: Regione[] = [];
   loading: boolean = false;
+  hasError: boolean = false;
+  errorMessage: string = '';
   currentFilters: FilterCriteria = {
     regioni: [],
     software: [],
@@ -51,10 +54,27 @@ export class RegioniComponent implements OnInit, OnDestroy {
       this.applyFilters();
     });
 
-    this.regioniService.getAllRegioni().subscribe((data) => {
-      this.regioni = data;
-      this.applyFilters();
-      this.loading = false;
+    this.loadRegioni();
+  }
+
+  loadRegioni() {
+    this.loading = true;
+    this.hasError = false;
+    this.errorMessage = '';
+
+    this.regioniService.getAllRegioni().subscribe({
+      next: (data) => {
+        this.regioni = data;
+        this.applyFilters();
+        this.loading = false;
+        this.hasError = false;
+      },
+      error: (error) => {
+        console.error('Errore nel caricamento delle regioni:', error);
+        this.loading = false;
+        this.hasError = true;
+        this.errorMessage = error.message || 'Impossibile raggiungere il server';
+      }
     });
   }
 
@@ -162,5 +182,9 @@ export class RegioniComponent implements OnInit, OnDestroy {
       },
       () => {}
     );
+  }
+
+  retryLoadRegioni() {
+    this.loadRegioni();
   }
 }
