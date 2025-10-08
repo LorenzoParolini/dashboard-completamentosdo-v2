@@ -1,8 +1,18 @@
-import type { Software } from './software.model';
-
+// ============================================================================
+// AMBIENTE - Response dal backend (con ID)
+// ============================================================================
 export type Ambiente = {
-  id: string;
+  id: number;
   descrizione: string;
-  note?: string;
+  note: string;
   dataCreazione: Date;
+};
+
+// ============================================================================
+// AMBIENTE INPUT DTO - Dati da inviare (POST/PUT) senza ID
+// ============================================================================
+export type AmbienteInputDTO = {
+  descrizione: string;
+  note: string;
+  dataCreazione?: Date;
 };

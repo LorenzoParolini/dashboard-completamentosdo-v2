@@ -27,22 +27,22 @@ export class ClientiModalComponent implements OnInit {
   @Input() isRestoredFromMinimized?: boolean = false;
 
   nuovoCliente: Cliente = {
-    id: '',
+    id: 0,
     descrizione: '',
-    regione: { id: '', descrizione: '', codice: '', coordinate: { x: 0, y: 0 } },
+    regione: { id: 0, descrizione: '', codice: '', x: 0, y: 0 },
     software: []
   };
 
   // Campo per il menu a tendina
-  softwareSelezionatoId: string = '';
+  softwareSelezionatoId: number = 0;
 
   regioniDisponibili: Regione[] = [];
   softwareDisponibili: Software[] = [];
 
   private originalData: Cliente = {
-    id: '',
+    id: 0,
     descrizione: '',
-    regione: { id: '', descrizione: '', codice: '', coordinate: { x: 0, y: 0 } },
+    regione: { id: 0, descrizione: '', codice: '', x: 0, y: 0 },
     software: []
   };
 
@@ -66,9 +66,11 @@ export class ClientiModalComponent implements OnInit {
     // Carica regioni disponibili
     this.regioniService.getAllRegioni().subscribe(regioni => {
       this.regioniDisponibili = regioni;
+      console.log('Regioni disponibili caricate:', this.regioniDisponibili);
       
       // Se siamo in modalità modifica, assicuriamoci che la regione sia settata correttamente
       if (this.cliente) {
+        console.log('Modalità modifica - Cliente ricevuto:', this.cliente);
         // Solo se non abbiamo già dati ripristinati da una modale minimizzata
         if (!this.isRestoredFromMinimized) {
           this.nuovoCliente = {
@@ -84,6 +86,7 @@ export class ClientiModalComponent implements OnInit {
         };
         console.log('Cliente da modificare:', this.cliente);
         console.log('Regione del cliente:', this.cliente.regione);
+        console.log('Software del cliente:', this.nuovoCliente.software);
         console.log('ID regione del cliente:', this.cliente.regione.id);
       }
     });
@@ -91,13 +94,15 @@ export class ClientiModalComponent implements OnInit {
     // Carica software disponibili
     this.softwareService.getAllSoftware().subscribe(software => {
       this.softwareDisponibili = software;
+      console.log('Software disponibili caricati:', this.softwareDisponibili);
     });
 
     if (!this.cliente) {
+      console.log('Modalità aggiunta - Nuovo cliente');
       // Inizializza l'ID solo qui, quando il servizio è disponibile
       // Solo se non abbiamo già dati ripristinati
-      if (!this.isRestoredFromMinimized && this.nuovoCliente.id === '') {
-        this.nuovoCliente.id = (this.getLength() + 1).toString();
+      if (!this.isRestoredFromMinimized && this.nuovoCliente.id === 0) {
+        this.nuovoCliente.id = this.getLength() + 1;
       }
       this.originalData = {
         ...this.nuovoCliente,
@@ -186,38 +191,51 @@ export class ClientiModalComponent implements OnInit {
   }
 
   onRegioneChange(event: any) {
-    const regioneId = event.target.value;
+    const regioneId = Number(event.target.value);
     const regione = this.regioniDisponibili.find(r => r.id === regioneId);
     if (regione) {
       this.nuovoCliente.regione = regione;
     } else {
       // Se non viene trovata la regione, reimposta la regione vuota
-      this.nuovoCliente.regione = { id: '', descrizione: '', codice: '', coordinate: { x: 0, y: 0 } };
+      this.nuovoCliente.regione = { id: 0, descrizione: '', codice: '', x: 0, y: 0 };
     }
     this.onFieldChange();
   }
 
   // Chiamata quando cambia la selezione nel dropdown software
-  onSoftwareSelezionato() {
-    if (this.softwareSelezionatoId) {
-      const softwareSelezionato = this.softwareDisponibili.find(s => s.id === this.softwareSelezionatoId);
-      if (softwareSelezionato && !this.nuovoCliente.software.find(s => s.id === this.softwareSelezionatoId)) {
+  onSoftwareSelezionatoChange(value: string | number) {
+    console.log('Software selezionato value:', value, typeof value);
+    const softwareId = Number(value);
+    console.log('Software ID convertito:', softwareId);
+    
+    if (softwareId && softwareId !== 0) {
+      const softwareSelezionato = this.softwareDisponibili.find(s => s.id === softwareId);
+      console.log('Software trovato:', softwareSelezionato);
+      
+      if (softwareSelezionato && !this.nuovoCliente.software.find(s => s.id === softwareId)) {
         this.nuovoCliente.software.push(softwareSelezionato);
+        console.log('Software dopo aggiunta:', this.nuovoCliente.software);
         this.onFieldChange();
       }
+      
       // Resetta la selezione
-      this.softwareSelezionatoId = '';
+      this.softwareSelezionatoId = 0;
     }
   }
 
+  // Manteniamo il vecchio metodo per compatibilità
+  onSoftwareSelezionato() {
+    this.onSoftwareSelezionatoChange(this.softwareSelezionatoId);
+  }
+
   // Rimuove un software dalla lista
-  rimuoviSoftware(softwareId: string) {
+  rimuoviSoftware(softwareId: number) {
     this.nuovoCliente.software = this.nuovoCliente.software.filter(s => s.id !== softwareId);
     this.onFieldChange();
   }
 
   // Controlla se un software è già stato selezionato
-  isSoftwareGiaSelezionato(softwareId: string): boolean {
+  isSoftwareGiaSelezionato(softwareId: number): boolean {
     return this.nuovoCliente.software.some(s => s.id === softwareId);
   }
 

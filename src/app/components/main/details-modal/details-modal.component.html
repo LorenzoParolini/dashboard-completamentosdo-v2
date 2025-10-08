@@ -57,13 +57,13 @@
             <div class="info-label">Codice Regione</div>
             <div class="info-value">{{ cliente.regione.codice }}</div>
           </div>
-          <div class="info-card" *ngIf="cliente.regione.coordinate">
+          <div class="info-card" *ngIf="cliente.regione.x !== undefined">
             <div class="info-label">Coordinate X</div>
-            <div class="info-value">{{ cliente.regione.coordinate.x | number:'1.6-6' }}</div>
+            <div class="info-value">{{ cliente.regione.x | number:'1.6-6' }}</div>
           </div>
-          <div class="info-card" *ngIf="cliente.regione.coordinate">
+          <div class="info-card" *ngIf="cliente.regione.y !== undefined">
             <div class="info-label">Coordinate Y</div>
-            <div class="info-value">{{ cliente.regione.coordinate.y | number:'1.6-6' }}</div>
+            <div class="info-value">{{ cliente.regione.y | number:'1.6-6' }}</div>
           </div>
         </div>
       </div>

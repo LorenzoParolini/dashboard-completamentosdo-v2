@@ -74,7 +74,7 @@ export class SoftwareComponent implements OnInit, OnDestroy {
     return this.filterUtilsService.shouldShowSoftware(software, this.currentFilters);
   }
 
-  onDeleteSoftware(id_software_da_eliminare: string) {
+  onDeleteSoftware(id_software_da_eliminare: number) {
     const modalRef = this.modalService.open(ConfirmationModalComponent, {
       backdrop: true,
       keyboard: true,
@@ -92,9 +92,20 @@ export class SoftwareComponent implements OnInit, OnDestroy {
     modalRef.result.then(
       (confirmed: boolean) => {
         if (confirmed) {
-          this.softwareService.deleteSoftware(id_software_da_eliminare);
-          this.software = this.software.filter(s => s.id !== id_software_da_eliminare);
-          this.applyFilters(); // Riapplica i filtri dopo l'eliminazione
+          this.softwareService.deleteSoftware(id_software_da_eliminare).subscribe({
+            next: () => {
+              console.log('Software eliminato con successo');
+              // Ricarica la lista aggiornata
+              this.softwareService.getAllSoftware().subscribe((data) => {
+                this.software = data;
+                this.applyFilters();
+              });
+            },
+            error: (error) => {
+              console.error('Errore nell\'eliminazione software:', error);
+              // Gestisci l'errore (es. mostra un messaggio)
+            }
+          });
         }
       },
       () => {
@@ -118,12 +129,38 @@ export class SoftwareComponent implements OnInit, OnDestroy {
     modalRef.result.then(
       (result: SoftwareModel) => {
         if (software) {
-          const idx = this.software.findIndex((s) => s.id === result.id);
-          if (idx !== -1) this.software[idx] = result;
+          // Modifica: converti in InputDTO e passa l'ID
+          const softwareInputDTO = {
+            descrizione: result.descrizione,
+            note: result.note,
+            versioneCorrente: result.versioneCorrente,
+            dataUltimoAggiornamento: result.dataUltimoAggiornamento,
+            ambienteIds: result.ambienti.map(a => a.id)
+          };
+          this.softwareService.updateSoftware(result.id, softwareInputDTO).subscribe(() => {
+            // Ricarica la lista dai software aggiornati
+            this.softwareService.getAllSoftware().subscribe((data) => {
+              this.software = data;
+              this.applyFilters();
+            });
+          });
         } else {
-          this.software.push(result);
+          // Aggiunta: converti in InputDTO e usa il servizio per aggiungere
+          const softwareInputDTO = {
+            descrizione: result.descrizione,
+            note: result.note,
+            versioneCorrente: result.versioneCorrente,
+            dataUltimoAggiornamento: result.dataUltimoAggiornamento,
+            ambienteIds: result.ambienti.map(a => a.id)
+          };
+          this.softwareService.addSoftware(softwareInputDTO).subscribe(() => {
+            // Ricarica la lista dai software aggiornati
+            this.softwareService.getAllSoftware().subscribe((data) => {
+              this.software = data;
+              this.applyFilters();
+            });
+          });
         }
-        this.applyFilters(); // Riapplica i filtri dopo la modifica/aggiunta
       },
       () => {}
     );

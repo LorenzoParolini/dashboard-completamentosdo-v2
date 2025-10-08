@@ -53,8 +53,8 @@
           <div class="detail-section">
             <h5 class="detail-section-title">Regione</h5>
             <p class="detail-text">{{ cliente.regione.descrizione }} ({{ cliente.regione.codice }})</p>
-            <p *ngIf="cliente.regione.coordinate" class="coordinates">
-              Coordinate: {{ cliente.regione.coordinate.x | number:'1.4-4' }}, {{ cliente.regione.coordinate.y | number:'1.4-4' }}
+            <p *ngIf="cliente.regione.x !== undefined && cliente.regione.y !== undefined" class="coordinates">
+              Coordinate: {{ cliente.regione.x | number:'1.4-4' }}, {{ cliente.regione.y | number:'1.4-4' }}
             </p>
           </div>
 

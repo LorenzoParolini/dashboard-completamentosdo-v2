@@ -23,7 +23,6 @@ export class ConfirmationModalComponent {
   @Input() confirmText: string = 'Elimina';
   @Input() cancelText: string = 'Annulla';
   @Input() confirmButtonClass: string = 'btn-danger';
-  @Input() icon: 'warning' | 'info' | 'danger' = 'warning';
 
   constructor(public activeModal: NgbActiveModal) {}
 

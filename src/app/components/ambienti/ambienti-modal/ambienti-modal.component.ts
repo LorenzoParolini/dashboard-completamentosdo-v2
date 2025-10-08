@@ -28,14 +28,14 @@ export class AmbientiModalComponent implements OnInit {
 
   // Non inizializzare qui - fallo in ngOnInit
   nuovoAmbiente: Ambiente = {
-    id: '',
+    id: 0,
     descrizione: '',
     note: '',
     dataCreazione: new Date()
   };
 
   private originalData: Ambiente = {
-    id: '',
+    id: 0,
     descrizione: '',
     note: '',
     dataCreazione: new Date()
@@ -70,8 +70,8 @@ export class AmbientiModalComponent implements OnInit {
     } else {
       // Inizializza l'ID solo qui, quando il servizio è disponibile
       // Solo se non abbiamo già dati ripristinati
-      if (!this.isRestoredFromMinimized && this.nuovoAmbiente.id === '') {
-        this.nuovoAmbiente.id = (this.getLength()+1).toString();
+      if (!this.isRestoredFromMinimized && this.nuovoAmbiente.id === 0) {
+        this.nuovoAmbiente.id = this.getLength() + 1;
       }
       this.originalData = {
         ...this.nuovoAmbiente

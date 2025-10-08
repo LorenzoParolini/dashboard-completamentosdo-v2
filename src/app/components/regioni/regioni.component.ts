@@ -72,7 +72,7 @@ export class RegioniComponent implements OnInit, OnDestroy {
     return this.filterUtilsService.shouldShowRegione(regione, this.currentFilters);
   }
 
-  onDeleteRegione(id_regione_da_eliminare: string) {
+  onDeleteRegione(id_regione_da_eliminare: number) {
     const modalRef = this.modalService.open(ConfirmationModalComponent, {
       backdrop: true,
       keyboard: true,
@@ -90,9 +90,20 @@ export class RegioniComponent implements OnInit, OnDestroy {
     modalRef.result.then(
       (confirmed: boolean) => {
         if (confirmed) {
-          this.regioniService.deleteRegione(id_regione_da_eliminare);
-          this.regioni = this.regioni.filter(r => r.id !== id_regione_da_eliminare);
-          this.applyFilters(); // Riapplica i filtri dopo l'eliminazione
+          this.regioniService.deleteRegione(id_regione_da_eliminare).subscribe({
+            next: () => {
+              console.log('Regione eliminata con successo');
+              // Ricarica la lista aggiornata
+              this.regioniService.getAllRegioni().subscribe((data) => {
+                this.regioni = data;
+                this.applyFilters();
+              });
+            },
+            error: (error) => {
+              console.error('Errore nell\'eliminazione regione:', error);
+              // Gestisci l'errore (es. mostra un messaggio)
+            }
+          });
         }
       },
       () => {
@@ -118,14 +129,36 @@ export class RegioniComponent implements OnInit, OnDestroy {
     modalRef.result.then(
       (result: Regione) => {
         if (regione) {
-          // Modifica: aggiorna la regione nella lista
-          const idx = this.regioni.findIndex((r) => r.id === result.id);
-          if (idx !== -1) this.regioni[idx] = result;
+          // Modifica: converti in InputDTO e passa l'ID
+          const regioneInputDTO = {
+            descrizione: result.descrizione,
+            codice: result.codice,
+            x: result.x,
+            y: result.y
+          };
+          this.regioniService.updateRegione(result.id, regioneInputDTO).subscribe(() => {
+            // Ricarica la lista dalle regioni aggiornate
+            this.regioniService.getAllRegioni().subscribe((data) => {
+              this.regioni = data;
+              this.applyFilters();
+            });
+          });
         } else {
-          // Aggiunta: aggiungi la nuova regione
-          this.regioni.push(result);
+          // Aggiunta: converti in InputDTO e usa il servizio per aggiungere
+          const regioneInputDTO = {
+            descrizione: result.descrizione,
+            codice: result.codice,
+            x: result.x,
+            y: result.y
+          };
+          this.regioniService.addRegione(regioneInputDTO).subscribe(() => {
+            // Ricarica la lista dalle regioni aggiornate
+            this.regioniService.getAllRegioni().subscribe((data) => {
+              this.regioni = data;
+              this.applyFilters();
+            });
+          });
         }
-        this.applyFilters(); // Riapplica i filtri dopo la modifica/aggiunta
       },
       () => {}
     );

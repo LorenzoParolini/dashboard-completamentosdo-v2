@@ -25,7 +25,7 @@ export class SoftwareModalComponent implements OnInit {
   @Input() isRestoredFromMinimized?: boolean = false;
 
   nuovoSoftware: Software = {
-    id: '',
+    id: 0,
     descrizione: '',
     note: '',
     ambienti: [],
@@ -34,13 +34,13 @@ export class SoftwareModalComponent implements OnInit {
   };
 
   // Campo per il menu a tendina
-  ambienteSelezionatoId: string = '';
+  ambienteSelezionatoId: number = 0;
 
   // Mock data per le select
   ambientiDisponibili: Ambiente[] = [];
 
   private originalData: Software = {
-    id: '',
+    id: 0,
     descrizione: '',
     note: '',
     ambienti: [],
@@ -67,9 +67,11 @@ export class SoftwareModalComponent implements OnInit {
     // Carica gli ambienti dal servizio
     this.ambientiService.getAllAmbienti().subscribe(ambienti => {
       this.ambientiDisponibili = ambienti;
+      console.log('Ambienti disponibili caricati:', this.ambientiDisponibili);
     });
 
     if (this.software) {
+      console.log('Modalità modifica - Software ricevuto:', this.software);
       // Solo se non abbiamo già dati ripristinati da una modale minimizzata
       if (!this.isRestoredFromMinimized) {
         this.nuovoSoftware = {
@@ -81,11 +83,13 @@ export class SoftwareModalComponent implements OnInit {
         ...this.software,
         ambienti: [...this.software.ambienti]
       };
+      console.log('Ambienti del software:', this.nuovoSoftware.ambienti);
     } else {
+      console.log('Modalità aggiunta - Nuovo software');
       // Inizializza l'ID solo qui, quando il servizio è disponibile
       // Solo se non abbiamo già dati ripristinati
-      if (!this.isRestoredFromMinimized && this.nuovoSoftware.id === '') {
-        this.nuovoSoftware.id = (this.getLength() + 1).toString();
+      if (!this.isRestoredFromMinimized && this.nuovoSoftware.id === 0) {
+        this.nuovoSoftware.id = this.getLength() + 1;
       }
       this.originalData = {
         ...this.nuovoSoftware,
@@ -174,26 +178,39 @@ export class SoftwareModalComponent implements OnInit {
   }
 
   // Chiamata quando cambia la selezione nel dropdown
-  onAmbienteSelezionato() {
-    if (this.ambienteSelezionatoId) {
-      const ambienteSelezionato = this.ambientiDisponibili.find(a => a.id === this.ambienteSelezionatoId);
-      if (ambienteSelezionato && !this.nuovoSoftware.ambienti.find(a => a.id === this.ambienteSelezionatoId)) {
+  onAmbienteSelezionatoChange(value: string | number) {
+    console.log('Ambiente selezionato value:', value, typeof value);
+    const ambienteId = Number(value);
+    console.log('Ambiente ID convertito:', ambienteId);
+    
+    if (ambienteId && ambienteId !== 0) {
+      const ambienteSelezionato = this.ambientiDisponibili.find(a => a.id === ambienteId);
+      console.log('Ambiente trovato:', ambienteSelezionato);
+      
+      if (ambienteSelezionato && !this.nuovoSoftware.ambienti.find(a => a.id === ambienteId)) {
         this.nuovoSoftware.ambienti.push(ambienteSelezionato);
+        console.log('Ambienti dopo aggiunta:', this.nuovoSoftware.ambienti);
         this.onFieldChange();
       }
+      
       // Resetta la selezione
-      this.ambienteSelezionatoId = '';
+      this.ambienteSelezionatoId = 0;
     }
   }
 
+  // Manteniamo il vecchio metodo per compatibilità
+  onAmbienteSelezionato() {
+    this.onAmbienteSelezionatoChange(this.ambienteSelezionatoId);
+  }
+
   // Rimuove un ambiente dalla lista
-  rimuoviAmbiente(ambienteId: string) {
+  rimuoviAmbiente(ambienteId: number) {
     this.nuovoSoftware.ambienti = this.nuovoSoftware.ambienti.filter(a => a.id !== ambienteId);
     this.onFieldChange();
   }
 
   // Controlla se un ambiente è già stato selezionato
-  isAmbienteGiaSelezionato(ambienteId: string): boolean {
+  isAmbienteGiaSelezionato(ambienteId: number): boolean {
     return this.nuovoSoftware.ambienti.some(a => a.id === ambienteId);
   }
 

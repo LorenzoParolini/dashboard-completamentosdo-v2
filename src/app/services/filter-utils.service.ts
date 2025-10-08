@@ -5,9 +5,9 @@ import { Ambiente } from '../models/ambiente.model';
 import { Cliente } from '../models/cliente.model';
 
 export interface FilterCriteria {
-  regioni: string[];
-  software: string[];
-  ambienti: string[];
+  regioni: number[];
+  software: number[];
+  ambienti: number[];
   codiciRegione: string[];
   coordinate: { x: number, y: number }[];
   versione: string;
@@ -64,9 +64,9 @@ export class FilterUtilsService {
     }
 
     // Filtro per coordinate
-    if (filters.coordinate && filters.coordinate.length > 0 && regione.coordinate) {
+    if (filters.coordinate && filters.coordinate.length > 0) {
       const hasMatchingCoordinate = filters.coordinate.some(filterCoord => 
-        regione.coordinate?.x === filterCoord.x && regione.coordinate?.y === filterCoord.y
+        regione.x === filterCoord.x && regione.y === filterCoord.y
       );
       if (!hasMatchingCoordinate) {
         return false;

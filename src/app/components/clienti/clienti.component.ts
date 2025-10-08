@@ -74,7 +74,7 @@ export class ClientiComponent implements OnInit, OnDestroy {
     return this.filterUtilsService.shouldShowCliente(cliente, this.currentFilters);
   }
 
-  onDeleteCliente(id_cliente_da_eliminare: string) {
+  onDeleteCliente(id_cliente_da_eliminare: number) {
     const modalRef = this.modalService.open(ConfirmationModalComponent, {
       backdrop: true,
       keyboard: true,
@@ -92,9 +92,20 @@ export class ClientiComponent implements OnInit, OnDestroy {
     modalRef.result.then(
       (confirmed: boolean) => {
         if (confirmed) {
-          this.clientiService.deleteCliente(id_cliente_da_eliminare);
-          this.clienti = this.clienti.filter(c => c.id !== id_cliente_da_eliminare);
-          this.applyFilters(); // Riapplica i filtri dopo l'eliminazione
+          this.clientiService.deleteCliente(id_cliente_da_eliminare).subscribe({
+            next: () => {
+              console.log('Cliente eliminato con successo');
+              // Ricarica la lista aggiornata
+              this.clientiService.getAllClienti().subscribe((data) => {
+                this.clienti = data;
+                this.applyFilters();
+              });
+            },
+            error: (error) => {
+              console.error('Errore nell\'eliminazione cliente:', error);
+              // Gestisci l'errore (es. mostra un messaggio)
+            }
+          });
         }
       },
       () => {
@@ -118,12 +129,34 @@ export class ClientiComponent implements OnInit, OnDestroy {
     modalRef.result.then(
       (result: Cliente) => {
         if (cliente) {
-          const idx = this.clienti.findIndex((c) => c.id === result.id);
-          if (idx !== -1) this.clienti[idx] = result;
+          // Modifica: converti in InputDTO e passa l'ID
+          const clienteInputDTO = {
+            descrizione: result.descrizione,
+            regioneId: result.regione.id,
+            softwareIds: result.software.map(s => s.id)
+          };
+          this.clientiService.updateCliente(result.id, clienteInputDTO).subscribe(() => {
+            // Ricarica la lista dai clienti aggiornati
+            this.clientiService.getAllClienti().subscribe((data) => {
+              this.clienti = data;
+              this.applyFilters();
+            });
+          });
         } else {
-          this.clienti.push(result);
+          // Aggiunta: converti in InputDTO e usa il servizio per aggiungere
+          const clienteInputDTO = {
+            descrizione: result.descrizione,
+            regioneId: result.regione.id,
+            softwareIds: result.software.map(s => s.id)
+          };
+          this.clientiService.addCliente(clienteInputDTO).subscribe(() => {
+            // Ricarica la lista dai clienti aggiornati
+            this.clientiService.getAllClienti().subscribe((data) => {
+              this.clienti = data;
+              this.applyFilters();
+            });
+          });
         }
-        this.applyFilters(); // Riapplica i filtri dopo la modifica/aggiunta
       },
       () => {}
     );

@@ -51,14 +51,14 @@
 
             <div class="form-field form-field-full">
               <label class="form-label">Regione</label>
-              <select 
+              <select
                 [(ngModel)]="nuovoCliente.regione.id"
                 (change)="onRegioneChange($event)"
                 name="regione"
                 class="form-select"
                 required
               >
-                <option value="" *ngIf="!cliente">Seleziona una regione</option>
+                <option [value]="0" *ngIf="!cliente">Seleziona una regione</option>
                 <option *ngFor="let regione of regioniDisponibili" [value]="regione.id">
                   {{ regione.descrizione }}
                 </option>
@@ -82,12 +82,12 @@
             <div class="form-field">
               <label class="form-label">Aggiungi Software</label>
               <select
-                [(ngModel)]="softwareSelezionatoId"
+                [ngModel]="softwareSelezionatoId"
+                (ngModelChange)="onSoftwareSelezionatoChange($event)"
                 name="softwareSelezionato"
                 class="form-select"
-                (change)="onSoftwareSelezionato()"
               >
-                <option value="">Seleziona un software da aggiungere</option>
+                <option [value]="0">Seleziona un software da aggiungere</option>
                 <option 
                   *ngFor="let software of softwareDisponibili" 
                   [value]="software.id"

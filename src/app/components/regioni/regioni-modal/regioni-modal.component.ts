@@ -24,17 +24,19 @@ export class RegioniModalComponent implements OnInit {
   @Input() isRestoredFromMinimized?: boolean = false;
 
   nuovaRegione: Regione = {
-    id: '',
+    id: 0,
     descrizione: '',
     codice: '',
-    coordinate: { x: 0, y: 0 }
+    x: 0,
+    y: 0
   };
 
   private originalData: Regione = {
-    id: '',
+    id: 0,
     descrizione: '',
     codice: '',
-    coordinate: { x: 0, y: 0 }
+    x: 0,
+    y: 0
   };
 
   private hasUnsavedChanges = false;
@@ -57,36 +59,27 @@ export class RegioniModalComponent implements OnInit {
       if (!this.isRestoredFromMinimized) {
         this.nuovaRegione = {
           ...this.regione,
-          coordinate: {
-            x: this.regione.coordinate?.x ?? 0,
-            y: this.regione.coordinate?.y ?? 0
-          }
+          x: this.regione.x ?? 0,
+          y: this.regione.y ?? 0
         };
       }
       this.originalData = {
         ...this.regione,
-        coordinate: {
-          x: this.regione.coordinate?.x ?? 0,
-          y: this.regione.coordinate?.y ?? 0
-        }
+        x: this.regione.x ?? 0,
+        y: this.regione.y ?? 0
       };
     } else {
       // Inizializza l'ID solo qui, quando il servizio è disponibile
       // Solo se non abbiamo già dati ripristinati
-      if (!this.isRestoredFromMinimized && this.nuovaRegione.id === '') {
-        this.nuovaRegione.id = (this.getLength() + 1).toString();
+      if (!this.isRestoredFromMinimized && this.nuovaRegione.id === 0) {
+        this.nuovaRegione.id = this.getLength() + 1;
       }
     }
-    
-    if (!this.nuovaRegione.coordinate) {
-      this.nuovaRegione.coordinate = { x: 0, y: 0 };
-    }
 
-    // Imposta originalData dopo aver assicurato che coordinate sia definito
+    // Imposta originalData dopo aver inizializzato nuovaRegione
     if (!this.originalData.id) {
       this.originalData = {
-        ...this.nuovaRegione,
-        coordinate: { x: this.nuovaRegione.coordinate.x, y: this.nuovaRegione.coordinate.y }
+        ...this.nuovaRegione
       };
     }
   }
@@ -99,8 +92,8 @@ export class RegioniModalComponent implements OnInit {
     return (
       this.nuovaRegione.descrizione !== this.originalData.descrizione ||
       this.nuovaRegione.codice !== this.originalData.codice ||
-      (this.nuovaRegione.coordinate?.x ?? 0) !== (this.originalData.coordinate?.x ?? 0) ||
-      (this.nuovaRegione.coordinate?.y ?? 0) !== (this.originalData.coordinate?.y ?? 0)
+      (this.nuovaRegione.x ?? 0) !== (this.originalData.x ?? 0) ||
+      (this.nuovaRegione.y ?? 0) !== (this.originalData.y ?? 0)
     );
   }
 
@@ -112,10 +105,6 @@ export class RegioniModalComponent implements OnInit {
   }
 
   salva() {
-    // Assicuriamoci che coordinate sia sempre definito prima del salvataggio
-    if (!this.nuovaRegione.coordinate) {
-      this.nuovaRegione.coordinate = { x: 0, y: 0 };
-    }
     this.hasUnsavedChanges = false;
     this.activeModal.close(this.nuovaRegione);
     console.log('Modale chiusa con salvataggio');

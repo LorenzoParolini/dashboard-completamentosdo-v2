@@ -102,12 +102,12 @@
             <div class="form-field">
               <label class="form-label">Aggiungi Ambiente</label>
               <select
-                [(ngModel)]="ambienteSelezionatoId"
+                [ngModel]="ambienteSelezionatoId"
+                (ngModelChange)="onAmbienteSelezionatoChange($event)"
                 name="ambienteSelezionato"
                 class="form-select"
-                (change)="onAmbienteSelezionato()"
               >
-                <option value="">Seleziona un ambiente da aggiungere</option>
+                <option [value]="0">Seleziona un ambiente da aggiungere</option>
                 <option 
                   *ngFor="let ambiente of ambientiDisponibili" 
                   [value]="ambiente.id"

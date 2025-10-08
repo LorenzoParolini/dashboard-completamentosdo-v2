@@ -35,7 +35,7 @@
           <table class="data-table">
             <thead class="table-header">
               <tr>
-                <th class="table-th"></th>
+                <th class="table-th">#</th>
                 <th class="table-th">Descrizione</th>
                 <th class="table-th">Note</th>
                 <th class="table-th">Versione</th>
@@ -45,8 +45,8 @@
               </tr>
             </thead>
             <tbody class="table-body">
-              <tr class="table-row" *ngFor="let sw of filteredSoftware">
-                <td class="table-td id-column">{{ sw.id }}</td>
+              <tr class="table-row" *ngFor="let sw of filteredSoftware; let i = index">
+                <td class="table-td id-column">{{ i + 1 }}</td>
                 <td class="table-td">{{ sw.descrizione }}</td>
                 <td class="table-td">
                   <span class="note-text" *ngIf="sw.note; else noNote">{{ sw.note }}</span>

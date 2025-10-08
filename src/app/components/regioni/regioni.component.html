@@ -34,7 +34,7 @@
           <table class="data-table">
             <thead class="table-header">
               <tr>
-                <th class="table-th"></th>
+                <th class="table-th">#</th>
                 <th class="table-th">Descrizione</th>
                 <th class="table-th">Codice</th>
                 <th class="table-th">Coordinate</th>
@@ -42,19 +42,19 @@
               </tr>
             </thead>
             <tbody class="table-body">
-              <tr class="table-row" *ngFor="let regione of filteredRegioni">
-                <td class="table-td id-column">{{ regione.id }}</td>
+              <tr class="table-row" *ngFor="let regione of filteredRegioni; let i = index">
+                <td class="table-td id-column">{{ i + 1 }}</td>
                 <td class="table-td">{{ regione.descrizione }}</td>
                 <td class="table-td">
                   <span class="code-badge">{{ regione.codice }}</span>
                 </td>
                 <td class="table-td">
-                  <div class="coordinates" *ngIf="regione.coordinate">
-                    <span class="coordinate-value">{{ regione.coordinate.x | number:'1.2-2' }}</span>
+                  <div class="coordinates" *ngIf="regione.x !== undefined && regione.y !== undefined">
+                    <span class="coordinate-value">{{ regione.x | number:'1.2-2' }}</span>
                     <span class="coordinate-separator">,</span>
-                    <span class="coordinate-value">{{ regione.coordinate.y | number:'1.2-2' }}</span>
+                    <span class="coordinate-value">{{ regione.y | number:'1.2-2' }}</span>
                   </div>
-                  <span class="no-data" *ngIf="!regione.coordinate">N/A</span>
+                  <span class="no-data" *ngIf="regione.x === undefined || regione.y === undefined">N/A</span>
                 </td>
                 <td class="table-td actions-column">
                   <div class="action-buttons">

@@ -74,7 +74,10 @@ export class AmbientiComponent implements OnInit, OnDestroy {
     return this.filterUtilsService.shouldShowAmbiente(ambiente, this.currentFilters);
   }
 
-  onDeleteAmbiente(id_ambiente_da_eliminare: string) {
+  onDeleteAmbiente(id_ambiente_da_eliminare: number) {
+    console.log('🔍 ID DA ELIMINARE:', id_ambiente_da_eliminare); // ← AGGIUNGI QUESTO
+    console.log('🔍 TIPO DI ID:', typeof id_ambiente_da_eliminare); // ← AGGIUNGI QUESTO
+    
     const modalRef = this.modalService.open(ConfirmationModalComponent, {
       backdrop: true,
       keyboard: true,
@@ -92,9 +95,20 @@ export class AmbientiComponent implements OnInit, OnDestroy {
     modalRef.result.then(
       (confirmed: boolean) => {
         if (confirmed) {
-          this.ambientiService.deleteAmbiente(id_ambiente_da_eliminare);
-          this.ambienti = this.ambienti.filter(a => a.id !== id_ambiente_da_eliminare);
-          this.applyFilters(); // Riapplica i filtri dopo l'eliminazione
+          this.ambientiService.deleteAmbiente(id_ambiente_da_eliminare).subscribe({
+            next: () => {
+              console.log('Ambiente eliminato con successo');
+              // Ricarica la lista aggiornata
+              this.ambientiService.getAllAmbienti().subscribe((data) => {
+                this.ambienti = data;
+                this.applyFilters();
+              });
+            },
+            error: (error) => {
+              console.error('Errore nell\'eliminazione ambiente:', error);
+              // Gestisci l'errore (es. mostra un messaggio)
+            }
+          });
         }
       },
       () => {
@@ -118,12 +132,34 @@ export class AmbientiComponent implements OnInit, OnDestroy {
     modalRef.result.then(
       (result: Ambiente) => {
         if (ambiente) {
-          const idx = this.ambienti.findIndex((a) => a.id === result.id);
-          if (idx !== -1) this.ambienti[idx] = result;
+          // Modifica: converti in InputDTO e passa l'ID
+          const ambienteInputDTO = {
+            descrizione: result.descrizione,
+            note: result.note,
+            dataCreazione: result.dataCreazione
+          };
+          this.ambientiService.updateAmbiente(result.id, ambienteInputDTO).subscribe(() => {
+            // Ricarica la lista dagli ambienti aggiornati
+            this.ambientiService.getAllAmbienti().subscribe((data) => {
+              this.ambienti = data;
+              this.applyFilters();
+            });
+          });
         } else {
-          this.ambienti.push(result);
+          // Aggiunta: converti in InputDTO e usa il servizio per aggiungere
+          const ambienteInputDTO = {
+            descrizione: result.descrizione,
+            note: result.note,
+            dataCreazione: result.dataCreazione
+          };
+          this.ambientiService.addAmbiente(ambienteInputDTO).subscribe(() => {
+            // Ricarica la lista dagli ambienti aggiornati
+            this.ambientiService.getAllAmbienti().subscribe((data) => {
+              this.ambienti = data;
+              this.applyFilters();
+            });
+          });
         }
-        this.applyFilters(); // Riapplica i filtri dopo la modifica/aggiunta
       },
       () => {}
     );
