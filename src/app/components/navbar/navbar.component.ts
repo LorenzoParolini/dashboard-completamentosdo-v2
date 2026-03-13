@@ -1,6 +1,11 @@
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
-import { Subscription } from 'rxjs';
+import {
+  RouterLink,
+  RouterLinkActive,
+  Router,
+  NavigationEnd,
+} from '@angular/router';
+import { Subscription, filter } from 'rxjs';
 import { SearchbarComponent } from './searchbar/searchbar.component';
 import { FilterOffcanvasComponent } from './filter-offcanvas/filter-offcanvas.component';
 import { FilterService } from '../../services/filter.service';
@@ -11,9 +16,15 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, SearchbarComponent, FilterOffcanvasComponent, CommonModule],
+  imports: [
+    RouterLink,
+    RouterLinkActive,
+    SearchbarComponent,
+    FilterOffcanvasComponent,
+    CommonModule,
+  ],
   templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.css']
+  styleUrls: ['./navbar.component.css'],
 })
 export class NavbarComponent implements OnInit, OnDestroy {
   isFilterOffcanvasOpen = false;
@@ -22,27 +33,69 @@ export class NavbarComponent implements OnInit, OnDestroy {
   isDarkTheme = false;
   private filterSubscription: Subscription = new Subscription();
   private themeSubscription: Subscription = new Subscription();
+  private routeSubscription: Subscription = new Subscription();
 
   constructor(
     private filterService: FilterService,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private router: Router,
   ) {}
 
   ngOnInit() {
+    this.currentView = this.getViewFromUrl(this.router.url);
+
     // Subscribe ai cambiamenti dei filtri per contare quelli attivi
-    this.filterSubscription = this.filterService.filters$.subscribe(filters => {
-      this.activeFiltersCount = this.countActiveFilters(filters);
-    });
+    this.filterSubscription = this.filterService.filters$.subscribe(
+      (filters) => {
+        this.activeFiltersCount = this.countActiveFilters(filters);
+      },
+    );
 
     // Subscribe ai cambiamenti del tema
-    this.themeSubscription = this.themeService.darkTheme$.subscribe(isDark => {
-      this.isDarkTheme = isDark;
-    });
+    this.themeSubscription = this.themeService.darkTheme$.subscribe(
+      (isDark) => {
+        this.isDarkTheme = isDark;
+      },
+    );
+
+    // Reset automatico dei filtri quando cambia pagina (anche con back/forward)
+    this.routeSubscription = this.router.events
+      .pipe(
+        filter(
+          (event): event is NavigationEnd => event instanceof NavigationEnd,
+        ),
+      )
+      .subscribe((event) => {
+        const nextView = this.getViewFromUrl(event.urlAfterRedirects);
+        this.switchView(nextView);
+      });
   }
 
   ngOnDestroy() {
     this.filterSubscription.unsubscribe();
     this.themeSubscription.unsubscribe();
+    this.routeSubscription.unsubscribe();
+  }
+
+  private getViewFromUrl(url: string): 'D' | 'R' | 'C' | 'S' | 'A' {
+    const normalizedUrl = url.split('?')[0].split('#')[0];
+
+    if (normalizedUrl.startsWith('/regione')) return 'R';
+    if (normalizedUrl.startsWith('/cliente')) return 'C';
+    if (normalizedUrl.startsWith('/software')) return 'S';
+    if (normalizedUrl.startsWith('/ambiente')) return 'A';
+
+    return 'D';
+  }
+
+  private switchView(view: 'D' | 'R' | 'C' | 'S' | 'A') {
+    if (this.currentView === view) {
+      return;
+    }
+
+    this.currentView = view;
+    this.filterService.clearFilters();
+    this.isFilterOffcanvasOpen = false;
   }
 
   /**
@@ -50,16 +103,17 @@ export class NavbarComponent implements OnInit, OnDestroy {
    */
   private countActiveFilters(filters: FilterCriteria): number {
     let count = 0;
-    
+
     if (filters.regioni && filters.regioni.length > 0) count++;
     if (filters.software && filters.software.length > 0) count++;
     if (filters.ambienti && filters.ambienti.length > 0) count++;
     if (filters.codiciRegione && filters.codiciRegione.length > 0) count++;
     if (filters.coordinate && filters.coordinate.length > 0) count++;
     if (filters.versione && filters.versione.trim() !== '') count++;
-    if (filters.dataAggiornamento && filters.dataAggiornamento.length > 0) count++;
+    if (filters.dataAggiornamento && filters.dataAggiornamento.length > 0)
+      count++;
     if (filters.dataCreazione && filters.dataCreazione.length > 0) count++;
-    
+
     return count;
   }
 
@@ -77,45 +131,45 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   onFiltersApplied(filters: {
-    regioni: number[], 
-    software: number[], 
-    ambienti: number[],
-    codiciRegione: string[],
-    coordinate: { x: number, y: number }[],
-    versione: string,
-    dataAggiornamento: { inizio: Date, fine: Date }[],
-    dataCreazione: { inizio: Date, fine: Date }[]
+    regioni: number[];
+    software: number[];
+    ambienti: number[];
+    codiciRegione: string[];
+    coordinate: { x: number; y: number }[];
+    versione: string;
+    dataAggiornamento: { inizio: Date; fine: Date }[];
+    dataCreazione: { inizio: Date; fine: Date }[];
   }) {
     console.log('Filtri applicati:', filters);
-    
+
     // Preserve the current search query when updating other filters
     const currentFilters = this.filterService.getCurrentFilters();
-    
+
     this.filterService.updateFilters({
       ...filters,
-      searchQuery: currentFilters.searchQuery
+      searchQuery: currentFilters.searchQuery,
     });
     this.isFilterOffcanvasOpen = false;
   }
 
   onClickDashboard() {
-    this.currentView = 'D';
+    this.switchView('D');
   }
 
   onClickRegione() {
-    this.currentView = 'R';
+    this.switchView('R');
   }
 
   onClickCliente() {
-    this.currentView = 'C';
+    this.switchView('C');
   }
 
   onClickSoftware() {
-    this.currentView = 'S';
+    this.switchView('S');
   }
 
   onClickAmbiente() {
-    this.currentView = 'A';
+    this.switchView('A');
   }
 
   /**

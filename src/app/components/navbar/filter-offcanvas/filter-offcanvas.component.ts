@@ -1,4 +1,12 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  OnInit,
+  OnChanges,
+  SimpleChanges,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RegioniService } from '../../../services/regioni.service';
@@ -8,27 +16,25 @@ import { Regione } from '../../../models/regione.model';
 import { Software } from '../../../models/software.model';
 import { Ambiente } from '../../../models/ambiente.model';
 
-
-
 @Component({
   selector: 'app-filter-offcanvas',
   imports: [CommonModule, FormsModule],
   templateUrl: './filter-offcanvas.component.html',
   styleUrl: './filter-offcanvas.component.css',
 })
-export class FilterOffcanvasComponent implements OnInit { 
+export class FilterOffcanvasComponent implements OnInit, OnChanges {
   @Input() isOpen: boolean = false;
   @Input() currentView: 'D' | 'R' | 'C' | 'S' | 'A' = 'D';
   @Output() onClose = new EventEmitter<void>();
   @Output() onFiltersApplied = new EventEmitter<{
-    regioni: number[], 
-    software: number[], 
-    ambienti: number[],
-    codiciRegione: string[],
-    coordinate: { x: number, y: number }[],
-    versione: string,
-    dataAggiornamento: { inizio: Date, fine: Date }[],
-    dataCreazione: { inizio: Date, fine: Date }[]
+    regioni: number[];
+    software: number[];
+    ambienti: number[];
+    codiciRegione: string[];
+    coordinate: { x: number; y: number }[];
+    versione: string;
+    dataAggiornamento: { inizio: Date; fine: Date }[];
+    dataCreazione: { inizio: Date; fine: Date }[];
   }>();
 
   isSelectedRegione: boolean = false;
@@ -49,10 +55,10 @@ export class FilterOffcanvasComponent implements OnInit {
   selectedSoftware: number[] = [];
   selectedAmbienti: number[] = [];
   selectedCodiciRegione: string[] = [];
-  selectedCoordinate: { x: number, y: number }[] = [];
+  selectedCoordinate: { x: number; y: number }[] = [];
   selectedVersione: string = '';
-  selectedDataAggiornamento: { inizio: Date, fine: Date }[] = [];
-  selectedDataCreazione: { inizio: Date, fine: Date }[] = [];
+  selectedDataAggiornamento: { inizio: Date; fine: Date }[] = [];
+  selectedDataCreazione: { inizio: Date; fine: Date }[] = [];
 
   // Temporary variables for input
   newCoordinateX: number | null = null;
@@ -62,19 +68,19 @@ export class FilterOffcanvasComponent implements OnInit {
   newDataCreazioneInizio: string = '';
   newDataCreazioneFine: string = '';
 
-//importa service di regioni, software e ambienti
+  //importa service di regioni, software e ambienti
   constructor(
     private regioniService: RegioniService,
     private softwareService: SoftwareService,
-    private ambientiService: AmbientiService
-  ) { }
+    private ambientiService: AmbientiService,
+  ) {}
 
   //subscribe per ottenere i dati di regioni, software e ambienti
   ngOnInit() {
     this.regioniService.getAllRegioni().subscribe((data: Regione[]) => {
       this.regioni = data;
       // Populate codiciRegione from regioni
-      this.codiciRegione = [...new Set(data.map(regione => regione.codice))];
+      this.codiciRegione = [...new Set(data.map((regione) => regione.codice))];
     });
     this.softwareService.getAllSoftware().subscribe((data: Software[]) => {
       this.software = data;
@@ -84,10 +90,15 @@ export class FilterOffcanvasComponent implements OnInit {
     });
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['currentView'] && !changes['currentView'].firstChange) {
+      this.resetLocalFilters();
+    }
+  }
+
   closeOffcanvas() {
     this.onClose.emit();
   }
-
 
   onFilterRegioneClick() {
     this.isSelectedRegione = !this.isSelectedRegione;
@@ -179,7 +190,7 @@ export class FilterOffcanvasComponent implements OnInit {
     if (this.newCoordinateX !== null && this.newCoordinateY !== null) {
       this.selectedCoordinate.push({
         x: this.newCoordinateX,
-        y: this.newCoordinateY
+        y: this.newCoordinateY,
       });
       this.newCoordinateX = null;
       this.newCoordinateY = null;
@@ -195,21 +206,22 @@ export class FilterOffcanvasComponent implements OnInit {
     if (this.newDataAggiornamentoInizio && this.newDataAggiornamentoFine) {
       const dataInizio = new Date(this.newDataAggiornamentoInizio);
       const dataFine = new Date(this.newDataAggiornamentoFine);
-      
+
       // Verifica che la data inizio sia precedente o uguale alla data fine
       if (dataInizio <= dataFine) {
         const range = { inizio: dataInizio, fine: dataFine };
-        
+
         // Verifica che non ci sia già lo stesso intervallo
-        const exists = this.selectedDataAggiornamento.some(r => 
-          r.inizio.getTime() === range.inizio.getTime() && 
-          r.fine.getTime() === range.fine.getTime()
+        const exists = this.selectedDataAggiornamento.some(
+          (r) =>
+            r.inizio.getTime() === range.inizio.getTime() &&
+            r.fine.getTime() === range.fine.getTime(),
         );
-        
+
         if (!exists) {
           this.selectedDataAggiornamento.push(range);
         }
-        
+
         this.newDataAggiornamentoInizio = '';
         this.newDataAggiornamentoFine = '';
       }
@@ -224,21 +236,22 @@ export class FilterOffcanvasComponent implements OnInit {
     if (this.newDataCreazioneInizio && this.newDataCreazioneFine) {
       const dataInizio = new Date(this.newDataCreazioneInizio);
       const dataFine = new Date(this.newDataCreazioneFine);
-      
+
       // Verifica che la data inizio sia precedente o uguale alla data fine
       if (dataInizio <= dataFine) {
         const range = { inizio: dataInizio, fine: dataFine };
-        
+
         // Verifica che non ci sia già lo stesso intervallo
-        const exists = this.selectedDataCreazione.some(r => 
-          r.inizio.getTime() === range.inizio.getTime() && 
-          r.fine.getTime() === range.fine.getTime()
+        const exists = this.selectedDataCreazione.some(
+          (r) =>
+            r.inizio.getTime() === range.inizio.getTime() &&
+            r.fine.getTime() === range.fine.getTime(),
         );
-        
+
         if (!exists) {
           this.selectedDataCreazione.push(range);
         }
-        
+
         this.newDataCreazioneInizio = '';
         this.newDataCreazioneFine = '';
       }
@@ -250,6 +263,11 @@ export class FilterOffcanvasComponent implements OnInit {
   }
 
   resetFilters() {
+    this.resetLocalFilters();
+    this.applyFilters();
+  }
+
+  private resetLocalFilters() {
     this.selectedRegioni = [];
     this.selectedSoftware = [];
     this.selectedAmbienti = [];
@@ -272,7 +290,6 @@ export class FilterOffcanvasComponent implements OnInit {
     this.newDataAggiornamentoFine = '';
     this.newDataCreazioneInizio = '';
     this.newDataCreazioneFine = '';
-    this.applyFilters();
   }
 
   applyFilters() {
@@ -284,12 +301,9 @@ export class FilterOffcanvasComponent implements OnInit {
       coordinate: this.selectedCoordinate,
       versione: this.selectedVersione,
       dataAggiornamento: this.selectedDataAggiornamento,
-      dataCreazione: this.selectedDataCreazione
+      dataCreazione: this.selectedDataCreazione,
     };
     this.onFiltersApplied.emit(filters);
     this.closeOffcanvas();
   }
-
-
-  
 }
