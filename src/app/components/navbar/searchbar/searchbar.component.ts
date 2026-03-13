@@ -11,6 +11,7 @@ import { FilterService } from '../../../services/filter.service';
 })
 export class SearchbarComponent implements OnChanges {
   @Input() currentView: string = 'D';
+  @Input() resetVersion: number = 0;
   searchQuery: string = '';
 
   constructor(private filterService: FilterService) {}
@@ -20,6 +21,10 @@ export class SearchbarComponent implements OnChanges {
     if (changes['currentView'] && !changes['currentView'].firstChange) {
       this.searchQuery = '';
       this.filterService.updateSearchQuery('');
+    }
+
+    if (changes['resetVersion'] && !changes['resetVersion'].firstChange) {
+      this.searchQuery = '';
     }
   }
 

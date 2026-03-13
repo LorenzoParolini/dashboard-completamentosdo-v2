@@ -31,9 +31,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
   currentView: 'D' | 'R' | 'C' | 'S' | 'A' = 'D';
   activeFiltersCount = 0;
   isDarkTheme = false;
+  filterResetVersion = 0;
   private filterSubscription: Subscription = new Subscription();
   private themeSubscription: Subscription = new Subscription();
   private routeSubscription: Subscription = new Subscription();
+  private currentRoutePath = '';
 
   constructor(
     private filterService: FilterService,
@@ -42,7 +44,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.currentView = this.getViewFromUrl(this.router.url);
+    const initialRoutePath = this.normalizeUrl(this.router.url);
+    this.currentRoutePath = initialRoutePath;
+    this.currentView = this.getViewFromUrl(initialRoutePath);
 
     // Subscribe ai cambiamenti dei filtri per contare quelli attivi
     this.filterSubscription = this.filterService.filters$.subscribe(
@@ -66,8 +70,15 @@ export class NavbarComponent implements OnInit, OnDestroy {
         ),
       )
       .subscribe((event) => {
-        const nextView = this.getViewFromUrl(event.urlAfterRedirects);
-        this.switchView(nextView);
+        const nextRoutePath = this.normalizeUrl(event.urlAfterRedirects);
+        const nextView = this.getViewFromUrl(nextRoutePath);
+
+        this.currentView = nextView;
+
+        if (nextRoutePath !== this.currentRoutePath) {
+          this.resetFiltersOnNavigation();
+          this.currentRoutePath = nextRoutePath;
+        }
       });
   }
 
@@ -78,7 +89,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   private getViewFromUrl(url: string): 'D' | 'R' | 'C' | 'S' | 'A' {
-    const normalizedUrl = url.split('?')[0].split('#')[0];
+    const normalizedUrl = this.normalizeUrl(url);
 
     if (normalizedUrl.startsWith('/regione')) return 'R';
     if (normalizedUrl.startsWith('/cliente')) return 'C';
@@ -88,14 +99,22 @@ export class NavbarComponent implements OnInit, OnDestroy {
     return 'D';
   }
 
-  private switchView(view: 'D' | 'R' | 'C' | 'S' | 'A') {
-    if (this.currentView === view) {
-      return;
-    }
+  private normalizeUrl(url: string): string {
+    return url.split('?')[0].split('#')[0];
+  }
 
-    this.currentView = view;
+  private resetFiltersOnNavigation() {
     this.filterService.clearFilters();
     this.isFilterOffcanvasOpen = false;
+    this.filterResetVersion++;
+  }
+
+  private switchView(view: 'D' | 'R' | 'C' | 'S' | 'A') {
+    if (this.currentView !== view) {
+      this.currentView = view;
+    }
+
+    this.resetFiltersOnNavigation();
   }
 
   /**

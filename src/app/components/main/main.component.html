@@ -1,18 +1,25 @@
 <div class="homepage-container">
   <div class="homepage-header">
     <h1 class="homepage-title">Dashboard</h1>
-    <p class="homepage-subtitle">Passa il mouse sui clienti per vedere i dettagli, clicca per aprire la vista completa</p>
+    <p class="homepage-subtitle">
+      Passa il mouse sui clienti per vedere i dettagli, clicca per aprire la
+      vista completa
+    </p>
   </div>
 
   <app-loading-spinner *ngIf="loading"></app-loading-spinner>
-  <app-server-error 
-    *ngIf="!loading && hasError" 
+  <app-server-error
+    *ngIf="!loading && hasError"
     [errorMessage]="errorMessage"
-    (retry)="retryLoadClienti()">
+    (retry)="retryLoadClienti()"
+  >
   </app-server-error>
-  <div class="clienti-grid" *ngIf="!loading && !hasError && filteredClienti.length > 0; else noClienti">
-    <div 
-      class="cliente-card" 
+  <div
+    class="clienti-grid"
+    *ngIf="!loading && !hasError && filteredClienti.length > 0; else noClienti"
+  >
+    <div
+      class="cliente-card"
       *ngFor="let cliente of filteredClienti"
       (mouseenter)="showDetails(cliente)"
       (mouseleave)="selectedCliente = null"
@@ -22,30 +29,46 @@
       <div class="card-content">
         <div class="card-header">
           <h3 class="card-title">{{ cliente.descrizione }}</h3>
-          <span class="regione-badge">{{ cliente.regione.descrizione }}</span>
+          <span class="regione-badge">{{
+            $any(cliente.regione)?.descrizione || "Regione non disponibile"
+          }}</span>
         </div>
-        
+
         <div class="card-body">
           <div class="regione-info">
-            <span class="regione-code">{{ cliente.regione.codice }}</span>
+            <span class="regione-code">{{
+              $any(cliente.regione)?.codice || "N/D"
+            }}</span>
           </div>
-          
-          <div class="software-count" *ngIf="cliente.software.length > 0">
+
+          <div
+            class="software-count"
+            *ngIf="($any(cliente.software)?.length || 0) > 0"
+          >
             <span class="software-label">Software:</span>
-            <span class="software-number">{{ cliente.software.length }}</span>
+            <span class="software-number">{{
+              $any(cliente.software)?.length || 0
+            }}</span>
           </div>
         </div>
       </div>
 
       <!-- Click indicator -->
       <div class="click-indicator">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M9 18l6-6-6-6"/>
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="M9 18l6-6-6-6" />
         </svg>
       </div>
 
       <!-- Detailed Information Overlay -->
-      <div 
+      <div
         class="details-card"
         [class.visible]="selectedCliente?.id === cliente.id"
       >
@@ -53,30 +76,64 @@
           <h4 class="details-title">{{ cliente.descrizione }}</h4>
           <span class="click-hint">Clicca per dettagli completi</span>
         </div>
-        
+
         <div class="details-content">
           <div class="detail-section">
             <h5 class="detail-section-title">Regione</h5>
-            <p class="detail-text">{{ cliente.regione.descrizione }} ({{ cliente.regione.codice }})</p>
-            <p *ngIf="cliente.regione.x !== undefined && cliente.regione.y !== undefined" class="coordinates">
-              Coordinate: {{ cliente.regione.x | number:'1.4-4' }}, {{ cliente.regione.y | number:'1.4-4' }}
+            <p class="detail-text">
+              {{
+                $any(cliente.regione)?.descrizione || "Regione non disponibile"
+              }}
+              ({{ $any(cliente.regione)?.codice || "N/D" }})
+            </p>
+            <p
+              *ngIf="
+                $any(cliente.regione)?.x !== undefined &&
+                $any(cliente.regione)?.x !== null &&
+                $any(cliente.regione)?.y !== undefined &&
+                $any(cliente.regione)?.y !== null
+              "
+              class="coordinates"
+            >
+              Coordinate: {{ $any(cliente.regione)?.x | number: "1.4-4" }},
+              {{ $any(cliente.regione)?.y | number: "1.4-4" }}
             </p>
           </div>
 
-          <div class="detail-section" *ngIf="cliente.software.length > 0">
-            <h5 class="detail-section-title">Software ({{ cliente.software.length }})</h5>
+          <div
+            class="detail-section"
+            *ngIf="($any(cliente.software)?.length || 0) > 0"
+          >
+            <h5 class="detail-section-title">
+              Software ({{ $any(cliente.software)?.length || 0 }})
+            </h5>
             <div class="software-preview">
-              <div class="software-preview-item" *ngFor="let software of cliente.software.slice(0, 2)">
-                <span class="software-preview-name">{{ software.descrizione }}</span>
-                <span class="software-preview-version">v{{ software.versioneCorrente }}</span>
+              <div
+                class="software-preview-item"
+                *ngFor="
+                  let software of ($any(cliente.software) || []).slice(0, 2)
+                "
+              >
+                <span class="software-preview-name">{{
+                  software.descrizione
+                }}</span>
+                <span class="software-preview-version"
+                  >v{{ software.versioneCorrente }}</span
+                >
               </div>
-              <div class="software-more" *ngIf="cliente.software.length > 2">
-                +{{ cliente.software.length - 2 }} altri...
+              <div
+                class="software-more"
+                *ngIf="($any(cliente.software)?.length || 0) > 2"
+              >
+                +{{ ($any(cliente.software)?.length || 0) - 2 }} altri...
               </div>
             </div>
           </div>
 
-          <div class="detail-section" *ngIf="cliente.software.length === 0">
+          <div
+            class="detail-section"
+            *ngIf="($any(cliente.software)?.length || 0) === 0"
+          >
             <p class="no-software">Nessun software installato</p>
           </div>
         </div>
@@ -85,17 +142,19 @@
   </div>
 
   <ng-template #noClienti>
-    <app-empty-state 
+    <app-empty-state
       *ngIf="!hasError"
       message="Nessun cliente trovato"
-      description="Non ci sono clienti da visualizzare">
+      description="Non ci sono clienti da visualizzare"
+    >
     </app-empty-state>
   </ng-template>
 
   <!-- Modale dettagli -->
-  <app-details-modal 
-    [cliente]="modalCliente" 
-    [isOpen]="isModalOpen" 
-    (closeModal)="closeModal()">
+  <app-details-modal
+    [cliente]="modalCliente"
+    [isOpen]="isModalOpen"
+    (closeModal)="closeModal()"
+  >
   </app-details-modal>
 </div>

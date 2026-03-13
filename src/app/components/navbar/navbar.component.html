@@ -1,17 +1,22 @@
 <!-- navbar.component.html -->
 <nav class="navbar-container">
   <div class="navbar-content">
-    
     <!-- Logo (senza isoletta) -->
     <div class="logo-container">
-      <img src="assets/logo.png" alt="Logo" class="logo-image">
+      <img src="assets/logo.png" alt="Logo" class="logo-image" />
     </div>
 
     <!-- Isoletta 1: Navigation Buttons -->
     <div class="navbar-island navigation-island">
       <!-- Dashboard Button -->
       <div class="dashboard-container">
-        <button class="nav-button dashboard-button" routerLink="/" routerLinkActive="nav-button-active" [routerLinkActiveOptions]="{exact: true}" (click)="onClickDashboard()">
+        <button
+          class="nav-button dashboard-button"
+          routerLink="/"
+          routerLinkActive="nav-button-active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          (click)="onClickDashboard()"
+        >
           Dashboard
         </button>
       </div>
@@ -21,9 +26,21 @@
 
       <!-- Altri Navigation Buttons -->
       <div class="nav-buttons-container">
-        <button class="nav-button icon-button" routerLink="/regione" routerLinkActive="nav-button-active" (click)="onClickRegione()">
+        <button
+          class="nav-button icon-button"
+          routerLink="/regione"
+          routerLinkActive="nav-button-active"
+          (click)="onClickRegione()"
+        >
           <div class="icon-container">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
               <circle cx="12" cy="10" r="3"></circle>
             </svg>
@@ -32,9 +49,21 @@
             <span>Regioni</span>
           </div>
         </button>
-        <button class="nav-button icon-button" routerLink="/cliente" routerLinkActive="nav-button-active" (click)="onClickCliente()">
+        <button
+          class="nav-button icon-button"
+          routerLink="/cliente"
+          routerLinkActive="nav-button-active"
+          (click)="onClickCliente()"
+        >
           <div class="icon-container">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
               <circle cx="12" cy="7" r="4"></circle>
             </svg>
@@ -43,9 +72,21 @@
             <span>Clienti</span>
           </div>
         </button>
-        <button class="nav-button icon-button" routerLink="/software" routerLinkActive="nav-button-active" (click)="onClickSoftware()">
+        <button
+          class="nav-button icon-button"
+          routerLink="/software"
+          routerLinkActive="nav-button-active"
+          (click)="onClickSoftware()"
+        >
           <div class="icon-container">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
               <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
               <line x1="8" y1="21" x2="16" y2="21"></line>
               <line x1="12" y1="17" x2="12" y2="21"></line>
@@ -55,9 +96,21 @@
             <span>Software</span>
           </div>
         </button>
-        <button class="nav-button icon-button" routerLink="/ambiente" routerLinkActive="nav-button-active" (click)="onClickAmbiente()">
+        <button
+          class="nav-button icon-button"
+          routerLink="/ambiente"
+          routerLinkActive="nav-button-active"
+          (click)="onClickAmbiente()"
+        >
           <div class="icon-container">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
               <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
               <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
             </svg>
@@ -72,46 +125,86 @@
     <!-- Isoletta 2: Search e Filtri -->
     <div class="navbar-island search-filters-island">
       <!-- Search Bar -->
-      <app-searchbar [currentView]="currentView"></app-searchbar>
+      <app-searchbar
+        [currentView]="currentView"
+        [resetVersion]="filterResetVersion"
+      ></app-searchbar>
 
       <!-- Filter Button -->
       <div class="filter-container">
-        <button class="nav-button icon-button filter-button" (click)="openFilterOffcanvas()">
+        <button
+          class="nav-button icon-button filter-button"
+          (click)="openFilterOffcanvas()"
+        >
           <div class="icon-container">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"></polygon>
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <polygon
+                points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"
+              ></polygon>
             </svg>
           </div>
         </button>
         <!-- Badge per filtri attivi posizionato sul container -->
-        <span class="filter-badge" *ngIf="activeFiltersCount > 0">{{ activeFiltersCount }}</span>
+        <span class="filter-badge" *ngIf="activeFiltersCount > 0">{{
+          activeFiltersCount
+        }}</span>
       </div>
     </div>
 
     <!-- Button Tema (senza isoletta) -->
     <div class="theme-container">
-      <button class="nav-button icon-button theme-button" (click)="toggleTheme()" [title]="isDarkTheme ? 'Passa al tema chiaro' : 'Passa al tema scuro'">
+      <button
+        class="nav-button icon-button theme-button"
+        (click)="toggleTheme()"
+        [title]="isDarkTheme ? 'Passa al tema chiaro' : 'Passa al tema scuro'"
+      >
         <div class="icon-container">
           <!-- Icona Sole (tema chiaro) -->
-          <svg *ngIf="!isDarkTheme" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg
+            *ngIf="!isDarkTheme"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
             <circle cx="12" cy="12" r="5"></circle>
-            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
+            <path
+              d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
+            ></path>
           </svg>
           <!-- Icona Luna (tema scuro) -->
-          <svg *ngIf="isDarkTheme" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg
+            *ngIf="isDarkTheme"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
           </svg>
         </div>
       </button>
     </div>
-
   </div>
 </nav>
 
 <!-- Filter Offcanvas -->
-<app-filter-offcanvas 
+<app-filter-offcanvas
   [currentView]="currentView"
-  [isOpen]="isFilterOffcanvasOpen" 
+  [resetVersion]="filterResetVersion"
+  [isOpen]="isFilterOffcanvasOpen"
   (onClose)="closeFilterOffcanvas()"
-  (onFiltersApplied)="onFiltersApplied($event)">
+  (onFiltersApplied)="onFiltersApplied($event)"
+>
 </app-filter-offcanvas>

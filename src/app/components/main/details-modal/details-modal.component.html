@@ -1,6 +1,8 @@
-<div class="modal-backdrop" 
-     *ngIf="isOpen && cliente" 
-     (click)="onBackdropClick($event)">
+<div
+  class="modal-backdrop"
+  *ngIf="isOpen && cliente"
+  (click)="onBackdropClick($event)"
+>
   <div class="modal-container">
     <!-- Header -->
     <div class="modal-header">
@@ -8,8 +10,19 @@
         <h2 class="modal-title">{{ cliente.descrizione }}</h2>
         <span class="modal-subtitle">Dettagli completi del cliente</span>
       </div>
-      <button class="close-button" (click)="onCloseClick()" aria-label="Chiudi modale">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <button
+        class="close-button"
+        (click)="onCloseClick()"
+        aria-label="Chiudi modale"
+      >
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
           <line x1="18" y1="6" x2="6" y2="18"></line>
           <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
@@ -22,7 +35,14 @@
       <div class="info-section">
         <div class="section-header">
           <h3 class="section-title">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
               <circle cx="12" cy="7" r="4"></circle>
             </svg>
@@ -41,7 +61,14 @@
       <div class="info-section">
         <div class="section-header">
           <h3 class="section-title">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
               <circle cx="12" cy="10" r="3"></circle>
             </svg>
@@ -51,19 +78,41 @@
         <div class="info-grid">
           <div class="info-card">
             <div class="info-label">Nome Regione</div>
-            <div class="info-value">{{ cliente.regione.descrizione }}</div>
+            <div class="info-value">
+              {{
+                $any(cliente.regione)?.descrizione || "Regione non disponibile"
+              }}
+            </div>
           </div>
           <div class="info-card">
             <div class="info-label">Codice Regione</div>
-            <div class="info-value">{{ cliente.regione.codice }}</div>
+            <div class="info-value">
+              {{ $any(cliente.regione)?.codice || "N/D" }}
+            </div>
           </div>
-          <div class="info-card" *ngIf="cliente.regione.x !== undefined">
+          <div
+            class="info-card"
+            *ngIf="
+              $any(cliente.regione)?.x !== undefined &&
+              $any(cliente.regione)?.x !== null
+            "
+          >
             <div class="info-label">Coordinate X</div>
-            <div class="info-value">{{ cliente.regione.x | number:'1.6-6' }}</div>
+            <div class="info-value">
+              {{ $any(cliente.regione)?.x | number: "1.6-6" }}
+            </div>
           </div>
-          <div class="info-card" *ngIf="cliente.regione.y !== undefined">
+          <div
+            class="info-card"
+            *ngIf="
+              $any(cliente.regione)?.y !== undefined &&
+              $any(cliente.regione)?.y !== null
+            "
+          >
             <div class="info-label">Coordinate Y</div>
-            <div class="info-value">{{ cliente.regione.y | number:'1.6-6' }}</div>
+            <div class="info-value">
+              {{ $any(cliente.regione)?.y | number: "1.6-6" }}
+            </div>
           </div>
         </div>
       </div>
@@ -72,64 +121,113 @@
       <div class="info-section">
         <div class="section-header">
           <h3 class="section-title">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
               <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
               <line x1="8" y1="21" x2="16" y2="21"></line>
               <line x1="12" y1="17" x2="12" y2="21"></line>
             </svg>
             Software Installati
-            <span class="count-badge">{{ cliente.software.length }}</span>
+            <span class="count-badge">{{
+              $any(cliente.software)?.length || 0
+            }}</span>
           </h3>
         </div>
-        
-        <div class="software-container" *ngIf="cliente.software.length > 0; else noSoftware">
-          <div class="software-card" *ngFor="let software of cliente.software; trackBy: trackBySoftwareId">
+
+        <div
+          class="software-container"
+          *ngIf="($any(cliente.software)?.length || 0) > 0; else noSoftware"
+        >
+          <div
+            class="software-card"
+            *ngFor="
+              let software of $any(cliente.software) || [];
+              trackBy: trackBySoftwareId
+            "
+          >
             <div class="software-header">
               <h4 class="software-name">{{ software.descrizione }}</h4>
-              <span class="software-version">v{{ software.versioneCorrente }}</span>
+              <span class="software-version"
+                >v{{ software.versioneCorrente }}</span
+              >
             </div>
-            
+
             <div class="software-details">
               <div class="software-detail-grid">
                 <div class="detail-item">
                   <span class="detail-label">Ultimo Aggiornamento:</span>
-                  <span class="detail-value">{{ software.dataUltimoAggiornamento | date:'dd/MM/yyyy HH:mm' }}</span>
+                  <span class="detail-value">{{
+                    software.dataUltimoAggiornamento | date: "dd/MM/yyyy HH:mm"
+                  }}</span>
                 </div>
                 <div class="detail-item" *ngIf="software.note">
                   <span class="detail-label">Note:</span>
-                  <span class="detail-value note-text">{{ software.note }}</span>
+                  <span class="detail-value note-text">{{
+                    software.note
+                  }}</span>
                 </div>
               </div>
 
               <!-- Ambienti del Software -->
-              <div class="ambienti-section" *ngIf="software.ambienti && software.ambienti.length > 0">
+              <div
+                class="ambienti-section"
+                *ngIf="software.ambienti && software.ambienti.length > 0"
+              >
                 <h5 class="ambienti-title">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
                     <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
                     <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
                   </svg>
                   Ambienti ({{ software.ambienti.length }})
                 </h5>
                 <div class="ambienti-grid">
-                  <div class="ambiente-card" *ngFor="let ambiente of software.ambienti; trackBy: trackByAmbienteId">
+                  <div
+                    class="ambiente-card"
+                    *ngFor="
+                      let ambiente of software.ambienti;
+                      trackBy: trackByAmbienteId
+                    "
+                  >
                     <div class="ambiente-header">
-                      <span class="ambiente-name">{{ ambiente.descrizione }}</span>
+                      <span class="ambiente-name">{{
+                        ambiente.descrizione
+                      }}</span>
                     </div>
                     <div class="ambiente-details">
                       <div class="ambiente-detail">
                         <span class="detail-label">Creato il:</span>
-                        <span class="detail-value">{{ ambiente.dataCreazione | date:'dd/MM/yyyy HH:mm' }}</span>
+                        <span class="detail-value">{{
+                          ambiente.dataCreazione | date: "dd/MM/yyyy HH:mm"
+                        }}</span>
                       </div>
                       <div class="ambiente-detail" *ngIf="ambiente.note">
                         <span class="detail-label">Note:</span>
-                        <span class="detail-value note-text">{{ ambiente.note }}</span>
+                        <span class="detail-value note-text">{{
+                          ambiente.note
+                        }}</span>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              
-              <div class="no-ambienti" *ngIf="!software.ambienti || software.ambienti.length === 0">
+
+              <div
+                class="no-ambienti"
+                *ngIf="!software.ambienti || software.ambienti.length === 0"
+              >
                 <span class="no-data-text">Nessun ambiente configurato</span>
               </div>
             </div>
@@ -139,12 +237,21 @@
         <ng-template #noSoftware>
           <div class="no-software">
             <div class="no-data-icon">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+              <svg
+                width="48"
+                height="48"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1"
+              >
                 <circle cx="12" cy="12" r="10"></circle>
                 <path d="m9 12 2 2 4-4"></path>
               </svg>
             </div>
-            <p class="no-data-text">Nessun software installato per questo cliente</p>
+            <p class="no-data-text">
+              Nessun software installato per questo cliente
+            </p>
           </div>
         </ng-template>
       </div>

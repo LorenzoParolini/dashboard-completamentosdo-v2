@@ -25,6 +25,7 @@ import { Ambiente } from '../../../models/ambiente.model';
 export class FilterOffcanvasComponent implements OnInit, OnChanges {
   @Input() isOpen: boolean = false;
   @Input() currentView: 'D' | 'R' | 'C' | 'S' | 'A' = 'D';
+  @Input() resetVersion: number = 0;
   @Output() onClose = new EventEmitter<void>();
   @Output() onFiltersApplied = new EventEmitter<{
     regioni: number[];
@@ -91,7 +92,12 @@ export class FilterOffcanvasComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['currentView'] && !changes['currentView'].firstChange) {
+    const viewChanged =
+      changes['currentView'] && !changes['currentView'].firstChange;
+    const resetTriggered =
+      changes['resetVersion'] && !changes['resetVersion'].firstChange;
+
+    if (viewChanged || resetTriggered) {
       this.resetLocalFilters();
     }
   }
