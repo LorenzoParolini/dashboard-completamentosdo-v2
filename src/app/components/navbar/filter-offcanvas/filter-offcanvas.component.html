@@ -1,12 +1,23 @@
 <!-- Overlay -->
-<div class="offcanvas-overlay" [class.active]="isOpen" (click)="closeOffcanvas()"></div>
+<div
+  class="offcanvas-overlay"
+  [class.active]="isOpen"
+  (click)="closeOffcanvas()"
+></div>
 
 <!-- Offcanvas -->
 <div class="offcanvas" [class.active]="isOpen">
   <div class="offcanvas-header">
     <h3>Filtri</h3>
     <button class="close-button" (click)="closeOffcanvas()">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
         <line x1="18" y1="6" x2="6" y2="18"></line>
         <line x1="6" y1="6" x2="18" y2="18"></line>
       </svg>
@@ -14,251 +25,354 @@
   </div>
 
   <!-- Tutti Filtri -->
-  <div class="offcanvas-content" >
+  <div class="offcanvas-content">
     <!-- Filtri per Regione -->
-    <div class="filtri-regione" *ngIf="currentView == 'D' || currentView == 'C'">
-        <button (click)="onFilterRegioneClick()" [class.active]="isSelectedRegione">
-            <span>Regioni</span>
-        </button>
-        <div class="filter-regione">
-            <div *ngIf="isSelectedRegione">
-                <p>Seleziona una o più regioni</p>
-                <div class="checkbox-group">
-                    <label *ngFor="let regione of regioni" class="checkbox-label">
-                        <input 
-                            type="checkbox" 
-                            [value]="regione.id"
-                            [checked]="isRegioneSelected(regione.id)"
-                            (change)="onRegioneChange(regione.id, $event)">
-                        <span>{{ regione.descrizione }}</span>
-                    </label>
-                </div>
+    <div
+      class="filtri-regione"
+      *ngIf="currentView == 'D' || currentView == 'C'"
+    >
+      <button
+        (click)="onFilterRegioneClick()"
+        [class.active]="isSelectedRegione"
+      >
+        <span>Regioni</span>
+      </button>
+      <div class="filter-regione">
+        <div *ngIf="isSelectedRegione">
+          <ng-container *ngIf="regioni.length > 0; else noRegioniFound">
+            <p>Seleziona una o più regioni</p>
+            <div class="checkbox-group">
+              <label *ngFor="let regione of regioni" class="checkbox-label">
+                <input
+                  type="checkbox"
+                  [value]="regione.id"
+                  [checked]="isRegioneSelected(regione.id)"
+                  (change)="onRegioneChange(regione.id, $event)"
+                />
+                <span>{{ regione.descrizione }}</span>
+              </label>
             </div>
+          </ng-container>
+          <ng-template #noRegioniFound>
+            <p>Non sono state trovate regioni.</p>
+          </ng-template>
         </div>
+      </div>
     </div>
 
     <!-- Filtri per Software -->
-    <div class="filtri-software" *ngIf="currentView == 'D' || currentView == 'C'">
-        <button (click)="onFilterSoftwareClick()" [class.active]="isSelectedSoftware">
-            <span>Software</span>
-        </button>
-        <div class="filter-software">
-            <div *ngIf="isSelectedSoftware">
-                <p>Seleziona uno o più software</p>
-                <div class="checkbox-group">
-                    <label *ngFor="let sw of software" class="checkbox-label">
-                        <input 
-                            type="checkbox" 
-                            [value]="sw.id"
-                            [checked]="isSoftwareSelected(sw.id)"
-                            (change)="onSoftwareChange(sw.id, $event)">
-                        <span>{{ sw.descrizione }}</span>
-                    </label>
-                </div>
+    <div
+      class="filtri-software"
+      *ngIf="currentView == 'D' || currentView == 'C'"
+    >
+      <button
+        (click)="onFilterSoftwareClick()"
+        [class.active]="isSelectedSoftware"
+      >
+        <span>Software</span>
+      </button>
+      <div class="filter-software">
+        <div *ngIf="isSelectedSoftware">
+          <ng-container *ngIf="software.length > 0; else noSoftwareFound">
+            <p>Seleziona uno o più software</p>
+            <div class="checkbox-group">
+              <label *ngFor="let sw of software" class="checkbox-label">
+                <input
+                  type="checkbox"
+                  [value]="sw.id"
+                  [checked]="isSoftwareSelected(sw.id)"
+                  (change)="onSoftwareChange(sw.id, $event)"
+                />
+                <span>{{ sw.descrizione }}</span>
+              </label>
             </div>
+          </ng-container>
+          <ng-template #noSoftwareFound>
+            <p>Non sono stati trovati software.</p>
+          </ng-template>
         </div>
+      </div>
     </div>
 
     <!-- Filtri per Ambiente -->
-    <div  class="filtri-ambiente" *ngIf="currentView == 'S'">
-        <button (click)="onFilterAmbienteClick()" [class.active]="isSelectedAmbiente">
-            <span>Ambienti</span>
-        </button>
-        <div class="filter-ambiente">
-            <div *ngIf="isSelectedAmbiente">
-                <p>Seleziona uno o più ambienti</p>
-                <div class="checkbox-group">
-                    <label *ngFor="let ambiente of ambienti" class="checkbox-label">
-                        <input 
-                            type="checkbox" 
-                            [value]="ambiente.id"
-                            [checked]="isAmbienteSelected(ambiente.id)"
-                            (change)="onAmbienteChange(ambiente.id, $event)">
-                        <span>{{ ambiente.descrizione }}</span>
-                    </label>
-                </div>
+    <div class="filtri-ambiente" *ngIf="currentView == 'S'">
+      <button
+        (click)="onFilterAmbienteClick()"
+        [class.active]="isSelectedAmbiente"
+      >
+        <span>Ambienti</span>
+      </button>
+      <div class="filter-ambiente">
+        <div *ngIf="isSelectedAmbiente">
+          <ng-container *ngIf="ambienti.length > 0; else noAmbientiFound">
+            <p>Seleziona uno o più ambienti</p>
+            <div class="checkbox-group">
+              <label *ngFor="let ambiente of ambienti" class="checkbox-label">
+                <input
+                  type="checkbox"
+                  [value]="ambiente.id"
+                  [checked]="isAmbienteSelected(ambiente.id)"
+                  (change)="onAmbienteChange(ambiente.id, $event)"
+                />
+                <span>{{ ambiente.descrizione }}</span>
+              </label>
             </div>
+          </ng-container>
+          <ng-template #noAmbientiFound>
+            <p>Non sono stati trovati ambienti.</p>
+          </ng-template>
         </div>
+      </div>
     </div>
 
     <!-- Codice Regione -->
     <div class="filtri-codice-regione" *ngIf="currentView == 'R'">
-        <button (click)="onFilterCodiceRegioneClick()" [class.active]="isSelectedCodiceRegione">
-            <span>Codice Regione</span>
-        </button>
-        <div class="filter-codice-regione">
-            <div *ngIf="isSelectedCodiceRegione">
-                <p>Seleziona uno o più codici regione</p>
-                <div class="checkbox-group">
-                    <label *ngFor="let codice of codiciRegione" class="checkbox-label">
-                        <input 
-                            type="checkbox" 
-                            [value]="codice"
-                            [checked]="isCodiceRegioneSelected(codice)"
-                            (change)="onCodiceRegioneChange(codice, $event)">
-                        <span>{{ codice }}</span>
-                    </label>
-                </div>
+      <button
+        (click)="onFilterCodiceRegioneClick()"
+        [class.active]="isSelectedCodiceRegione"
+      >
+        <span>Codice Regione</span>
+      </button>
+      <div class="filter-codice-regione">
+        <div *ngIf="isSelectedCodiceRegione">
+          <ng-container
+            *ngIf="codiciRegione.length > 0; else noCodiciRegioneFound"
+          >
+            <p>Seleziona uno o più codici regione</p>
+            <div class="checkbox-group">
+              <label
+                *ngFor="let codice of codiciRegione"
+                class="checkbox-label"
+              >
+                <input
+                  type="checkbox"
+                  [value]="codice"
+                  [checked]="isCodiceRegioneSelected(codice)"
+                  (change)="onCodiceRegioneChange(codice, $event)"
+                />
+                <span>{{ codice }}</span>
+              </label>
             </div>
+          </ng-container>
+          <ng-template #noCodiciRegioneFound>
+            <p>Non sono stati trovati codici regione.</p>
+          </ng-template>
         </div>
+      </div>
     </div>
 
     <!-- Coordinate -->
     <div class="filtri-coordinate" *ngIf="currentView == 'R'">
-        <button (click)="onFilterCoordinateClick()" [class.active]="isSelectedCoordinate">
-            <span>Coordinate</span>
-        </button>
-        <div class="filter-coordinate">
-            <div *ngIf="isSelectedCoordinate">
-                <p>Aggiungi coordinate (X, Y)</p>
-                <div class="coordinate-input-group">
-                    <div class="coordinate-inputs">
-                        <div class="input-pair">
-                            <label>X:</label>
-                            <input 
-                                type="number" 
-                                [(ngModel)]="newCoordinateX"
-                                placeholder="Coordinata X"
-                                class="coordinate-input">
-                        </div>
-                        <div class="input-pair">
-                            <label>Y:</label>
-                            <input 
-                                type="number" 
-                                [(ngModel)]="newCoordinateY"
-                                placeholder="Coordinata Y"
-                                class="coordinate-input">
-                        </div>
-                        <button (click)="addCoordinate()" class="add-coordinate-btn">Aggiungi</button>
-                    </div>
-                    <div class="selected-coordinates" *ngIf="selectedCoordinate.length > 0">
-                        <h4>Coordinate selezionate:</h4>
-                        <div class="coordinate-list">
-                            <div *ngFor="let coord of selectedCoordinate; let i = index" class="selection-chip">
-                                <span class="selection-chip-text">X: {{ coord.x }}, Y: {{ coord.y }}</span>
-                                <button (click)="removeCoordinate(i)" class="selection-chip-remove">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+      <button
+        (click)="onFilterCoordinateClick()"
+        [class.active]="isSelectedCoordinate"
+      >
+        <span>Coordinate</span>
+      </button>
+      <div class="filter-coordinate">
+        <div *ngIf="isSelectedCoordinate">
+          <p>Aggiungi coordinate (X, Y)</p>
+          <div class="coordinate-input-group">
+            <div class="coordinate-inputs">
+              <div class="input-pair">
+                <label>X:</label>
+                <input
+                  type="number"
+                  [(ngModel)]="newCoordinateX"
+                  placeholder="Coordinata X"
+                  class="coordinate-input"
+                />
+              </div>
+              <div class="input-pair">
+                <label>Y:</label>
+                <input
+                  type="number"
+                  [(ngModel)]="newCoordinateY"
+                  placeholder="Coordinata Y"
+                  class="coordinate-input"
+                />
+              </div>
+              <button (click)="addCoordinate()" class="add-coordinate-btn">
+                Aggiungi
+              </button>
             </div>
+            <div
+              class="selected-coordinates"
+              *ngIf="selectedCoordinate.length > 0"
+            >
+              <h4>Coordinate selezionate:</h4>
+              <div class="coordinate-list">
+                <div
+                  *ngFor="let coord of selectedCoordinate; let i = index"
+                  class="selection-chip"
+                >
+                  <span class="selection-chip-text"
+                    >X: {{ coord.x }}, Y: {{ coord.y }}</span
+                  >
+                  <button
+                    (click)="removeCoordinate(i)"
+                    class="selection-chip-remove"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
 
     <!-- Versione -->
     <div class="filtri-versione" *ngIf="currentView == 'S'">
-        <button (click)="onFilterVersioneClick()" [class.active]="isSelectedVersione">
-            <span>Versione</span>
-        </button>
-        <div class="filter-versione">
-            <div *ngIf="isSelectedVersione">
-                <p>Inserisci numero versione</p>
-                <div class="number-input-group">
-                    <input 
-                        type="text" 
-                        [(ngModel)]="selectedVersione"
-                        placeholder="Numero versione"
-                        class="version-input">
-                </div>
-            </div>
+      <button
+        (click)="onFilterVersioneClick()"
+        [class.active]="isSelectedVersione"
+      >
+        <span>Versione</span>
+      </button>
+      <div class="filter-versione">
+        <div *ngIf="isSelectedVersione">
+          <p>Inserisci numero versione</p>
+          <div class="number-input-group">
+            <input
+              type="text"
+              [(ngModel)]="selectedVersione"
+              placeholder="Numero versione"
+              class="version-input"
+            />
+          </div>
         </div>
+      </div>
     </div>
 
     <!-- Data Ultimo Aggiornamento -->
     <div class="filtri-data-aggiornamento" *ngIf="currentView == 'S'">
-        <button (click)="onFilterDataAggiornamentoClick()" [class.active]="isSelectedDataAggiornamento">
-            <span>Data Ultimo Aggiornamento</span>
-        </button>
-        <div class="filter-data-aggiornamento">
-            <div *ngIf="isSelectedDataAggiornamento">
-                <p>Seleziona uno o più intervalli di date</p>
-                <div class="date-range-input-group">
-                    <div class="date-range-inputs">
-                        <div class="date-input-pair">
-                            <label>Data inizio:</label>
-                            <input 
-                                type="date" 
-                                [(ngModel)]="newDataAggiornamentoInizio"
-                                class="date-input">
-                        </div>
-                        <div class="date-input-pair">
-                            <label>Data fine:</label>
-                            <input 
-                                type="date" 
-                                [(ngModel)]="newDataAggiornamentoFine"
-                                class="date-input">
-                        </div>
-                    </div>
-                    <button (click)="addDataAggiornamentoRange()" class="add-date-btn">Aggiungi Intervallo</button>
-                </div>
-                <div class="selected-dates" *ngIf="selectedDataAggiornamento.length > 0">
-                    <h4>Intervalli selezionati:</h4>
-                    <div class="date-list">
-                        <div *ngFor="let range of selectedDataAggiornamento; let i = index" class="selection-chip">
-                            <span class="selection-chip-text">{{ range.inizio | date:'dd/MM/yyyy' }} - {{ range.fine | date:'dd/MM/yyyy' }}</span>
-                            <button (click)="removeDataAggiornamento(i)" class="selection-chip-remove">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
+      <button
+        (click)="onFilterDataAggiornamentoClick()"
+        [class.active]="isSelectedDataAggiornamento"
+      >
+        <span>Data Ultimo Aggiornamento</span>
+      </button>
+      <div class="filter-data-aggiornamento">
+        <div *ngIf="isSelectedDataAggiornamento">
+          <p>Seleziona uno o più intervalli di date</p>
+          <div class="date-range-input-group">
+            <div class="date-range-inputs">
+              <div class="date-input-pair">
+                <label>Data inizio:</label>
+                <input
+                  type="date"
+                  [(ngModel)]="newDataAggiornamentoInizio"
+                  class="date-input"
+                />
+              </div>
+              <div class="date-input-pair">
+                <label>Data fine:</label>
+                <input
+                  type="date"
+                  [(ngModel)]="newDataAggiornamentoFine"
+                  class="date-input"
+                />
+              </div>
             </div>
+            <button (click)="addDataAggiornamentoRange()" class="add-date-btn">
+              Aggiungi Intervallo
+            </button>
+          </div>
+          <div
+            class="selected-dates"
+            *ngIf="selectedDataAggiornamento.length > 0"
+          >
+            <h4>Intervalli selezionati:</h4>
+            <div class="date-list">
+              <div
+                *ngFor="let range of selectedDataAggiornamento; let i = index"
+                class="selection-chip"
+              >
+                <span class="selection-chip-text"
+                  >{{ range.inizio | date: "dd/MM/yyyy" }} -
+                  {{ range.fine | date: "dd/MM/yyyy" }}</span
+                >
+                <button
+                  (click)="removeDataAggiornamento(i)"
+                  class="selection-chip-remove"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
 
     <!-- Data Creazione -->
     <div class="filtri-data-creazione" *ngIf="currentView == 'A'">
-        <button (click)="onFilterDataCreazioneClick()" [class.active]="isSelectedDataCreazione">
-            <span>Data Creazione</span>
-        </button>
-        <div class="filter-data-creazione">
-            <div *ngIf="isSelectedDataCreazione">
-                <p>Seleziona uno o più intervalli di date di creazione</p>
-                <div class="date-range-input-group">
-                    <div class="date-range-inputs">
-                        <div class="date-input-pair">
-                            <label>Data inizio:</label>
-                            <input 
-                                type="date" 
-                                [(ngModel)]="newDataCreazioneInizio"
-                                class="date-input">
-                        </div>
-                        <div class="date-input-pair">
-                            <label>Data fine:</label>
-                            <input 
-                                type="date" 
-                                [(ngModel)]="newDataCreazioneFine"
-                                class="date-input">
-                        </div>
-                    </div>
-                    <button (click)="addDataCreazioneRange()" class="add-date-btn">Aggiungi Intervallo</button>
-                </div>
-                <div class="selected-dates" *ngIf="selectedDataCreazione.length > 0">
-                    <h4>Intervalli selezionati:</h4>
-                    <div class="date-list">
-                        <div *ngFor="let range of selectedDataCreazione; let i = index" class="selection-chip">
-                            <span class="selection-chip-text">{{ range.inizio | date:'dd/MM/yyyy' }} - {{ range.fine | date:'dd/MM/yyyy' }}</span>
-                            <button (click)="removeDataCreazione(i)" class="selection-chip-remove">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
+      <button
+        (click)="onFilterDataCreazioneClick()"
+        [class.active]="isSelectedDataCreazione"
+      >
+        <span>Data Creazione</span>
+      </button>
+      <div class="filter-data-creazione">
+        <div *ngIf="isSelectedDataCreazione">
+          <p>Seleziona uno o più intervalli di date di creazione</p>
+          <div class="date-range-input-group">
+            <div class="date-range-inputs">
+              <div class="date-input-pair">
+                <label>Data inizio:</label>
+                <input
+                  type="date"
+                  [(ngModel)]="newDataCreazioneInizio"
+                  class="date-input"
+                />
+              </div>
+              <div class="date-input-pair">
+                <label>Data fine:</label>
+                <input
+                  type="date"
+                  [(ngModel)]="newDataCreazioneFine"
+                  class="date-input"
+                />
+              </div>
             </div>
+            <button (click)="addDataCreazioneRange()" class="add-date-btn">
+              Aggiungi Intervallo
+            </button>
+          </div>
+          <div class="selected-dates" *ngIf="selectedDataCreazione.length > 0">
+            <h4>Intervalli selezionati:</h4>
+            <div class="date-list">
+              <div
+                *ngFor="let range of selectedDataCreazione; let i = index"
+                class="selection-chip"
+              >
+                <span class="selection-chip-text"
+                  >{{ range.inizio | date: "dd/MM/yyyy" }} -
+                  {{ range.fine | date: "dd/MM/yyyy" }}</span
+                >
+                <button
+                  (click)="removeDataCreazione(i)"
+                  class="selection-chip-remove"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
-
   </div>
 
   <div class="offcanvas-footer">
