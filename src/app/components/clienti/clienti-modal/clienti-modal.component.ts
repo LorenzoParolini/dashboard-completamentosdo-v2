@@ -1,7 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, Input, HostListener } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NgbActiveModal, NgbModule, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import {
+  NgbActiveModal,
+  NgbModule,
+  NgbModal,
+} from '@ng-bootstrap/ng-bootstrap';
 import { Cliente } from '../../../models/cliente.model';
 import { Regione } from '../../../models/regione.model';
 import { Software } from '../../../models/software.model';
@@ -19,7 +23,7 @@ export interface ClientiDialogData {
   selector: 'app-clienti-modal',
   imports: [CommonModule, FormsModule, NgbModule],
   templateUrl: './clienti-modal.component.html',
-  styleUrls: ['./clienti-modal.component.css']
+  styleUrls: ['./clienti-modal.component.css'],
 })
 export class ClientiModalComponent implements OnInit {
   @Input() cliente?: Cliente;
@@ -30,7 +34,7 @@ export class ClientiModalComponent implements OnInit {
     id: 0,
     descrizione: '',
     regione: { id: 0, descrizione: '', codice: '', x: 0, y: 0 },
-    software: []
+    software: [],
   };
 
   // Campo per il menu a tendina
@@ -43,20 +47,19 @@ export class ClientiModalComponent implements OnInit {
     id: 0,
     descrizione: '',
     regione: { id: 0, descrizione: '', codice: '', x: 0, y: 0 },
-    software: []
+    software: [],
   };
 
   private hasUnsavedChanges = false;
 
   constructor(
-    public activeModal: NgbActiveModal, 
+    public activeModal: NgbActiveModal,
     private clientiService: ClientiService,
     private regioniService: RegioniService,
     private softwareService: SoftwareService,
     private modalService: NgbModal,
-    private minimizedModalsService: MinimizedModalsService
-  ) {
-  }
+    private minimizedModalsService: MinimizedModalsService,
+  ) {}
 
   getLength(): number {
     return this.clientiService.length();
@@ -64,10 +67,10 @@ export class ClientiModalComponent implements OnInit {
 
   ngOnInit() {
     // Carica regioni disponibili
-    this.regioniService.getAllRegioni().subscribe(regioni => {
+    this.regioniService.getAllRegioni().subscribe((regioni) => {
       this.regioniDisponibili = regioni;
       console.log('Regioni disponibili caricate:', this.regioniDisponibili);
-      
+
       // Se siamo in modalità modifica, assicuriamoci che la regione sia settata correttamente
       if (this.cliente) {
         console.log('Modalità modifica - Cliente ricevuto:', this.cliente);
@@ -76,23 +79,24 @@ export class ClientiModalComponent implements OnInit {
           this.nuovoCliente = {
             ...this.cliente,
             regione: { ...this.cliente.regione },
-            software: [...this.cliente.software]
+            software: [...this.cliente.software],
           };
         }
         this.originalData = {
           ...this.cliente,
           regione: { ...this.cliente.regione },
-          software: [...this.cliente.software]
+          software: [...this.cliente.software],
         };
         console.log('Cliente da modificare:', this.cliente);
         console.log('Regione del cliente:', this.cliente.regione);
         console.log('Software del cliente:', this.nuovoCliente.software);
         console.log('ID regione del cliente:', this.cliente.regione.id);
+        this.normalizeSoftwareSelection();
       }
     });
 
     // Carica software disponibili
-    this.softwareService.getAllSoftware().subscribe(software => {
+    this.softwareService.getAllSoftware().subscribe((software) => {
       this.softwareDisponibili = software;
       console.log('Software disponibili caricati:', this.softwareDisponibili);
     });
@@ -107,9 +111,22 @@ export class ClientiModalComponent implements OnInit {
       this.originalData = {
         ...this.nuovoCliente,
         regione: { ...this.nuovoCliente.regione },
-        software: [...this.nuovoCliente.software]
+        software: [...this.nuovoCliente.software],
       };
+      this.normalizeSoftwareSelection();
     }
+  }
+
+  private normalizeSoftwareSelection() {
+    if (this.nuovoCliente.software.length > 1) {
+      this.nuovoCliente.software = [this.nuovoCliente.software[0]];
+    }
+
+    if (this.originalData.software.length > 1) {
+      this.originalData.software = [this.originalData.software[0]];
+    }
+
+    this.softwareSelezionatoId = this.nuovoCliente.software[0]?.id ?? 0;
   }
 
   onFieldChange() {
@@ -128,14 +145,22 @@ export class ClientiModalComponent implements OnInit {
     }
 
     // Verifica cambiamenti nei software
-    if (this.nuovoCliente.software.length !== this.originalData.software.length) {
+    if (
+      this.nuovoCliente.software.length !== this.originalData.software.length
+    ) {
       return true;
     }
 
-    const originalSoftwareIds = this.originalData.software.map(s => s.id).sort();
-    const currentSoftwareIds = this.nuovoCliente.software.map(s => s.id).sort();
-    
-    return !originalSoftwareIds.every((id, index) => id === currentSoftwareIds[index]);
+    const originalSoftwareIds = this.originalData.software
+      .map((s) => s.id)
+      .sort();
+    const currentSoftwareIds = this.nuovoCliente.software
+      .map((s) => s.id)
+      .sort();
+
+    return !originalSoftwareIds.every(
+      (id, index) => id === currentSoftwareIds[index],
+    );
   }
 
   @HostListener('window:beforeunload', ['$event'])
@@ -161,11 +186,12 @@ export class ClientiModalComponent implements OnInit {
   private showUnsavedChangesConfirmation() {
     const modalRef = this.modalService.open(ConfirmationModalComponent, {
       centered: true,
-      backdrop: 'static'
+      backdrop: 'static',
     });
 
     modalRef.componentInstance.title = 'Modifiche non salvate';
-    modalRef.componentInstance.message = 'Hai modifiche non salvate. Sei sicuro di voler chiudere senza salvare?';
+    modalRef.componentInstance.message =
+      'Hai modifiche non salvate. Sei sicuro di voler chiudere senza salvare?';
     modalRef.componentInstance.confirmText = 'Chiudi senza salvare';
     modalRef.componentInstance.cancelText = 'Continua modifica';
     modalRef.componentInstance.confirmButtonClass = 'btn-warning';
@@ -180,7 +206,7 @@ export class ClientiModalComponent implements OnInit {
       },
       () => {
         // L'utente ha annullato, non fare nulla
-      }
+      },
     );
   }
 
@@ -192,62 +218,76 @@ export class ClientiModalComponent implements OnInit {
 
   onRegioneChange(event: any) {
     const regioneId = Number(event.target.value);
-    const regione = this.regioniDisponibili.find(r => r.id === regioneId);
+    const regione = this.regioniDisponibili.find((r) => r.id === regioneId);
     if (regione) {
       this.nuovoCliente.regione = regione;
     } else {
       // Se non viene trovata la regione, reimposta la regione vuota
-      this.nuovoCliente.regione = { id: 0, descrizione: '', codice: '', x: 0, y: 0 };
+      this.nuovoCliente.regione = {
+        id: 0,
+        descrizione: '',
+        codice: '',
+        x: 0,
+        y: 0,
+      };
     }
     this.onFieldChange();
   }
 
   // Chiamata quando cambia la selezione nel dropdown software
   onSoftwareSelezionatoChange(value: string | number) {
-    console.log('Software selezionato value:', value, typeof value);
     const softwareId = Number(value);
-    console.log('Software ID convertito:', softwareId);
-    
-    if (softwareId && softwareId !== 0) {
-      const softwareSelezionato = this.softwareDisponibili.find(s => s.id === softwareId);
-      console.log('Software trovato:', softwareSelezionato);
-      
-      if (softwareSelezionato && !this.nuovoCliente.software.find(s => s.id === softwareId)) {
-        this.nuovoCliente.software.push(softwareSelezionato);
-        console.log('Software dopo aggiunta:', this.nuovoCliente.software);
+
+    this.softwareSelezionatoId = softwareId;
+
+    if (softwareId === 0) {
+      if (this.nuovoCliente.software.length > 0) {
+        this.nuovoCliente.software = [];
         this.onFieldChange();
       }
-      
-      // Resetta la selezione
-      this.softwareSelezionatoId = 0;
+      return;
     }
-  }
 
-  // Manteniamo il vecchio metodo per compatibilità
-  onSoftwareSelezionato() {
-    this.onSoftwareSelezionatoChange(this.softwareSelezionatoId);
+    const softwareSelezionato = this.softwareDisponibili.find(
+      (s) => s.id === softwareId,
+    );
+    if (!softwareSelezionato) {
+      return;
+    }
+
+    const softwareAttualeId = this.nuovoCliente.software[0]?.id;
+    if (
+      this.nuovoCliente.software.length !== 1 ||
+      softwareAttualeId !== softwareId
+    ) {
+      this.nuovoCliente.software = [softwareSelezionato];
+      this.onFieldChange();
+    }
   }
 
   // Rimuove un software dalla lista
   rimuoviSoftware(softwareId: number) {
-    this.nuovoCliente.software = this.nuovoCliente.software.filter(s => s.id !== softwareId);
+    this.nuovoCliente.software = this.nuovoCliente.software.filter(
+      (s) => s.id !== softwareId,
+    );
+    if (this.softwareSelezionatoId === softwareId) {
+      this.softwareSelezionatoId = 0;
+    }
     this.onFieldChange();
-  }
-
-  // Controlla se un software è già stato selezionato
-  isSoftwareGiaSelezionato(softwareId: number): boolean {
-    return this.nuovoCliente.software.some(s => s.id === softwareId);
   }
 
   // Minimizza la modale salvando i dati nel servizio
   minimizeModal() {
-    const modalId = this.modalId || this.minimizedModalsService.generateModalId(
-      'clienti', 
-      this.cliente ? 'edit' : 'add',
-      this.cliente?.id
-    );
+    const modalId =
+      this.modalId ||
+      this.minimizedModalsService.generateModalId(
+        'clienti',
+        this.cliente ? 'edit' : 'add',
+        this.cliente?.id,
+      );
 
-    const description = this.nuovoCliente.descrizione || 
+    const description =
+      this.nuovoCliente.descrizione ||
       (this.cliente ? this.cliente.descrizione : 'Nuovo Cliente');
 
     // Crea una copia completa dei dati del form inclusi i campi di selezione
@@ -255,10 +295,13 @@ export class ClientiModalComponent implements OnInit {
       ...this.nuovoCliente,
       softwareSelezionatoId: this.softwareSelezionatoId,
       // Salva anche lo stato originale per riferimento
-      originalData: this.originalData
+      originalData: this.originalData,
     };
 
-    console.log('Salvando dati form clienti per minimizzazione:', formDataToSave);
+    console.log(
+      'Salvando dati form clienti per minimizzazione:',
+      formDataToSave,
+    );
 
     this.minimizedModalsService.addMinimizedModal({
       id: modalId,
@@ -266,7 +309,7 @@ export class ClientiModalComponent implements OnInit {
       section: 'clienti',
       description: description,
       data: this.cliente,
-      formData: formDataToSave
+      formData: formDataToSave,
     });
 
     this.hasUnsavedChanges = false;

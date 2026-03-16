@@ -46,8 +46,9 @@
             *ngIf="($any(cliente.software)?.length || 0) > 0"
           >
             <span class="software-label">Software:</span>
+            <!-- nome del softwaare -->
             <span class="software-number">{{
-              $any(cliente.software)?.length || 0
+              $any(cliente.software)?.[0]?.descrizione || "N/D"
             }}</span>
           </div>
         </div>
@@ -105,7 +106,7 @@
             *ngIf="($any(cliente.software)?.length || 0) > 0"
           >
             <h5 class="detail-section-title">
-              Software ({{ $any(cliente.software)?.length || 0 }})
+              Software
             </h5>
             <div class="software-preview">
               <div
