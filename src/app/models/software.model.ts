@@ -1,5 +1,7 @@
 import type { Ambiente } from './ambiente.model';
 
+export type LocalDateTimeString = string;
+
 // ============================================================================
 // SOFTWARE - Response dal backend (con ID e oggetti nested completi)
 // ============================================================================
@@ -8,7 +10,7 @@ export type Software = {
   descrizione: string;
   note: string;
   versioneCorrente: string;
-  dataUltimoAggiornamento: Date;
+  dataUltimoAggiornamento: LocalDateTimeString;
   ambienti: Ambiente[];
 };
 
@@ -19,6 +21,6 @@ export type SoftwareInputDTO = {
   descrizione: string;
   note: string;
   versioneCorrente: string;
-  dataUltimoAggiornamento?: Date;
+  dataUltimoAggiornamento?: LocalDateTimeString;
   ambienteIds: number[];
 };

@@ -3,17 +3,45 @@
     <!-- Header -->
     <div class="modal-header">
       <div class="modal-title-section">
-        <h2 class="modal-title">{{ software ? 'Modifica Software' : 'Aggiungi Software' }}</h2>
-        <span class="modal-subtitle">{{ software ? 'Aggiorna i dati del software' : 'Inserisci i dati del nuovo software' }}</span>
+        <h2 class="modal-title">
+          {{ software ? "Modifica Software" : "Aggiungi Software" }}
+        </h2>
+        <span class="modal-subtitle">{{
+          software
+            ? "Aggiorna i dati del software"
+            : "Inserisci i dati del nuovo software"
+        }}</span>
       </div>
       <div class="modal-actions">
-        <button class="minimize-button" (click)="minimizeModal()" aria-label="Minimizza modale">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <button
+          class="minimize-button"
+          (click)="minimizeModal()"
+          aria-label="Minimizza modale"
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
             <line x1="5" y1="12" x2="19" y2="12"></line>
           </svg>
         </button>
-        <button class="close-button" (click)="closeModal()" aria-label="Chiudi modale">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <button
+          class="close-button"
+          (click)="closeModal()"
+          aria-label="Chiudi modale"
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
@@ -26,7 +54,14 @@
       <div class="form-section">
         <div class="section-header">
           <h3 class="section-title">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
               <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
               <line x1="8" y1="21" x2="16" y2="21"></line>
               <line x1="12" y1="17" x2="12" y2="21"></line>
@@ -66,10 +101,11 @@
             <div class="form-field">
               <label class="form-label">Data Ultimo Aggiornamento</label>
               <input
-                type="date"
+                type="datetime-local"
                 [(ngModel)]="nuovoSoftware.dataUltimoAggiornamento"
                 name="dataUltimoAggiornamento"
                 class="form-input"
+                (ngModelChange)="onFieldChange()"
                 required
               />
             </div>
@@ -91,7 +127,14 @@
           <div class="ambiente-section">
             <div class="section-divider">
               <h4 class="section-subtitle">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
                   <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
                   <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
                 </svg>
@@ -108,35 +151,51 @@
                 class="form-select"
               >
                 <option [value]="0">Seleziona un ambiente da aggiungere</option>
-                <option 
-                  *ngFor="let ambiente of ambientiDisponibili" 
+                <option
+                  *ngFor="let ambiente of ambientiDisponibili"
                   [value]="ambiente.id"
                   [disabled]="isAmbienteGiaSelezionato(ambiente.id)"
                 >
                   {{ ambiente.descrizione }}
-                  <span *ngIf="isAmbienteGiaSelezionato(ambiente.id)"> (già selezionato)</span>
+                  <span *ngIf="isAmbienteGiaSelezionato(ambiente.id)">
+                    (già selezionato)</span
+                  >
                 </option>
               </select>
             </div>
-            
+
             <!-- Lista ambienti selezionati -->
-            <div class="ambiente-list" *ngIf="nuovoSoftware.ambienti.length > 0">
+            <div
+              class="ambiente-list"
+              *ngIf="nuovoSoftware.ambienti.length > 0"
+            >
               <div class="ambiente-grid">
-                <div 
-                  *ngFor="let ambiente of nuovoSoftware.ambienti" 
+                <div
+                  *ngFor="let ambiente of nuovoSoftware.ambienti"
                   class="ambiente-card"
                 >
                   <div class="ambiente-info">
-                    <span class="ambiente-name">{{ ambiente.descrizione }}</span>
-                    <span class="ambiente-date">{{ ambiente.dataCreazione | date:'dd/MM/yyyy' }}</span>
+                    <span class="ambiente-name">{{
+                      ambiente.descrizione
+                    }}</span>
+                    <span class="ambiente-date">{{
+                      ambiente.dataCreazione | date: "dd/MM/yyyy"
+                    }}</span>
                   </div>
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     class="remove-ambiente-btn"
                     (click)="rimuoviAmbiente(ambiente.id)"
                     title="Rimuovi ambiente"
                   >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
                       <line x1="18" y1="6" x2="6" y2="18"></line>
                       <line x1="6" y1="6" x2="18" y2="18"></line>
                     </svg>
@@ -145,7 +204,10 @@
               </div>
             </div>
 
-            <div class="no-ambiente" *ngIf="nuovoSoftware.ambienti.length === 0">
+            <div
+              class="no-ambiente"
+              *ngIf="nuovoSoftware.ambienti.length === 0"
+            >
               <p class="no-data-text">Nessun ambiente selezionato</p>
             </div>
           </div>
@@ -155,12 +217,21 @@
               Annulla
             </button>
             <button type="submit" class="btn-primary">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
+                ></path>
                 <polyline points="17,21 17,13 7,13 7,21"></polyline>
                 <polyline points="7,3 7,8 15,8"></polyline>
               </svg>
-              {{ software ? 'Salva' : 'Aggiungi' }}
+              {{ software ? "Salva" : "Aggiungi" }}
             </button>
           </div>
         </form>

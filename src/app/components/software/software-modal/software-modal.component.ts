@@ -1,7 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, Input, HostListener } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NgbActiveModal, NgbModule, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import {
+  NgbActiveModal,
+  NgbModule,
+  NgbModal,
+} from '@ng-bootstrap/ng-bootstrap';
 import { Software } from '../../../models/software.model';
 import { Ambiente } from '../../../models/ambiente.model';
 import { SoftwareService } from '../../../services/software.service';
@@ -30,7 +34,7 @@ export class SoftwareModalComponent implements OnInit {
     note: '',
     ambienti: [],
     versioneCorrente: '',
-    dataUltimoAggiornamento: new Date()
+    dataUltimoAggiornamento: '',
   };
 
   // Campo per il menu a tendina
@@ -45,19 +49,18 @@ export class SoftwareModalComponent implements OnInit {
     note: '',
     ambienti: [],
     versioneCorrente: '',
-    dataUltimoAggiornamento: new Date()
+    dataUltimoAggiornamento: '',
   };
 
   private hasUnsavedChanges = false;
 
   constructor(
-    public activeModal: NgbActiveModal, 
-    private softwareService: SoftwareService, 
+    public activeModal: NgbActiveModal,
+    private softwareService: SoftwareService,
     private ambientiService: AmbientiService,
     private modalService: NgbModal,
-    private minimizedModalsService: MinimizedModalsService
-  ) {
-  }
+    private minimizedModalsService: MinimizedModalsService,
+  ) {}
 
   getLength(): number {
     return this.softwareService.length();
@@ -65,7 +68,7 @@ export class SoftwareModalComponent implements OnInit {
 
   ngOnInit() {
     // Carica gli ambienti dal servizio
-    this.ambientiService.getAllAmbienti().subscribe(ambienti => {
+    this.ambientiService.getAllAmbienti().subscribe((ambienti) => {
       this.ambientiDisponibili = ambienti;
       console.log('Ambienti disponibili caricati:', this.ambientiDisponibili);
     });
@@ -76,12 +79,26 @@ export class SoftwareModalComponent implements OnInit {
       if (!this.isRestoredFromMinimized) {
         this.nuovoSoftware = {
           ...this.software,
-          ambienti: [...this.software.ambienti]
+          ambienti: [...this.software.ambienti],
+          dataUltimoAggiornamento: this.toDateTimeLocalValue(
+            this.software.dataUltimoAggiornamento,
+          ),
+        };
+      } else {
+        this.nuovoSoftware = {
+          ...this.nuovoSoftware,
+          ambienti: [...this.nuovoSoftware.ambienti],
+          dataUltimoAggiornamento: this.toDateTimeLocalValue(
+            this.nuovoSoftware.dataUltimoAggiornamento,
+          ),
         };
       }
       this.originalData = {
         ...this.software,
-        ambienti: [...this.software.ambienti]
+        ambienti: [...this.software.ambienti],
+        dataUltimoAggiornamento: this.toBackendLocalDateTime(
+          this.software.dataUltimoAggiornamento,
+        ),
       };
       console.log('Ambienti del software:', this.nuovoSoftware.ambienti);
     } else {
@@ -91,9 +108,21 @@ export class SoftwareModalComponent implements OnInit {
       if (!this.isRestoredFromMinimized && this.nuovoSoftware.id === 0) {
         this.nuovoSoftware.id = this.getLength() + 1;
       }
+
+      this.nuovoSoftware = {
+        ...this.nuovoSoftware,
+        ambienti: [...this.nuovoSoftware.ambienti],
+        dataUltimoAggiornamento: this.toDateTimeLocalValue(
+          this.nuovoSoftware.dataUltimoAggiornamento || new Date(),
+        ),
+      };
+
       this.originalData = {
         ...this.nuovoSoftware,
-        ambienti: [...this.nuovoSoftware.ambienti]
+        ambienti: [...this.nuovoSoftware.ambienti],
+        dataUltimoAggiornamento: this.toBackendLocalDateTime(
+          this.nuovoSoftware.dataUltimoAggiornamento,
+        ),
       };
     }
   }
@@ -102,23 +131,108 @@ export class SoftwareModalComponent implements OnInit {
     this.hasUnsavedChanges = this.checkForChanges();
   }
 
+  private formatLocalDateTime(
+    date: Date,
+    includeSeconds: boolean = false,
+  ): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+
+    if (includeSeconds) {
+      const seconds = String(date.getSeconds()).padStart(2, '0');
+      return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+    }
+
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  }
+
+  private toDateTimeLocalValue(value?: string | Date | null): string {
+    if (!value) {
+      return '';
+    }
+
+    if (typeof value === 'string') {
+      const normalized = value.trim().replace(' ', 'T').replace('Z', '');
+      const dateTimeMatch = normalized.match(
+        /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2})/,
+      );
+      if (dateTimeMatch) {
+        return dateTimeMatch[1];
+      }
+    }
+
+    const parsedDate = value instanceof Date ? value : new Date(value);
+    return Number.isNaN(parsedDate.getTime())
+      ? ''
+      : this.formatLocalDateTime(parsedDate);
+  }
+
+  private toBackendLocalDateTime(value?: string | Date | null): string {
+    if (!value) {
+      return '';
+    }
+
+    if (typeof value === 'string') {
+      const normalized = value.trim().replace(' ', 'T').replace('Z', '');
+
+      if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(normalized)) {
+        return `${normalized}:00`;
+      }
+
+      const dateTimeWithSecondsMatch = normalized.match(
+        /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})/,
+      );
+      if (dateTimeWithSecondsMatch) {
+        return dateTimeWithSecondsMatch[1];
+      }
+    }
+
+    const parsedDate = value instanceof Date ? value : new Date(value);
+    return Number.isNaN(parsedDate.getTime())
+      ? ''
+      : this.formatLocalDateTime(parsedDate, true);
+  }
+
   private checkForChanges(): boolean {
     // Verifica cambiamenti nei campi base
-    if (this.nuovoSoftware.descrizione !== this.originalData.descrizione ||
-        this.nuovoSoftware.note !== this.originalData.note ||
-        this.nuovoSoftware.versioneCorrente !== this.originalData.versioneCorrente) {
+    if (
+      this.nuovoSoftware.descrizione !== this.originalData.descrizione ||
+      this.nuovoSoftware.note !== this.originalData.note ||
+      this.nuovoSoftware.versioneCorrente !== this.originalData.versioneCorrente
+    ) {
+      return true;
+    }
+
+    const currentDateTime = this.toBackendLocalDateTime(
+      this.nuovoSoftware.dataUltimoAggiornamento,
+    );
+    const originalDateTime = this.toBackendLocalDateTime(
+      this.originalData.dataUltimoAggiornamento,
+    );
+    if (currentDateTime !== originalDateTime) {
       return true;
     }
 
     // Verifica cambiamenti negli ambienti
-    if (this.nuovoSoftware.ambienti.length !== this.originalData.ambienti.length) {
+    if (
+      this.nuovoSoftware.ambienti.length !== this.originalData.ambienti.length
+    ) {
       return true;
     }
 
-    const originalAmbientiIds = this.originalData.ambienti.map(a => a.id).sort();
-    const currentAmbientiIds = this.nuovoSoftware.ambienti.map(a => a.id).sort();
-    
-    return !originalAmbientiIds.every((id, index) => id === currentAmbientiIds[index]);
+    const originalAmbientiIds = this.originalData.ambienti
+      .map((a) => a.id)
+      .sort();
+    const currentAmbientiIds = this.nuovoSoftware.ambienti
+      .map((a) => a.id)
+      .sort();
+
+    return !originalAmbientiIds.every(
+      (id, index) => id === currentAmbientiIds[index],
+    );
   }
 
   @HostListener('window:beforeunload', ['$event'])
@@ -129,10 +243,13 @@ export class SoftwareModalComponent implements OnInit {
   }
 
   salva() {
-    if (!this.nuovoSoftware.dataUltimoAggiornamento) {
-      this.nuovoSoftware.dataUltimoAggiornamento = new Date();
-    }
-    
+    const normalizedDateTime = this.toBackendLocalDateTime(
+      this.nuovoSoftware.dataUltimoAggiornamento || new Date(),
+    );
+
+    this.nuovoSoftware.dataUltimoAggiornamento =
+      normalizedDateTime || this.toBackendLocalDateTime(new Date());
+
     this.hasUnsavedChanges = false;
     this.activeModal.close(this.nuovoSoftware);
   }
@@ -148,11 +265,12 @@ export class SoftwareModalComponent implements OnInit {
   private showUnsavedChangesConfirmation() {
     const modalRef = this.modalService.open(ConfirmationModalComponent, {
       centered: true,
-      backdrop: 'static'
+      backdrop: 'static',
     });
 
     modalRef.componentInstance.title = 'Modifiche non salvate';
-    modalRef.componentInstance.message = 'Hai modifiche non salvate. Sei sicuro di voler chiudere senza salvare?';
+    modalRef.componentInstance.message =
+      'Hai modifiche non salvate. Sei sicuro di voler chiudere senza salvare?';
     modalRef.componentInstance.confirmText = 'Chiudi senza salvare';
     modalRef.componentInstance.cancelText = 'Continua modifica';
     modalRef.componentInstance.confirmButtonClass = 'btn-warning';
@@ -167,7 +285,7 @@ export class SoftwareModalComponent implements OnInit {
       },
       () => {
         // L'utente ha annullato, non fare nulla
-      }
+      },
     );
   }
 
@@ -182,17 +300,22 @@ export class SoftwareModalComponent implements OnInit {
     console.log('Ambiente selezionato value:', value, typeof value);
     const ambienteId = Number(value);
     console.log('Ambiente ID convertito:', ambienteId);
-    
+
     if (ambienteId && ambienteId !== 0) {
-      const ambienteSelezionato = this.ambientiDisponibili.find(a => a.id === ambienteId);
+      const ambienteSelezionato = this.ambientiDisponibili.find(
+        (a) => a.id === ambienteId,
+      );
       console.log('Ambiente trovato:', ambienteSelezionato);
-      
-      if (ambienteSelezionato && !this.nuovoSoftware.ambienti.find(a => a.id === ambienteId)) {
+
+      if (
+        ambienteSelezionato &&
+        !this.nuovoSoftware.ambienti.find((a) => a.id === ambienteId)
+      ) {
         this.nuovoSoftware.ambienti.push(ambienteSelezionato);
         console.log('Ambienti dopo aggiunta:', this.nuovoSoftware.ambienti);
         this.onFieldChange();
       }
-      
+
       // Resetta la selezione
       this.ambienteSelezionatoId = 0;
     }
@@ -205,24 +328,29 @@ export class SoftwareModalComponent implements OnInit {
 
   // Rimuove un ambiente dalla lista
   rimuoviAmbiente(ambienteId: number) {
-    this.nuovoSoftware.ambienti = this.nuovoSoftware.ambienti.filter(a => a.id !== ambienteId);
+    this.nuovoSoftware.ambienti = this.nuovoSoftware.ambienti.filter(
+      (a) => a.id !== ambienteId,
+    );
     this.onFieldChange();
   }
 
   // Controlla se un ambiente è già stato selezionato
   isAmbienteGiaSelezionato(ambienteId: number): boolean {
-    return this.nuovoSoftware.ambienti.some(a => a.id === ambienteId);
+    return this.nuovoSoftware.ambienti.some((a) => a.id === ambienteId);
   }
 
   // Minimizza la modale salvando i dati nel servizio
   minimizeModal() {
-    const modalId = this.modalId || this.minimizedModalsService.generateModalId(
-      'software', 
-      this.software ? 'edit' : 'add',
-      this.software?.id
-    );
+    const modalId =
+      this.modalId ||
+      this.minimizedModalsService.generateModalId(
+        'software',
+        this.software ? 'edit' : 'add',
+        this.software?.id,
+      );
 
-    const description = this.nuovoSoftware.descrizione || 
+    const description =
+      this.nuovoSoftware.descrizione ||
       (this.software ? this.software.descrizione : 'Nuovo Software');
 
     // Crea una copia completa dei dati del form inclusi i campi di selezione
@@ -230,7 +358,7 @@ export class SoftwareModalComponent implements OnInit {
       ...this.nuovoSoftware,
       ambienteSelezionatoId: this.ambienteSelezionatoId,
       // Salva anche lo stato originale per riferimento
-      originalData: this.originalData
+      originalData: this.originalData,
     };
 
     this.minimizedModalsService.addMinimizedModal({
@@ -239,7 +367,7 @@ export class SoftwareModalComponent implements OnInit {
       section: 'software',
       description: description,
       data: this.software,
-      formData: formDataToSave
+      formData: formDataToSave,
     });
 
     this.hasUnsavedChanges = false;
