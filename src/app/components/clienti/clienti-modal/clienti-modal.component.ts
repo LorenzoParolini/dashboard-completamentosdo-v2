@@ -61,9 +61,6 @@ export class ClientiModalComponent implements OnInit {
     private minimizedModalsService: MinimizedModalsService,
   ) {}
 
-  getLength(): number {
-    return this.clientiService.length();
-  }
 
   ngOnInit() {
     // Carica regioni disponibili
@@ -103,11 +100,6 @@ export class ClientiModalComponent implements OnInit {
 
     if (!this.cliente) {
       console.log('Modalità aggiunta - Nuovo cliente');
-      // Inizializza l'ID solo qui, quando il servizio è disponibile
-      // Solo se non abbiamo già dati ripristinati
-      if (!this.isRestoredFromMinimized && this.nuovoCliente.id === 0) {
-        this.nuovoCliente.id = this.getLength() + 1;
-      }
       this.originalData = {
         ...this.nuovoCliente,
         regione: { ...this.nuovoCliente.regione },

@@ -1,25 +1,25 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, Input, HostListener } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NgbActiveModal, NgbModule, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import {
+  NgbActiveModal,
+  NgbModule,
+  NgbModal,
+} from '@ng-bootstrap/ng-bootstrap';
 import { Ambiente } from '../../../models/ambiente.model';
 import { AmbientiService } from '../../../services/ambienti.service';
 import { MinimizedModalsService } from '../../../services/minimized-modals.service';
 import { ConfirmationModalComponent } from '../../confirmation-modal/confirmation-modal.component';
 
-
 export interface AmbientiDialogData {
   ambiente?: Ambiente;
 }
-
-
 
 @Component({
   selector: 'app-ambienti-modal',
   imports: [CommonModule, FormsModule, NgbModule],
   templateUrl: './ambienti-modal.component.html',
   styleUrls: ['./ambienti-modal.component.css'],
-  
 })
 export class AmbientiModalComponent implements OnInit {
   @Input() ambiente?: Ambiente;
@@ -31,50 +31,40 @@ export class AmbientiModalComponent implements OnInit {
     id: 0,
     descrizione: '',
     note: '',
-    dataCreazione: new Date()
+    dataCreazione: new Date(),
   };
 
   private originalData: Ambiente = {
     id: 0,
     descrizione: '',
     note: '',
-    dataCreazione: new Date()
+    dataCreazione: new Date(),
   };
 
   private hasUnsavedChanges = false;
 
-  
   constructor(
-    public activeModal: NgbActiveModal, 
+    public activeModal: NgbActiveModal,
     private ambientiService: AmbientiService,
     private modalService: NgbModal,
-    private minimizedModalsService: MinimizedModalsService
-  ) {
-  }
+    private minimizedModalsService: MinimizedModalsService,
+  ) {}
 
-  getLength(): number {
-    return this.ambientiService.length();
-  }
 
   ngOnInit() {
     if (this.ambiente) {
       // Solo se non abbiamo già dati ripristinati da una modale minimizzata
       if (!this.isRestoredFromMinimized) {
         this.nuovoAmbiente = {
-          ...this.ambiente
+          ...this.ambiente,
         };
       }
       this.originalData = {
-        ...this.ambiente
+        ...this.ambiente,
       };
     } else {
-      // Inizializza l'ID solo qui, quando il servizio è disponibile
-      // Solo se non abbiamo già dati ripristinati
-      if (!this.isRestoredFromMinimized && this.nuovoAmbiente.id === 0) {
-        this.nuovoAmbiente.id = this.getLength() + 1;
-      }
       this.originalData = {
-        ...this.nuovoAmbiente
+        ...this.nuovoAmbiente,
       };
     }
   }
@@ -116,11 +106,12 @@ export class AmbientiModalComponent implements OnInit {
   private showUnsavedChangesConfirmation() {
     const modalRef = this.modalService.open(ConfirmationModalComponent, {
       centered: true,
-      backdrop: 'static'
+      backdrop: 'static',
     });
 
     modalRef.componentInstance.title = 'Modifiche non salvate';
-    modalRef.componentInstance.message = 'Hai modifiche non salvate. Sei sicuro di voler chiudere senza salvare?';
+    modalRef.componentInstance.message =
+      'Hai modifiche non salvate. Sei sicuro di voler chiudere senza salvare?';
     modalRef.componentInstance.confirmText = 'Chiudi senza salvare';
     modalRef.componentInstance.cancelText = 'Continua modifica';
     modalRef.componentInstance.confirmButtonClass = 'btn-warning';
@@ -135,7 +126,7 @@ export class AmbientiModalComponent implements OnInit {
       },
       () => {
         // L'utente ha annullato, non fare nulla
-      }
+      },
     );
   }
 
@@ -147,20 +138,23 @@ export class AmbientiModalComponent implements OnInit {
 
   // Minimizza la modale salvando i dati nel servizio
   minimizeModal() {
-    const modalId = this.modalId || this.minimizedModalsService.generateModalId(
-      'ambienti', 
-      this.ambiente ? 'edit' : 'add',
-      this.ambiente?.id
-    );
+    const modalId =
+      this.modalId ||
+      this.minimizedModalsService.generateModalId(
+        'ambienti',
+        this.ambiente ? 'edit' : 'add',
+        this.ambiente?.id,
+      );
 
-    const description = this.nuovoAmbiente.descrizione || 
+    const description =
+      this.nuovoAmbiente.descrizione ||
       (this.ambiente ? this.ambiente.descrizione : 'Nuovo Ambiente');
 
     // Crea una copia completa dei dati del form
     const formDataToSave = {
       ...this.nuovoAmbiente,
       // Salva anche lo stato originale per riferimento
-      originalData: this.originalData
+      originalData: this.originalData,
     };
 
     this.minimizedModalsService.addMinimizedModal({
@@ -169,7 +163,7 @@ export class AmbientiModalComponent implements OnInit {
       section: 'ambienti',
       description: description,
       data: this.ambiente,
-      formData: formDataToSave
+      formData: formDataToSave,
     });
 
     this.hasUnsavedChanges = false;

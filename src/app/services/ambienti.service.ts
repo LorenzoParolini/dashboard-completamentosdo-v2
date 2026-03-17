@@ -8,32 +8,7 @@ import { Observable, of, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { Ambiente, AmbienteInputDTO } from '../models/ambiente.model';
 
-export const ambienti: Ambiente[] = [
-  {
-    id: 1,
-    descrizione: 'DEV',
-    dataCreazione: new Date('2024-01-10'),
-    note: 'Ambiente di sviluppo',
-  },
-  {
-    id: 2,
-    descrizione: 'TEST',
-    dataCreazione: new Date('2024-02-15'),
-    note: 'Ambiente di test funzionale',
-  },
-  {
-    id: 3,
-    descrizione: 'PROD',
-    dataCreazione: new Date('2024-03-01'),
-    note: 'Ambiente di produzione',
-  },
-  {
-    id: 4,
-    descrizione: 'STAGING',
-    dataCreazione: new Date('2024-04-05'),
-    note: 'Ambiente di pre-produzione',
-  },
-];
+
 
 @Injectable({
   providedIn: 'root',
@@ -124,7 +99,4 @@ export class AmbientiService {
       );
   }
 
-  length(): number {
-    return ambienti.length;
-  }
 }

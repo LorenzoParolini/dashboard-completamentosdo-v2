@@ -1,7 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, Input, HostListener } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NgbActiveModal, NgbModule, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import {
+  NgbActiveModal,
+  NgbModule,
+  NgbModal,
+} from '@ng-bootstrap/ng-bootstrap';
 import { Regione } from '../../../models/regione.model';
 import { RegioniService } from '../../../services/regioni.service';
 import { MinimizedModalsService } from '../../../services/minimized-modals.service';
@@ -10,7 +14,6 @@ import { ConfirmationModalComponent } from '../../confirmation-modal/confirmatio
 export interface DialogData {
   regione?: Regione;
 }
-
 
 @Component({
   selector: 'app-regioni-modal',
@@ -28,7 +31,7 @@ export class RegioniModalComponent implements OnInit {
     descrizione: '',
     codice: '',
     x: 0,
-    y: 0
+    y: 0,
   };
 
   private originalData: Regione = {
@@ -36,22 +39,19 @@ export class RegioniModalComponent implements OnInit {
     descrizione: '',
     codice: '',
     x: 0,
-    y: 0
+    y: 0,
   };
 
   private hasUnsavedChanges = false;
 
   constructor(
-    public activeModal: NgbActiveModal, 
+    public activeModal: NgbActiveModal,
     private regioniService: RegioniService,
     private modalService: NgbModal,
-    private minimizedModalsService: MinimizedModalsService
-  ) {
-  }
+    private minimizedModalsService: MinimizedModalsService,
+  ) {}
 
-  getLength(): number {
-    return this.regioniService.length();
-  }
+
 
   ngOnInit() {
     if (this.regione) {
@@ -60,26 +60,20 @@ export class RegioniModalComponent implements OnInit {
         this.nuovaRegione = {
           ...this.regione,
           x: this.regione.x ?? 0,
-          y: this.regione.y ?? 0
+          y: this.regione.y ?? 0,
         };
       }
       this.originalData = {
         ...this.regione,
         x: this.regione.x ?? 0,
-        y: this.regione.y ?? 0
+        y: this.regione.y ?? 0,
       };
-    } else {
-      // Inizializza l'ID solo qui, quando il servizio è disponibile
-      // Solo se non abbiamo già dati ripristinati
-      if (!this.isRestoredFromMinimized && this.nuovaRegione.id === 0) {
-        this.nuovaRegione.id = this.getLength() + 1;
-      }
-    }
+    } 
 
     // Imposta originalData dopo aver inizializzato nuovaRegione
     if (!this.originalData.id) {
       this.originalData = {
-        ...this.nuovaRegione
+        ...this.nuovaRegione,
       };
     }
   }
@@ -122,11 +116,12 @@ export class RegioniModalComponent implements OnInit {
   private showUnsavedChangesConfirmation() {
     const modalRef = this.modalService.open(ConfirmationModalComponent, {
       centered: true,
-      backdrop: 'static'
+      backdrop: 'static',
     });
 
     modalRef.componentInstance.title = 'Modifiche non salvate';
-    modalRef.componentInstance.message = 'Hai modifiche non salvate. Sei sicuro di voler chiudere senza salvare?';
+    modalRef.componentInstance.message =
+      'Hai modifiche non salvate. Sei sicuro di voler chiudere senza salvare?';
     modalRef.componentInstance.confirmText = 'Chiudi senza salvare';
     modalRef.componentInstance.cancelText = 'Continua modifica';
     modalRef.componentInstance.confirmButtonClass = 'btn-warning';
@@ -141,7 +136,7 @@ export class RegioniModalComponent implements OnInit {
       },
       () => {
         // L'utente ha annullato, non fare nulla
-      }
+      },
     );
   }
 
@@ -153,20 +148,23 @@ export class RegioniModalComponent implements OnInit {
 
   // Minimizza la modale salvando i dati nel servizio
   minimizeModal() {
-    const modalId = this.modalId || this.minimizedModalsService.generateModalId(
-      'regioni', 
-      this.regione ? 'edit' : 'add',
-      this.regione?.id
-    );
+    const modalId =
+      this.modalId ||
+      this.minimizedModalsService.generateModalId(
+        'regioni',
+        this.regione ? 'edit' : 'add',
+        this.regione?.id,
+      );
 
-    const description = this.nuovaRegione.descrizione || 
+    const description =
+      this.nuovaRegione.descrizione ||
       (this.regione ? this.regione.descrizione : 'Nuova Regione');
 
     // Crea una copia completa dei dati del form
     const formDataToSave = {
       ...this.nuovaRegione,
       // Salva anche lo stato originale per riferimento
-      originalData: this.originalData
+      originalData: this.originalData,
     };
 
     this.minimizedModalsService.addMinimizedModal({
@@ -175,11 +173,10 @@ export class RegioniModalComponent implements OnInit {
       section: 'regioni',
       description: description,
       data: this.regione,
-      formData: formDataToSave
+      formData: formDataToSave,
     });
 
     this.hasUnsavedChanges = false;
     this.activeModal.dismiss();
   }
-
 }

@@ -62,9 +62,7 @@ export class SoftwareModalComponent implements OnInit {
     private minimizedModalsService: MinimizedModalsService,
   ) {}
 
-  getLength(): number {
-    return this.softwareService.length();
-  }
+  
 
   ngOnInit() {
     // Carica gli ambienti dal servizio
@@ -103,11 +101,7 @@ export class SoftwareModalComponent implements OnInit {
       console.log('Ambienti del software:', this.nuovoSoftware.ambienti);
     } else {
       console.log('Modalità aggiunta - Nuovo software');
-      // Inizializza l'ID solo qui, quando il servizio è disponibile
-      // Solo se non abbiamo già dati ripristinati
-      if (!this.isRestoredFromMinimized && this.nuovoSoftware.id === 0) {
-        this.nuovoSoftware.id = this.getLength() + 1;
-      }
+      
 
       this.nuovoSoftware = {
         ...this.nuovoSoftware,

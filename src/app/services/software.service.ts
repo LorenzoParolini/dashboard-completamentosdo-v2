@@ -9,45 +9,9 @@ import { catchError, tap } from 'rxjs/operators';
 import { Software, SoftwareInputDTO } from '../models/software.model';
 import { Ambiente } from '../models/ambiente.model';
 
-const ambientiBase: Ambiente[] = [
-  {
-    id: 1,
-    descrizione: 'DEV',
-    dataCreazione: new Date('2024-01-10'),
-    note: 'Ambiente di sviluppo',
-  },
-  {
-    id: 2,
-    descrizione: 'TEST',
-    dataCreazione: new Date('2024-02-15'),
-    note: 'Ambiente di test funzionale',
-  },
-  {
-    id: 3,
-    descrizione: 'PROD',
-    dataCreazione: new Date('2024-03-20'),
-    note: 'Ambiente di produzione',
-  },
-];
 
-export const software: Software[] = [
-  {
-    id: 1,
-    descrizione: 'Gestionale ERP',
-    note: 'Software gestionale aziendale',
-    ambienti: ambientiBase,
-    versioneCorrente: '2.3.1',
-    dataUltimoAggiornamento: '2024-07-01T10:30:00',
-  },
-  {
-    id: 2,
-    descrizione: 'CRM Web',
-    note: 'Gestione clienti e contatti',
-    ambienti: ambientiBase,
-    versioneCorrente: '1.8.0',
-    dataUltimoAggiornamento: '2024-06-15T09:15:00',
-  },
-];
+
+
 
 @Injectable({
   providedIn: 'root',
@@ -136,7 +100,5 @@ export class SoftwareService {
       );
   }
 
-  length(): number {
-    return software.length;
-  }
+  
 }

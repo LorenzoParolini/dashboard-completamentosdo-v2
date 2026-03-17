@@ -8,62 +8,6 @@ import { Observable, of, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { Cliente, ClienteInputDTO } from '../models/cliente.model';
 
-export const clienti: Cliente[] = [
-  {
-    id: 1,
-    descrizione: 'Azienda Nord Italia',
-    regione: {
-      id: 1,
-      descrizione: 'Lombardia',
-      codice: 'LOM',
-      x: 45.4642,
-      y: 9.19,
-    },
-    software: [
-      {
-        id: 1,
-        descrizione: 'Gestionale ERP',
-        note: 'Software gestionale aziendale',
-        ambienti: [],
-        versioneCorrente: '2.3.1',
-        dataUltimoAggiornamento: '2024-07-01T10:30:00',
-      },
-    ],
-  },
-  {
-    id: 2,
-    descrizione: 'Società Sud Italia',
-    regione: {
-      id: 8,
-      descrizione: 'Campania',
-      codice: 'CAM',
-      x: 40.8518,
-      y: 14.2681,
-    },
-    software: [
-      {
-        id: 2,
-        descrizione: 'CRM Web',
-        note: 'Gestione clienti e contatti',
-        ambienti: [],
-        versioneCorrente: '1.8.0',
-        dataUltimoAggiornamento: '2024-06-15T09:15:00',
-      },
-    ],
-  },
-  {
-    id: 3,
-    descrizione: 'Gruppo Centro Italia',
-    regione: {
-      id: 7,
-      descrizione: 'Toscana',
-      codice: 'TOS',
-      x: 43.7696,
-      y: 11.2558,
-    },
-    software: [],
-  },
-];
 
 @Injectable({
   providedIn: 'root',
@@ -149,7 +93,4 @@ export class ClientiService {
     );
   }
 
-  length(): number {
-    return clienti.length;
-  }
 }
