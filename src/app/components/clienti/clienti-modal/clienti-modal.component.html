@@ -73,6 +73,11 @@
           <div class="form-grid">
             <div class="form-field form-field-full">
               <label class="form-label">Descrizione Cliente</label>
+              <!--
+                Validazione descrizione guidata da DTO:
+                blur attiva il controllo, ngClass colora il bordo,
+                field-error mostra il messaggio specifico.
+              -->
               <input
                 type="text"
                 [(ngModel)]="nuovoCliente.descrizione"
@@ -80,17 +85,31 @@
                 placeholder="Inserisci la descrizione del cliente"
                 class="form-input"
                 (input)="onFieldChange()"
+                (blur)="onFieldBlur('descrizione')"
+                [ngClass]="{
+                  'field-invalid': isFieldInvalid('descrizione'),
+                  'field-valid': isFieldValid('descrizione'),
+                }"
                 required
               />
+              <div class="field-error" *ngIf="isFieldInvalid('descrizione')">
+                {{ getDescrizioneError() }}
+              </div>
             </div>
 
             <div class="form-field form-field-full">
               <label class="form-label">Regione</label>
+              <!-- Regione obbligatoria: se non selezionata, bordo rosso + messaggio -->
               <select
                 [(ngModel)]="nuovoCliente.regione.id"
                 (change)="onRegioneChange($event)"
                 name="regione"
                 class="form-select"
+                (blur)="onFieldBlur('regione')"
+                [ngClass]="{
+                  'field-invalid': isFieldInvalid('regione'),
+                  'field-valid': isFieldValid('regione'),
+                }"
                 required
               >
                 <option [value]="0" *ngIf="!cliente">
@@ -103,6 +122,9 @@
                   {{ regione.descrizione }}
                 </option>
               </select>
+              <div class="field-error" *ngIf="isFieldInvalid('regione')">
+                {{ getRegioneError() }}
+              </div>
             </div>
           </div>
 

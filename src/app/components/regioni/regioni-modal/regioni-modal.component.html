@@ -3,17 +3,45 @@
     <!-- Header -->
     <div class="modal-header">
       <div class="modal-title-section">
-        <h2 class="modal-title">{{ regione ? 'Modifica Regione' : 'Aggiungi Regione' }}</h2>
-        <span class="modal-subtitle">{{ regione ? 'Aggiorna i dati della regione' : 'Inserisci i dati della nuova regione' }}</span>
+        <h2 class="modal-title">
+          {{ regione ? "Modifica Regione" : "Aggiungi Regione" }}
+        </h2>
+        <span class="modal-subtitle">{{
+          regione
+            ? "Aggiorna i dati della regione"
+            : "Inserisci i dati della nuova regione"
+        }}</span>
       </div>
       <div class="modal-actions">
-        <button class="minimize-button" (click)="minimizeModal()" aria-label="Minimizza modale">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <button
+          class="minimize-button"
+          (click)="minimizeModal()"
+          aria-label="Minimizza modale"
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
             <line x1="5" y1="12" x2="19" y2="12"></line>
           </svg>
         </button>
-        <button class="close-button" (click)="closeModal()" aria-label="Chiudi modale">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <button
+          class="close-button"
+          (click)="closeModal()"
+          aria-label="Chiudi modale"
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
@@ -26,7 +54,14 @@
       <div class="form-section">
         <div class="section-header">
           <h3 class="section-title">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
               <circle cx="12" cy="10" r="3"></circle>
             </svg>
@@ -38,6 +73,7 @@
           <div class="form-grid">
             <div class="form-field">
               <label class="form-label">Descrizione</label>
+              <!-- Feedback DTO su descrizione: blur -> stato touched -> bordo + messaggio -->
               <input
                 type="text"
                 [(ngModel)]="nuovaRegione.descrizione"
@@ -45,12 +81,21 @@
                 placeholder="Inserisci la descrizione"
                 class="form-input"
                 (input)="onFieldChange()"
+                (blur)="onFieldBlur('descrizione')"
+                [ngClass]="{
+                  'field-invalid': isFieldInvalid('descrizione'),
+                  'field-valid': isFieldValid('descrizione'),
+                }"
                 required
               />
+              <div class="field-error" *ngIf="isFieldInvalid('descrizione')">
+                {{ getDescrizioneError() }}
+              </div>
             </div>
 
             <div class="form-field">
               <label class="form-label">Codice</label>
+              <!-- Stesso flusso validazione per il codice (obbligatorio, 2..10) -->
               <input
                 type="text"
                 [(ngModel)]="nuovaRegione.codice"
@@ -58,8 +103,16 @@
                 placeholder="Inserisci il codice"
                 class="form-input"
                 (input)="onFieldChange()"
+                (blur)="onFieldBlur('codice')"
+                [ngClass]="{
+                  'field-invalid': isFieldInvalid('codice'),
+                  'field-valid': isFieldValid('codice'),
+                }"
                 required
               />
+              <div class="field-error" *ngIf="isFieldInvalid('codice')">
+                {{ getCodiceError() }}
+              </div>
             </div>
 
             <div class="form-field">
@@ -94,12 +147,21 @@
               Annulla
             </button>
             <button type="submit" class="btn-primary">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
+                ></path>
                 <polyline points="17,21 17,13 7,13 7,21"></polyline>
                 <polyline points="7,3 7,8 15,8"></polyline>
               </svg>
-              {{ regione ? 'Salva' : 'Aggiungi' }}
+              {{ regione ? "Salva" : "Aggiungi" }}
             </button>
           </div>
         </form>

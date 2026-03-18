@@ -138,6 +138,37 @@
   @apply bg-white shadow-md;
 }
 
+/* Stato invalid: evidenzia subito il campo in errore */
+.form-input.field-invalid,
+.form-select.field-invalid {
+  @apply border-red-500 ring-1 ring-red-500 bg-red-50;
+}
+
+:host-context(.dark) .form-input.field-invalid,
+:host-context(.dark) .form-select.field-invalid {
+  @apply border-red-400 ring-red-400 bg-red-900/20;
+}
+
+/* Stato valid: conferma visiva quando il campo rispetta il vincolo */
+.form-input.field-valid,
+.form-select.field-valid {
+  @apply border-emerald-500 ring-1 ring-emerald-500 bg-emerald-50;
+}
+
+:host-context(.dark) .form-input.field-valid,
+:host-context(.dark) .form-select.field-valid {
+  @apply border-emerald-400 ring-emerald-400 bg-emerald-900/20;
+}
+
+/* Messaggio errore mostrato sotto al controllo */
+.field-error {
+  @apply text-red-600 text-xs font-medium mt-1;
+}
+
+:host-context(.dark) .field-error {
+  @apply text-red-400;
+}
+
 /* Dark theme support for focused inputs */
 :host-context(.dark) .form-input:focus,
 :host-context(.dark) .form-select:focus {

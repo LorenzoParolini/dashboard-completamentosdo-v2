@@ -54,6 +54,14 @@ export class SoftwareModalComponent implements OnInit {
 
   private hasUnsavedChanges = false;
 
+  // Tracciamo il blur dei campi che hanno regole specifiche nel DTO.
+  // Questo evita feedback prematuri mentre l'utente sta scrivendo.
+  touchedFields = {
+    descrizione: false,
+    note: false,
+    versioneCorrente: false,
+  };
+
   constructor(
     public activeModal: NgbActiveModal,
     private softwareService: SoftwareService,
@@ -61,8 +69,6 @@ export class SoftwareModalComponent implements OnInit {
     private modalService: NgbModal,
     private minimizedModalsService: MinimizedModalsService,
   ) {}
-
-  
 
   ngOnInit() {
     // Carica gli ambienti dal servizio
@@ -101,7 +107,6 @@ export class SoftwareModalComponent implements OnInit {
       console.log('Ambienti del software:', this.nuovoSoftware.ambienti);
     } else {
       console.log('Modalità aggiunta - Nuovo software');
-      
 
       this.nuovoSoftware = {
         ...this.nuovoSoftware,
@@ -123,6 +128,101 @@ export class SoftwareModalComponent implements OnInit {
 
   onFieldChange() {
     this.hasUnsavedChanges = this.checkForChanges();
+  }
+
+  // Attiva validazione visuale (errore/ok) quando il campo perde il focus.
+  onFieldBlur(field: keyof typeof this.touchedFields) {
+    this.touchedFields[field] = true;
+  }
+
+  // Al submit, trattiamo tutti i campi come "toccati" per mostrare
+  // eventuali errori anche su campi non visitati.
+  private markAllFieldsAsTouched() {
+    this.touchedFields.descrizione = true;
+    this.touchedFields.note = true;
+    this.touchedFields.versioneCorrente = true;
+  }
+
+  // Normalizza stringhe in input per coerenza tra validazione e salvataggio.
+  private normalizeText(value?: string | null): string {
+    return (value ?? '').trim();
+  }
+
+  // Vincolo SoftwareInputDTO: descrizione obbligatoria, 3..100 caratteri.
+  isDescrizioneValid(): boolean {
+    const descrizione = this.normalizeText(this.nuovoSoftware.descrizione);
+    return descrizione.length >= 3 && descrizione.length <= 100;
+  }
+
+  // Messaggio puntuale per i diversi casi di errore sulla descrizione.
+  getDescrizioneError(): string {
+    const descrizione = this.normalizeText(this.nuovoSoftware.descrizione);
+    if (!descrizione) {
+      return 'Descrizione obbligatoria';
+    }
+    if (descrizione.length < 3 || descrizione.length > 100) {
+      return 'La descrizione deve essere tra 3 e 100 caratteri';
+    }
+    return '';
+  }
+
+  // Vincolo SoftwareInputDTO: note opzionali ma max 500 caratteri.
+  isNoteValid(): boolean {
+    return (this.nuovoSoftware.note ?? '').length <= 500;
+  }
+
+  // Messaggio per overflow lunghezza note.
+  getNoteError(): string {
+    if ((this.nuovoSoftware.note ?? '').length > 500) {
+      return 'Le note non possono superare 500 caratteri';
+    }
+    return '';
+  }
+
+  // Vincolo SoftwareInputDTO: versioneCorrente max 50 caratteri.
+  isVersioneCorrenteValid(): boolean {
+    return (this.nuovoSoftware.versioneCorrente ?? '').length <= 50;
+  }
+
+  // Messaggio per overflow lunghezza versione.
+  getVersioneCorrenteError(): string {
+    if ((this.nuovoSoftware.versioneCorrente ?? '').length > 50) {
+      return 'La versione non può superare 50 caratteri';
+    }
+    return '';
+  }
+
+  // Un campo è invalid quando è stato toccato e non rispetta il suo vincolo.
+  // Usato da template per bordo rosso e messaggio.
+  isFieldInvalid(field: 'descrizione' | 'note' | 'versioneCorrente'): boolean {
+    if (!this.touchedFields[field]) {
+      return false;
+    }
+
+    if (field === 'descrizione') {
+      return !this.isDescrizioneValid();
+    }
+
+    if (field === 'note') {
+      return !this.isNoteValid();
+    }
+
+    return !this.isVersioneCorrenteValid();
+  }
+
+  // Un campo è valid quando è toccato e non invalid.
+  // Usato da template per bordo verde.
+  isFieldValid(field: 'descrizione' | 'note' | 'versioneCorrente'): boolean {
+    return this.touchedFields[field] && !this.isFieldInvalid(field);
+  }
+
+  // Validazione complessiva chiamata prima del submit.
+  private isFormValid(): boolean {
+    return (
+      this.isDescrizioneValid() &&
+      this.isNoteValid() &&
+      this.isVersioneCorrenteValid()
+    );
   }
 
   private formatLocalDateTime(
@@ -237,6 +337,19 @@ export class SoftwareModalComponent implements OnInit {
   }
 
   salva() {
+    // Mostra feedback su tutti i campi vincolati al click su "Salva".
+    this.markAllFieldsAsTouched();
+
+    // Interrompe il submit se uno dei vincoli DTO non passa.
+    if (!this.isFormValid()) {
+      return;
+    }
+
+    // Normalizzazione finale dei testi prima di chiudere la modale.
+    this.nuovoSoftware.descrizione = this.normalizeText(
+      this.nuovoSoftware.descrizione,
+    );
+
     const normalizedDateTime = this.toBackendLocalDateTime(
       this.nuovoSoftware.dataUltimoAggiornamento || new Date(),
     );

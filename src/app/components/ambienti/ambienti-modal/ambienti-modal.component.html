@@ -3,17 +3,45 @@
     <!-- Header -->
     <div class="modal-header">
       <div class="modal-title-section">
-        <h2 class="modal-title">{{ ambiente ? 'Modifica Ambiente' : 'Aggiungi Ambiente' }}</h2>
-        <span class="modal-subtitle">{{ ambiente ? 'Aggiorna i dati dell\'ambiente' : 'Inserisci i dati del nuovo ambiente' }}</span>
+        <h2 class="modal-title">
+          {{ ambiente ? "Modifica Ambiente" : "Aggiungi Ambiente" }}
+        </h2>
+        <span class="modal-subtitle">{{
+          ambiente
+            ? "Aggiorna i dati dell'ambiente"
+            : "Inserisci i dati del nuovo ambiente"
+        }}</span>
       </div>
       <div class="modal-actions">
-        <button class="minimize-button" (click)="minimizeModal()" aria-label="Minimizza modale">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <button
+          class="minimize-button"
+          (click)="minimizeModal()"
+          aria-label="Minimizza modale"
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
             <line x1="5" y1="12" x2="19" y2="12"></line>
           </svg>
         </button>
-        <button class="close-button" (click)="closeModal()" aria-label="Chiudi modale">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <button
+          class="close-button"
+          (click)="closeModal()"
+          aria-label="Chiudi modale"
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
@@ -26,7 +54,14 @@
       <div class="form-section">
         <div class="section-header">
           <h3 class="section-title">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
               <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
               <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
             </svg>
@@ -38,6 +73,12 @@
           <div class="form-grid">
             <div class="form-field form-field-full">
               <label class="form-label">Descrizione Ambiente</label>
+              <!--
+                Feedback campo descrizione:
+                - blur => il campo diventa "toccato"
+                - ngClass => bordo rosso/verde
+                - field-error => messaggio del vincolo DTO
+              -->
               <input
                 type="text"
                 [(ngModel)]="nuovoAmbiente.descrizione"
@@ -45,8 +86,16 @@
                 placeholder="Inserisci la descrizione dell'ambiente"
                 class="form-input"
                 (input)="onFieldChange()"
+                (blur)="onFieldBlur('descrizione')"
+                [ngClass]="{
+                  'field-invalid': isFieldInvalid('descrizione'),
+                  'field-valid': isFieldValid('descrizione'),
+                }"
                 required
               />
+              <div class="field-error" *ngIf="isFieldInvalid('descrizione')">
+                {{ getDescrizioneError() }}
+              </div>
             </div>
 
             <div class="form-field">
@@ -62,14 +111,23 @@
 
             <div class="form-field form-field-full">
               <label class="form-label">Note</label>
+              <!-- Stessa logica feedback del campo descrizione, ma con regola max 500 caratteri -->
               <textarea
                 [(ngModel)]="nuovoAmbiente.note"
                 name="note"
                 placeholder="Note opzionali sull'ambiente"
                 class="form-textarea"
                 (input)="onFieldChange()"
+                (blur)="onFieldBlur('note')"
+                [ngClass]="{
+                  'field-invalid': isFieldInvalid('note'),
+                  'field-valid': isFieldValid('note'),
+                }"
                 rows="4"
               ></textarea>
+              <div class="field-error" *ngIf="isFieldInvalid('note')">
+                {{ getNoteError() }}
+              </div>
             </div>
           </div>
 
@@ -78,12 +136,21 @@
               Annulla
             </button>
             <button type="submit" class="btn-primary">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
+                ></path>
                 <polyline points="17,21 17,13 7,13 7,21"></polyline>
                 <polyline points="7,3 7,8 15,8"></polyline>
               </svg>
-              {{ ambiente ? 'Salva' : 'Aggiungi' }}
+              {{ ambiente ? "Salva" : "Aggiungi" }}
             </button>
           </div>
         </form>

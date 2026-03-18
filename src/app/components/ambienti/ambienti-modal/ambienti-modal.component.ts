@@ -43,13 +43,19 @@ export class AmbientiModalComponent implements OnInit {
 
   private hasUnsavedChanges = false;
 
+  // Segna se l'utente ha già lasciato (blur) il campo.
+  // Serve a non mostrare errori mentre sta ancora digitando per la prima volta.
+  touchedFields = {
+    descrizione: false,
+    note: false,
+  };
+
   constructor(
     public activeModal: NgbActiveModal,
     private ambientiService: AmbientiService,
     private modalService: NgbModal,
     private minimizedModalsService: MinimizedModalsService,
   ) {}
-
 
   ngOnInit() {
     if (this.ambiente) {
@@ -73,6 +79,79 @@ export class AmbientiModalComponent implements OnInit {
     this.hasUnsavedChanges = this.checkForChanges();
   }
 
+  // Al blur abilitiamo la validazione visuale per il campo specifico.
+  onFieldBlur(field: keyof typeof this.touchedFields) {
+    this.touchedFields[field] = true;
+  }
+
+  // Quando l'utente preme "Salva", forziamo la visualizzazione di tutti
+  // gli errori dei campi con vincoli DTO.
+  private markAllFieldsAsTouched() {
+    this.touchedFields.descrizione = true;
+    this.touchedFields.note = true;
+  }
+
+  // Uniforma i controlli sulle stringhe (evita spazi iniziali/finali).
+  private normalizeText(value?: string | null): string {
+    return (value ?? '').trim();
+  }
+
+  // Vincolo allineato a AmbienteInputDTO: descrizione obbligatoria 3..100.
+  isDescrizioneValid(): boolean {
+    const descrizione = this.normalizeText(this.nuovoAmbiente.descrizione);
+    return descrizione.length >= 3 && descrizione.length <= 100;
+  }
+
+  // Ritorna il messaggio puntuale da mostrare sotto il campo descrizione.
+  getDescrizioneError(): string {
+    const descrizione = this.normalizeText(this.nuovoAmbiente.descrizione);
+    if (!descrizione) {
+      return 'Descrizione obbligatoria';
+    }
+    if (descrizione.length < 3 || descrizione.length > 100) {
+      return 'La descrizione deve essere tra 3 e 100 caratteri';
+    }
+    return '';
+  }
+
+  // Vincolo allineato a AmbienteInputDTO: note opzionali max 500 caratteri.
+  isNoteValid(): boolean {
+    return (this.nuovoAmbiente.note ?? '').length <= 500;
+  }
+
+  // Messaggio mostrato solo quando la lunghezza delle note supera il limite.
+  getNoteError(): string {
+    if ((this.nuovoAmbiente.note ?? '').length > 500) {
+      return 'Le note non possono superare 500 caratteri';
+    }
+    return '';
+  }
+
+  // Campo non valido se: è già stato toccato e la sua regola DTO non passa.
+  // Questo pilota sia il messaggio rosso sia il bordo rosso.
+  isFieldInvalid(field: 'descrizione' | 'note'): boolean {
+    if (!this.touchedFields[field]) {
+      return false;
+    }
+
+    if (field === 'descrizione') {
+      return !this.isDescrizioneValid();
+    }
+
+    return !this.isNoteValid();
+  }
+
+  // Campo valido se è stato toccato e non è invalid.
+  // Questo pilota il bordo verde.
+  isFieldValid(field: 'descrizione' | 'note'): boolean {
+    return this.touchedFields[field] && !this.isFieldInvalid(field);
+  }
+
+  // Validazione complessiva usata prima di chiudere la modale con "Salva".
+  private isFormValid(): boolean {
+    return this.isDescrizioneValid() && this.isNoteValid();
+  }
+
   private checkForChanges(): boolean {
     return (
       this.nuovoAmbiente.descrizione !== this.originalData.descrizione ||
@@ -88,6 +167,19 @@ export class AmbientiModalComponent implements OnInit {
   }
 
   salva() {
+    // Prima del submit mostriamo eventuali errori su tutti i campi vincolati.
+    this.markAllFieldsAsTouched();
+
+    // Se i vincoli DTO non sono rispettati, blocchiamo il salvataggio.
+    if (!this.isFormValid()) {
+      return;
+    }
+
+    // Normalizzazione finale prima di inviare l'oggetto al chiamante.
+    this.nuovoAmbiente.descrizione = this.normalizeText(
+      this.nuovoAmbiente.descrizione,
+    );
+
     if (!this.nuovoAmbiente.dataCreazione) {
       this.nuovoAmbiente.dataCreazione = new Date();
     }

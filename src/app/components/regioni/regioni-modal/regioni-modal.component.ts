@@ -44,14 +44,19 @@ export class RegioniModalComponent implements OnInit {
 
   private hasUnsavedChanges = false;
 
+  // Stato blur dei campi con vincoli DTO.
+  // Finché false, non mostriamo errori né bordi valid/invalid.
+  touchedFields = {
+    descrizione: false,
+    codice: false,
+  };
+
   constructor(
     public activeModal: NgbActiveModal,
     private regioniService: RegioniService,
     private modalService: NgbModal,
     private minimizedModalsService: MinimizedModalsService,
   ) {}
-
-
 
   ngOnInit() {
     if (this.regione) {
@@ -68,7 +73,7 @@ export class RegioniModalComponent implements OnInit {
         x: this.regione.x ?? 0,
         y: this.regione.y ?? 0,
       };
-    } 
+    }
 
     // Imposta originalData dopo aver inizializzato nuovaRegione
     if (!this.originalData.id) {
@@ -80,6 +85,81 @@ export class RegioniModalComponent implements OnInit {
 
   onFieldChange() {
     this.hasUnsavedChanges = this.checkForChanges();
+  }
+
+  // Chiamato dal template su blur per attivare il feedback del singolo campo.
+  onFieldBlur(field: keyof typeof this.touchedFields) {
+    this.touchedFields[field] = true;
+  }
+
+  // Forza la visualizzazione degli errori quando l'utente tenta di salvare.
+  private markAllFieldsAsTouched() {
+    this.touchedFields.descrizione = true;
+    this.touchedFields.codice = true;
+  }
+
+  // Utility di normalizzazione per evitare validazioni falsate dagli spazi.
+  private normalizeText(value?: string | null): string {
+    return (value ?? '').trim();
+  }
+
+  // Vincolo RegioneInputDTO: descrizione obbligatoria e 3..100 caratteri.
+  isDescrizioneValid(): boolean {
+    const descrizione = this.normalizeText(this.nuovaRegione.descrizione);
+    return descrizione.length >= 3 && descrizione.length <= 100;
+  }
+
+  // Messaggio contestuale per la descrizione in base all'errore corrente.
+  getDescrizioneError(): string {
+    const descrizione = this.normalizeText(this.nuovaRegione.descrizione);
+    if (!descrizione) {
+      return 'Descrizione obbligatoria';
+    }
+    if (descrizione.length < 3 || descrizione.length > 100) {
+      return 'La descrizione deve essere tra 3 e 100 caratteri';
+    }
+    return '';
+  }
+
+  // Vincolo RegioneInputDTO: codice obbligatorio e 2..10 caratteri.
+  isCodiceValid(): boolean {
+    const codice = this.normalizeText(this.nuovaRegione.codice);
+    return codice.length >= 2 && codice.length <= 10;
+  }
+
+  // Messaggio contestuale per il codice.
+  getCodiceError(): string {
+    const codice = this.normalizeText(this.nuovaRegione.codice);
+    if (!codice) {
+      return 'Codice obbligatorio';
+    }
+    if (codice.length < 2 || codice.length > 10) {
+      return 'Il codice deve essere tra 2 e 10 caratteri';
+    }
+    return '';
+  }
+
+  // Se il campo è stato toccato e non passa la regola DTO => invalid.
+  isFieldInvalid(field: 'descrizione' | 'codice'): boolean {
+    if (!this.touchedFields[field]) {
+      return false;
+    }
+
+    if (field === 'descrizione') {
+      return !this.isDescrizioneValid();
+    }
+
+    return !this.isCodiceValid();
+  }
+
+  // Se il campo è toccato e non invalid => valid (bordo verde).
+  isFieldValid(field: 'descrizione' | 'codice'): boolean {
+    return this.touchedFields[field] && !this.isFieldInvalid(field);
+  }
+
+  // Check unico usato dal metodo salva.
+  private isFormValid(): boolean {
+    return this.isDescrizioneValid() && this.isCodiceValid();
   }
 
   private checkForChanges(): boolean {
@@ -99,6 +179,20 @@ export class RegioniModalComponent implements OnInit {
   }
 
   salva() {
+    // Rende visibili tutti i feedback prima del controllo finale.
+    this.markAllFieldsAsTouched();
+
+    // Non chiudere la modale se il payload non rispetta i vincoli DTO.
+    if (!this.isFormValid()) {
+      return;
+    }
+
+    // Normalizzazione finale per mantenere i dati coerenti lato backend.
+    this.nuovaRegione.descrizione = this.normalizeText(
+      this.nuovaRegione.descrizione,
+    );
+    this.nuovaRegione.codice = this.normalizeText(this.nuovaRegione.codice);
+
     this.hasUnsavedChanges = false;
     this.activeModal.close(this.nuovaRegione);
     console.log('Modale chiusa con salvataggio');

@@ -132,7 +132,8 @@
   @apply text-gray-300;
 }
 
-.form-input, .form-textarea {
+.form-input,
+.form-textarea {
   @apply px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-gray-50;
 }
 
@@ -142,7 +143,8 @@
   @apply border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400;
 }
 
-.form-input:focus, .form-textarea:focus {
+.form-input:focus,
+.form-textarea:focus {
   @apply bg-white shadow-md;
 }
 
@@ -154,6 +156,37 @@
 
 .form-textarea {
   @apply resize-none;
+}
+
+/* Stato errore: bordo e sfondo rossi quando il campo e' invalid */
+.form-input.field-invalid,
+.form-textarea.field-invalid {
+  @apply border-red-500 ring-1 ring-red-500 bg-red-50;
+}
+
+:host-context(.dark) .form-input.field-invalid,
+:host-context(.dark) .form-textarea.field-invalid {
+  @apply border-red-400 ring-red-400 bg-red-900/20;
+}
+
+/* Stato ok: bordo e sfondo verdi quando il campo e' valid */
+.form-input.field-valid,
+.form-textarea.field-valid {
+  @apply border-emerald-500 ring-1 ring-emerald-500 bg-emerald-50;
+}
+
+:host-context(.dark) .form-input.field-valid,
+:host-context(.dark) .form-textarea.field-valid {
+  @apply border-emerald-400 ring-emerald-400 bg-emerald-900/20;
+}
+
+/* Testo errore mostrato sotto al campo */
+.field-error {
+  @apply text-red-600 text-xs font-medium mt-1;
+}
+
+:host-context(.dark) .field-error {
+  @apply text-red-400;
 }
 
 /* Form Actions */
@@ -188,6 +221,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -198,6 +232,7 @@
     transform: scale(0.95) translateY(-20px);
     opacity: 0;
   }
+
   to {
     transform: scale(1) translateY(0);
     opacity: 1;
@@ -209,31 +244,31 @@
   .modal-backdrop {
     @apply p-2;
   }
-  
+
   .modal-container {
     @apply w-full max-h-[90vh];
   }
-  
+
   .modal-header {
     @apply px-5 py-5;
   }
-  
+
   .modal-title {
     @apply text-xl;
   }
-  
+
   .form-section {
     @apply mx-4 my-4;
   }
-  
+
   .form-container {
     @apply p-4;
   }
-  
+
   .form-grid {
     @apply grid-cols-1 gap-4;
   }
-  
+
   .form-actions {
     @apply flex-col gap-2;
   }

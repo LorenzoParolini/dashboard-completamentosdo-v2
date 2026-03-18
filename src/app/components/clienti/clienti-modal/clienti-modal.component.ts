@@ -52,6 +52,13 @@ export class ClientiModalComponent implements OnInit {
 
   private hasUnsavedChanges = false;
 
+  // Traccia i campi su cui l'utente ha già perso il focus (blur).
+  // Usiamo questo stato per mostrare feedback solo al momento giusto.
+  touchedFields = {
+    descrizione: false,
+    regione: false,
+  };
+
   constructor(
     public activeModal: NgbActiveModal,
     private clientiService: ClientiService,
@@ -60,7 +67,6 @@ export class ClientiModalComponent implements OnInit {
     private modalService: NgbModal,
     private minimizedModalsService: MinimizedModalsService,
   ) {}
-
 
   ngOnInit() {
     // Carica regioni disponibili
@@ -125,6 +131,76 @@ export class ClientiModalComponent implements OnInit {
     this.hasUnsavedChanges = this.checkForChanges();
   }
 
+  // Attiva la validazione visuale del campo quando l'utente esce dall'input.
+  onFieldBlur(field: keyof typeof this.touchedFields) {
+    this.touchedFields[field] = true;
+  }
+
+  // Al submit marchiamo tutti i campi vincolati per mostrare tutti gli errori.
+  private markAllFieldsAsTouched() {
+    this.touchedFields.descrizione = true;
+    this.touchedFields.regione = true;
+  }
+
+  // Standardizza le stringhe prima dei controlli e del salvataggio.
+  private normalizeText(value?: string | null): string {
+    return (value ?? '').trim();
+  }
+
+  // Vincolo ClienteInputDTO: descrizione obbligatoria con lunghezza 3..100.
+  isDescrizioneValid(): boolean {
+    const descrizione = this.normalizeText(this.nuovoCliente.descrizione);
+    return descrizione.length >= 3 && descrizione.length <= 100;
+  }
+
+  // Messaggio di errore specifico da mostrare sotto la descrizione.
+  getDescrizioneError(): string {
+    const descrizione = this.normalizeText(this.nuovoCliente.descrizione);
+    if (!descrizione) {
+      return 'Descrizione obbligatoria';
+    }
+    if (descrizione.length < 3 || descrizione.length > 100) {
+      return 'La descrizione deve essere tra 3 e 100 caratteri';
+    }
+    return '';
+  }
+
+  // Vincolo ClienteInputDTO: regioneId obbligatorio.
+  isRegioneValid(): boolean {
+    return (this.nuovoCliente.regione?.id ?? 0) > 0;
+  }
+
+  // Messaggio da mostrare quando la regione non è stata selezionata.
+  getRegioneError(): string {
+    if (!this.isRegioneValid()) {
+      return 'Regione obbligatoria';
+    }
+    return '';
+  }
+
+  // Determina quando un campo deve apparire "in errore" (bordo rosso + testo).
+  isFieldInvalid(field: 'descrizione' | 'regione'): boolean {
+    if (!this.touchedFields[field]) {
+      return false;
+    }
+
+    if (field === 'descrizione') {
+      return !this.isDescrizioneValid();
+    }
+
+    return !this.isRegioneValid();
+  }
+
+  // Determina quando un campo deve apparire "valido" (bordo verde).
+  isFieldValid(field: 'descrizione' | 'regione'): boolean {
+    return this.touchedFields[field] && !this.isFieldInvalid(field);
+  }
+
+  // Validazione aggregata eseguita prima della chiusura con salvataggio.
+  private isFormValid(): boolean {
+    return this.isDescrizioneValid() && this.isRegioneValid();
+  }
+
   private checkForChanges(): boolean {
     // Verifica cambiamenti nei campi base
     if (this.nuovoCliente.descrizione !== this.originalData.descrizione) {
@@ -163,6 +239,19 @@ export class ClientiModalComponent implements OnInit {
   }
 
   salva() {
+    // Mostra eventuali errori anche se l'utente non ha fatto blur su tutti i campi.
+    this.markAllFieldsAsTouched();
+
+    // Blocca il submit finché i requisiti DTO non sono rispettati.
+    if (!this.isFormValid()) {
+      return;
+    }
+
+    // Pulizia del testo prima del ritorno dati al componente padre.
+    this.nuovoCliente.descrizione = this.normalizeText(
+      this.nuovoCliente.descrizione,
+    );
+
     this.hasUnsavedChanges = false;
     this.activeModal.close(this.nuovoCliente);
   }

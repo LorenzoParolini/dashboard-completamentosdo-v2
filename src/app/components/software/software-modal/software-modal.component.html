@@ -74,6 +74,11 @@
           <div class="form-grid">
             <div class="form-field form-field-full">
               <label class="form-label">Descrizione Software</label>
+              <!--
+                Campo con vincoli DTO:
+                blur abilita feedback, ngClass colora il bordo,
+                field-error mostra il messaggio dedicato.
+              -->
               <input
                 type="text"
                 [(ngModel)]="nuovoSoftware.descrizione"
@@ -81,12 +86,21 @@
                 placeholder="Inserisci la descrizione del software"
                 class="form-input"
                 (input)="onFieldChange()"
+                (blur)="onFieldBlur('descrizione')"
+                [ngClass]="{
+                  'field-invalid': isFieldInvalid('descrizione'),
+                  'field-valid': isFieldValid('descrizione'),
+                }"
                 required
               />
+              <div class="field-error" *ngIf="isFieldInvalid('descrizione')">
+                {{ getDescrizioneError() }}
+              </div>
             </div>
 
             <div class="form-field">
               <label class="form-label">Versione Corrente</label>
+              <!-- Versione non obbligatoria ma con limite massimo 50 caratteri -->
               <input
                 type="text"
                 [(ngModel)]="nuovoSoftware.versioneCorrente"
@@ -94,8 +108,18 @@
                 placeholder="es. 1.0.0"
                 class="form-input"
                 (input)="onFieldChange()"
-                required
+                (blur)="onFieldBlur('versioneCorrente')"
+                [ngClass]="{
+                  'field-invalid': isFieldInvalid('versioneCorrente'),
+                  'field-valid': isFieldValid('versioneCorrente'),
+                }"
               />
+              <div
+                class="field-error"
+                *ngIf="isFieldInvalid('versioneCorrente')"
+              >
+                {{ getVersioneCorrenteError() }}
+              </div>
             </div>
 
             <div class="form-field">
@@ -112,14 +136,23 @@
 
             <div class="form-field form-field-full">
               <label class="form-label">Note</label>
+              <!-- Note opzionali: feedback visuale quando si supera il limite di lunghezza -->
               <textarea
                 [(ngModel)]="nuovoSoftware.note"
                 name="note"
                 placeholder="Note opzionali sul software"
                 class="form-textarea"
                 (input)="onFieldChange()"
+                (blur)="onFieldBlur('note')"
+                [ngClass]="{
+                  'field-invalid': isFieldInvalid('note'),
+                  'field-valid': isFieldValid('note'),
+                }"
                 rows="3"
               ></textarea>
+              <div class="field-error" *ngIf="isFieldInvalid('note')">
+                {{ getNoteError() }}
+              </div>
             </div>
           </div>
 

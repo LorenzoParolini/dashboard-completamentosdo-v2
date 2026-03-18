@@ -146,6 +146,33 @@
   @apply bg-white shadow-md;
 }
 
+/* Campo non valido: bordo rosso e sfondo leggermente rosso */
+.form-input.field-invalid {
+  @apply border-red-500 ring-1 ring-red-500 bg-red-50;
+}
+
+:host-context(.dark) .form-input.field-invalid {
+  @apply border-red-400 ring-red-400 bg-red-900/20;
+}
+
+/* Campo valido: bordo verde e sfondo leggermente verde */
+.form-input.field-valid {
+  @apply border-emerald-500 ring-1 ring-emerald-500 bg-emerald-50;
+}
+
+:host-context(.dark) .form-input.field-valid {
+  @apply border-emerald-400 ring-emerald-400 bg-emerald-900/20;
+}
+
+/* Messaggio errore sotto input */
+.field-error {
+  @apply text-red-600 text-xs font-medium mt-1;
+}
+
+:host-context(.dark) .field-error {
+  @apply text-red-400;
+}
+
 /* Form Actions */
 .form-actions {
   @apply flex justify-end gap-3 pt-4 border-t border-gray-200;
@@ -178,6 +205,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -188,6 +216,7 @@
     transform: scale(0.95) translateY(-20px);
     opacity: 0;
   }
+
   to {
     transform: scale(1) translateY(0);
     opacity: 1;
@@ -199,31 +228,31 @@
   .modal-backdrop {
     @apply p-2;
   }
-  
+
   .modal-container {
     @apply w-full max-h-[90vh];
   }
-  
+
   .modal-header {
     @apply px-5 py-5;
   }
-  
+
   .modal-title {
     @apply text-xl;
   }
-  
+
   .form-section {
     @apply mx-4 my-4;
   }
-  
+
   .form-container {
     @apply p-4;
   }
-  
+
   .form-grid {
     @apply grid-cols-1 gap-4;
   }
-  
+
   .form-actions {
     @apply flex-col gap-2;
   }
