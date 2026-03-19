@@ -105,7 +105,9 @@
             class="detail-section"
             *ngIf="($any(cliente.software)?.length || 0) > 0"
           >
-            <h5 class="detail-section-title">Software</h5>
+            <h5 class="detail-section-title">
+              Software
+            </h5>
             <div class="software-preview">
               <div
                 class="software-preview-item"
@@ -118,12 +120,6 @@
                 }}</span>
                 <span class="software-preview-version"
                   >v{{ software.versioneCorrente }}</span
-                >
-                <span class="software-preview-version" *ngIf="software.branch"
-                  >branch: {{ software.branch }}</span
-                >
-                <span class="software-preview-version" *ngIf="software.build"
-                  >build: {{ software.build }}</span
                 >
               </div>
               <div

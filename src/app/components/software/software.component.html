@@ -62,14 +62,10 @@
               <tr>
                 <th class="table-th">#</th>
                 <th class="table-th">Descrizione</th>
-                <th class="table-th">Branch</th>
-                <th class="table-th">Commit</th>
-                <th class="table-th">Deployed By</th>
-                <th class="table-th">Build</th>
+                <th class="table-th">Note</th>
                 <th class="table-th">Versione</th>
                 <th class="table-th">Ultimo Aggiornamento</th>
                 <th class="table-th">Ambienti</th>
-                <th class="table-th">Note</th>
                 <th class="table-th actions-column">Azioni</th>
               </tr>
             </thead>
@@ -81,30 +77,12 @@
                 <td class="table-td id-column">{{ i + 1 }}</td>
                 <td class="table-td">{{ sw.descrizione }}</td>
                 <td class="table-td">
-                  <span *ngIf="sw.branch; else noBranch">{{ sw.branch }}</span>
-                  <ng-template #noBranch
-                    ><span class="no-data">N/A</span></ng-template
-                  >
-                </td>
-                <td class="table-td">
-                  <span *ngIf="sw.commit; else noCommit">{{ sw.commit }}</span>
-                  <ng-template #noCommit
-                    ><span class="no-data">N/A</span></ng-template
-                  >
-                </td>
-                <td class="table-td">
-                  <span *ngIf="sw.deployedBy; else noDeployedBy">{{
-                    sw.deployedBy
+                  <span class="note-text" *ngIf="sw.note; else noNote">{{
+                    sw.note
                   }}</span>
-                  <ng-template #noDeployedBy
-                    ><span class="no-data">N/A</span></ng-template
-                  >
-                </td>
-                <td class="table-td">
-                  <span *ngIf="sw.build; else noBuild">{{ sw.build }}</span>
-                  <ng-template #noBuild
-                    ><span class="no-data">N/A</span></ng-template
-                  >
+                  <ng-template #noNote>
+                    <span class="no-data">N/A</span>
+                  </ng-template>
                 </td>
                 <td class="table-td">
                   <span class="version-badge">{{ sw.versioneCorrente }}</span>
@@ -129,14 +107,6 @@
                   </div>
                   <ng-template #noAmbienti>
                     <span class="no-data">Nessun ambiente</span>
-                  </ng-template>
-                </td>
-                <td class="table-td">
-                  <span class="note-text" *ngIf="sw.note; else noNote">{{
-                    sw.note
-                  }}</span>
-                  <ng-template #noNote>
-                    <span class="no-data">N/A</span>
                   </ng-template>
                 </td>
                 <td class="table-td actions-column">

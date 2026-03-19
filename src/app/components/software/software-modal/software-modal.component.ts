@@ -28,7 +28,6 @@ export class SoftwareModalComponent implements OnInit {
   @Input() modalId?: string;
   @Input() isRestoredFromMinimized?: boolean = false;
 
-  // Inizializziamo con valori di default per evitare errori di binding su campi non ancora popolati.
   nuovoSoftware: Software = {
     id: 0,
     descrizione: '',
@@ -36,10 +35,6 @@ export class SoftwareModalComponent implements OnInit {
     ambienti: [],
     versioneCorrente: '',
     dataUltimoAggiornamento: '',
-    branch: '',
-    commit: '',
-    deployedBy: '',
-    build: '',
   };
 
   // Campo per il menu a tendina
@@ -55,10 +50,6 @@ export class SoftwareModalComponent implements OnInit {
     ambienti: [],
     versioneCorrente: '',
     dataUltimoAggiornamento: '',
-    branch: '',
-    commit: '',
-    deployedBy: '',
-    build: '',
   };
 
   private hasUnsavedChanges = false;
@@ -69,10 +60,6 @@ export class SoftwareModalComponent implements OnInit {
     descrizione: false,
     note: false,
     versioneCorrente: false,
-    branch: false,
-    commit: false,
-    deployedBy: false,
-    build: false,
   };
 
   constructor(
@@ -154,10 +141,6 @@ export class SoftwareModalComponent implements OnInit {
     this.touchedFields.descrizione = true;
     this.touchedFields.note = true;
     this.touchedFields.versioneCorrente = true;
-    this.touchedFields.branch = true;
-    this.touchedFields.commit = true;
-    this.touchedFields.deployedBy = true;
-    this.touchedFields.build = true;
   }
 
   // Normalizza stringhe in input per coerenza tra validazione e salvataggio.
@@ -170,6 +153,7 @@ export class SoftwareModalComponent implements OnInit {
     const descrizione = this.normalizeText(this.nuovoSoftware.descrizione);
     return descrizione.length >= 3 && descrizione.length <= 100;
   }
+
   // Messaggio puntuale per i diversi casi di errore sulla descrizione.
   getDescrizioneError(): string {
     const descrizione = this.normalizeText(this.nuovoSoftware.descrizione);
@@ -186,6 +170,7 @@ export class SoftwareModalComponent implements OnInit {
   isNoteValid(): boolean {
     return (this.nuovoSoftware.note ?? '').length <= 500;
   }
+
   // Messaggio per overflow lunghezza note.
   getNoteError(): string {
     if ((this.nuovoSoftware.note ?? '').length > 500) {
@@ -198,6 +183,7 @@ export class SoftwareModalComponent implements OnInit {
   isVersioneCorrenteValid(): boolean {
     return (this.nuovoSoftware.versioneCorrente ?? '').length <= 50;
   }
+
   // Messaggio per overflow lunghezza versione.
   getVersioneCorrenteError(): string {
     if ((this.nuovoSoftware.versioneCorrente ?? '').length > 50) {
@@ -206,65 +192,9 @@ export class SoftwareModalComponent implements OnInit {
     return '';
   }
 
-  // Campi tracking opzionali: validiamo solo formato/lunghezza quando valorizzati.
-  isBranchValid(): boolean {
-    return (this.nuovoSoftware.branch ?? '').length <= 100;
-  }
-
-  getBranchError(): string {
-    if ((this.nuovoSoftware.branch ?? '').length > 100) {
-      return 'Il branch non può superare 100 caratteri';
-    }
-    return '';
-  }
-
-  isCommitValid(): boolean {
-    return (this.nuovoSoftware.commit ?? '').length <= 100;
-  }
-
-  getCommitError(): string {
-    if ((this.nuovoSoftware.commit ?? '').length > 100) {
-      return 'Il commit non può superare 100 caratteri';
-    }
-    return '';
-  }
-
-  isDeployedByValid(): boolean {
-    const deployedBy = this.normalizeText(this.nuovoSoftware.deployedBy);
-    return deployedBy === '' || /^u\d{5}$/.test(deployedBy);
-  }
-
-  getDeployedByError(): string {
-    const deployedBy = this.normalizeText(this.nuovoSoftware.deployedBy);
-    if (deployedBy !== '' && !/^u\d{5}$/.test(deployedBy)) {
-      return "Il campo deployedBy deve essere nel formato 'u' seguito da 5 numeri (es. u12345)";
-    }
-    return '';
-  }
-
-  isBuildValid(): boolean {
-    return (this.nuovoSoftware.build ?? '').length <= 100;
-  }
-
-  getBuildError(): string {
-    if ((this.nuovoSoftware.build ?? '').length > 100) {
-      return 'Il build non può superare 100 caratteri';
-    }
-    return '';
-  }
-
   // Un campo è invalid quando è stato toccato e non rispetta il suo vincolo.
   // Usato da template per bordo rosso e messaggio.
-  isFieldInvalid(
-    field:
-      | 'descrizione'
-      | 'note'
-      | 'versioneCorrente'
-      | 'branch'
-      | 'commit'
-      | 'deployedBy'
-      | 'build',
-  ): boolean {
+  isFieldInvalid(field: 'descrizione' | 'note' | 'versioneCorrente'): boolean {
     if (!this.touchedFields[field]) {
       return false;
     }
@@ -277,37 +207,12 @@ export class SoftwareModalComponent implements OnInit {
       return !this.isNoteValid();
     }
 
-    if (field === 'branch') {
-      return !this.isBranchValid();
-    }
-
-    if (field === 'commit') {
-      return !this.isCommitValid();
-    }
-
-    if (field === 'deployedBy') {
-      return !this.isDeployedByValid();
-    }
-
-    if (field === 'build') {
-      return !this.isBuildValid();
-    }
-
     return !this.isVersioneCorrenteValid();
   }
 
   // Un campo è valid quando è toccato e non invalid.
   // Usato da template per bordo verde.
-  isFieldValid(
-    field:
-      | 'descrizione'
-      | 'note'
-      | 'versioneCorrente'
-      | 'branch'
-      | 'commit'
-      | 'deployedBy'
-      | 'build',
-  ): boolean {
+  isFieldValid(field: 'descrizione' | 'note' | 'versioneCorrente'): boolean {
     return this.touchedFields[field] && !this.isFieldInvalid(field);
   }
 
@@ -316,11 +221,7 @@ export class SoftwareModalComponent implements OnInit {
     return (
       this.isDescrizioneValid() &&
       this.isNoteValid() &&
-      this.isVersioneCorrenteValid() &&
-      this.isBranchValid() &&
-      this.isCommitValid() &&
-      this.isDeployedByValid() &&
-      this.isBuildValid()
+      this.isVersioneCorrenteValid()
     );
   }
 
@@ -389,18 +290,12 @@ export class SoftwareModalComponent implements OnInit {
       : this.formatLocalDateTime(parsedDate, true);
   }
 
-  // Confronta i dati attuali del form con quelli originali per determinare se ci sono modifiche non salvate.
   private checkForChanges(): boolean {
     // Verifica cambiamenti nei campi base
     if (
       this.nuovoSoftware.descrizione !== this.originalData.descrizione ||
       this.nuovoSoftware.note !== this.originalData.note ||
-      this.nuovoSoftware.versioneCorrente !==
-        this.originalData.versioneCorrente ||
-      this.nuovoSoftware.branch !== this.originalData.branch ||
-      this.nuovoSoftware.commit !== this.originalData.commit ||
-      this.nuovoSoftware.deployedBy !== this.originalData.deployedBy ||
-      this.nuovoSoftware.build !== this.originalData.build
+      this.nuovoSoftware.versioneCorrente !== this.originalData.versioneCorrente
     ) {
       return true;
     }
@@ -454,12 +349,6 @@ export class SoftwareModalComponent implements OnInit {
     this.nuovoSoftware.descrizione = this.normalizeText(
       this.nuovoSoftware.descrizione,
     );
-    this.nuovoSoftware.branch = this.normalizeText(this.nuovoSoftware.branch);
-    this.nuovoSoftware.commit = this.normalizeText(this.nuovoSoftware.commit);
-    this.nuovoSoftware.deployedBy = this.normalizeText(
-      this.nuovoSoftware.deployedBy,
-    );
-    this.nuovoSoftware.build = this.normalizeText(this.nuovoSoftware.build);
 
     const normalizedDateTime = this.toBackendLocalDateTime(
       this.nuovoSoftware.dataUltimoAggiornamento || new Date(),

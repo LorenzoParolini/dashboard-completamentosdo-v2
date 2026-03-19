@@ -12,10 +12,6 @@ export type Software = {
   versioneCorrente: string;
   dataUltimoAggiornamento: LocalDateTimeString;
   ambienti: Ambiente[];
-  branch?: string;
-  commit?: string;
-  deployedBy?: string;
-  build?: string;
 };
 
 // ============================================================================
@@ -27,8 +23,4 @@ export type SoftwareInputDTO = {
   versioneCorrente: string;
   dataUltimoAggiornamento?: LocalDateTimeString;
   ambienteIds: number[];
-  branch?: string;
-  commit?: string;
-  deployedBy?: string;
-  build?: string;
 };

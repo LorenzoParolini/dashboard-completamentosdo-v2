@@ -163,22 +163,6 @@
                     software.dataUltimoAggiornamento | date: "dd/MM/yyyy HH:mm"
                   }}</span>
                 </div>
-                <div class="detail-item" *ngIf="software.branch">
-                  <span class="detail-label">Branch:</span>
-                  <span class="detail-value">{{ software.branch }}</span>
-                </div>
-                <div class="detail-item" *ngIf="software.commit">
-                  <span class="detail-label">Commit:</span>
-                  <span class="detail-value">{{ software.commit }}</span>
-                </div>
-                <div class="detail-item" *ngIf="software.deployedBy">
-                  <span class="detail-label">Deployed By:</span>
-                  <span class="detail-value">{{ software.deployedBy }}</span>
-                </div>
-                <div class="detail-item" *ngIf="software.build">
-                  <span class="detail-label">Build:</span>
-                  <span class="detail-value">{{ software.build }}</span>
-                </div>
                 <div class="detail-item" *ngIf="software.note">
                   <span class="detail-label">Note:</span>
                   <span class="detail-value note-text">{{
