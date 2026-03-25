@@ -3,7 +3,10 @@ import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { ClientiService } from '../../services/clienti.service';
 import { FilterService } from '../../services/filter.service';
-import { FilterUtilsService, FilterCriteria } from '../../services/filter-utils.service';
+import {
+  FilterUtilsService,
+  FilterCriteria,
+} from '../../services/filter-utils.service';
 import { Cliente } from '../../models/cliente.model';
 
 import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
@@ -13,9 +16,15 @@ import { ServerErrorComponent } from '../server-error/server-error.component';
 
 @Component({
   selector: 'app-main',
-  imports: [CommonModule, LoadingSpinnerComponent, EmptyStateComponent, DetailsModalComponent, ServerErrorComponent],
+  imports: [
+    CommonModule,
+    LoadingSpinnerComponent,
+    EmptyStateComponent,
+    DetailsModalComponent,
+    ServerErrorComponent,
+  ],
   templateUrl: './main.component.html',
-  styleUrl: './main.component.css'
+  styleUrl: './main.component.css',
 })
 export class MainComponent implements OnInit, OnDestroy {
   clienti: Cliente[] = [];
@@ -30,29 +39,35 @@ export class MainComponent implements OnInit, OnDestroy {
     regioni: [],
     software: [],
     ambienti: [],
+    rilasci: [],
+    branch: '',
+    commit: '',
+    deployedBy: '',
+    build: '',
+    ultimoAggiornamento: [],
     codiciRegione: [],
     coordinate: [],
-    versione: '',
-    dataAggiornamento: [],
     dataCreazione: [],
-    searchQuery: ''
+    searchQuery: '',
   };
   private filterSubscription: Subscription = new Subscription();
 
   constructor(
     private clientiService: ClientiService,
     private filterService: FilterService,
-    private filterUtilsService: FilterUtilsService
+    private filterUtilsService: FilterUtilsService,
   ) {}
 
   ngOnInit() {
     this.loading = true;
-    
+
     // Subscribe to filter changes
-    this.filterSubscription = this.filterService.filters$.subscribe(filters => {
-      this.currentFilters = filters;
-      this.applyFilters();
-    });
+    this.filterSubscription = this.filterService.filters$.subscribe(
+      (filters) => {
+        this.currentFilters = filters;
+        this.applyFilters();
+      },
+    );
 
     setTimeout(() => {
       this.loadClienti();
@@ -79,19 +94,23 @@ export class MainComponent implements OnInit, OnDestroy {
         console.error('Errore nel caricamento dei clienti:', error);
         this.loading = false;
         this.hasError = true;
-        this.errorMessage = error.message || 'Impossibile raggiungere il server';
-      }
+        this.errorMessage =
+          error.message || 'Impossibile raggiungere il server';
+      },
     });
   }
 
   applyFilters() {
-    this.filteredClienti = this.clienti.filter(cliente => 
-      this.filterUtilsService.shouldShowCliente(cliente, this.currentFilters)
+    this.filteredClienti = this.clienti.filter((cliente) =>
+      this.filterUtilsService.shouldShowCliente(cliente, this.currentFilters),
     );
   }
 
   shouldShowCliente(cliente: Cliente): boolean {
-    return this.filterUtilsService.shouldShowCliente(cliente, this.currentFilters);
+    return this.filterUtilsService.shouldShowCliente(
+      cliente,
+      this.currentFilters,
+    );
   }
 
   showDetails(cliente: Cliente) {

@@ -229,11 +229,11 @@
 }
 
 .ambiente-grid {
-  @apply grid grid-cols-1 md:grid-cols-2 gap-3;
+  @apply grid grid-cols-1 gap-3;
 }
 
 .ambiente-card {
-  @apply bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 rounded-lg p-4 flex justify-between items-center transition-all duration-200;
+  @apply bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 rounded-lg p-4 transition-all duration-200;
 }
 
 /* Dark theme support for ambiente card */
@@ -254,6 +254,34 @@
   @apply flex flex-col gap-1;
 }
 
+.ambiente-header {
+  @apply mb-2;
+}
+
+.ambiente-toggle {
+  @apply w-full flex items-center justify-between bg-transparent border-0 p-0 cursor-pointer;
+}
+
+.ambiente-toggle-meta {
+  @apply flex items-center gap-2;
+}
+
+.rilasci-count-badge {
+  @apply text-xs font-semibold text-indigo-700 bg-indigo-100 border border-indigo-200 px-2 py-1 rounded-full;
+}
+
+:host-context(.dark) .rilasci-count-badge {
+  @apply text-indigo-200 bg-indigo-900/40 border-indigo-700;
+}
+
+.ambiente-toggle-icon {
+  @apply text-indigo-600 font-bold text-base;
+}
+
+:host-context(.dark) .ambiente-toggle-icon {
+  @apply text-indigo-300;
+}
+
 .ambiente-name {
   @apply text-sm font-semibold text-gray-800;
 }
@@ -270,6 +298,58 @@
 /* Dark theme support for ambiente date */
 :host-context(.dark) .ambiente-date {
   @apply text-indigo-300;
+}
+
+.ambiente-details {
+  @apply flex flex-col gap-2 pt-2;
+}
+
+.ambiente-note {
+  @apply text-xs italic text-gray-600;
+}
+
+:host-context(.dark) .ambiente-note {
+  @apply text-gray-300;
+}
+
+.rilasci-list {
+  @apply mt-2 flex flex-col gap-2;
+}
+
+.rilascio-item {
+  @apply bg-white border border-indigo-100 rounded-md p-3;
+}
+
+:host-context(.dark) .rilascio-item {
+  @apply bg-gray-800 border-indigo-800;
+}
+
+.rilascio-item-header {
+  @apply flex items-center justify-between gap-2 mb-2;
+}
+
+.rilascio-version {
+  @apply text-xs font-semibold text-blue-700 bg-blue-100 border border-blue-200 px-2 py-1 rounded-full;
+}
+
+:host-context(.dark) .rilascio-version {
+  @apply text-blue-300 bg-blue-900/40 border-blue-700;
+}
+
+.rilascio-date {
+  @apply text-xs text-gray-500;
+}
+
+:host-context(.dark) .rilascio-date {
+  @apply text-gray-400;
+}
+
+.rilascio-item-body {
+  @apply flex flex-col gap-1 text-xs text-gray-700;
+}
+
+:host-context(.dark) .rilascio-item-body {
+  @apply text-gray-300;
 }
 
 .remove-ambiente-btn {
@@ -371,10 +451,6 @@
 
   .form-grid {
     @apply grid-cols-1 gap-4;
-  }
-
-  .ambiente-grid {
-    @apply grid-cols-1;
   }
 
   .form-actions {

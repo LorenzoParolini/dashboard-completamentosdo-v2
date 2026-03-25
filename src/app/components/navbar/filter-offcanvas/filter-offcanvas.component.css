@@ -174,15 +174,37 @@
 }
 
 /* Stili per i filtri */
-.filtri-regione, .filtri-software, .filtri-ambiente, 
-.filtri-codice-regione, .filtri-coordinate, .filtri-versione,
-.filtri-data-aggiornamento, .filtri-data-creazione {
+.filtri-regione,
+.filtri-software,
+.filtri-ambiente,
+.filtri-rilascio,
+.filtri-branch,
+.filtri-commit,
+.filtri-deployed-by,
+.filtri-build,
+.filtri-ultimo-aggiornamento,
+.filtri-codice-regione,
+.filtri-coordinate,
+.filtri-versione,
+.filtri-data-aggiornamento,
+.filtri-data-creazione {
   @apply mb-6;
 }
 
-.filtri-regione button, .filtri-software button, .filtri-ambiente button,
-.filtri-codice-regione button, .filtri-coordinate button, .filtri-versione button,
-.filtri-data-aggiornamento button, .filtri-data-creazione button {
+.filtri-regione button,
+.filtri-software button,
+.filtri-ambiente button,
+.filtri-rilascio button,
+.filtri-branch button,
+.filtri-commit button,
+.filtri-deployed-by button,
+.filtri-build button,
+.filtri-ultimo-aggiornamento button,
+.filtri-codice-regione button,
+.filtri-coordinate button,
+.filtri-versione button,
+.filtri-data-aggiornamento button,
+.filtri-data-creazione button {
   @apply w-full p-4 rounded-xl font-semibold text-left transition-all duration-300 ease-out;
   @apply bg-white border border-gray-200 text-gray-700 relative overflow-hidden;
   @apply hover:border-indigo-300 hover:shadow-lg hover:shadow-indigo-100 hover:scale-[1.02];
@@ -192,50 +214,106 @@
 }
 
 /* Dark theme support for filter buttons */
-:host-context(.dark) .filtri-regione button, 
-:host-context(.dark) .filtri-software button, 
+:host-context(.dark) .filtri-regione button,
+:host-context(.dark) .filtri-software button,
 :host-context(.dark) .filtri-ambiente button,
-:host-context(.dark) .filtri-codice-regione button, 
-:host-context(.dark) .filtri-coordinate button, 
+:host-context(.dark) .filtri-rilascio button,
+:host-context(.dark) .filtri-branch button,
+:host-context(.dark) .filtri-commit button,
+:host-context(.dark) .filtri-deployed-by button,
+:host-context(.dark) .filtri-build button,
+:host-context(.dark) .filtri-ultimo-aggiornamento button,
+:host-context(.dark) .filtri-codice-regione button,
+:host-context(.dark) .filtri-coordinate button,
 :host-context(.dark) .filtri-versione button,
-:host-context(.dark) .filtri-data-aggiornamento button, 
+:host-context(.dark) .filtri-data-aggiornamento button,
 :host-context(.dark) .filtri-data-creazione button {
   @apply bg-gray-700 border-gray-600 text-gray-100;
   @apply hover:border-indigo-400 hover:shadow-lg hover:shadow-indigo-500/20;
 }
 
-.filtri-regione button span, .filtri-software button span, .filtri-ambiente button span,
-.filtri-codice-regione button span, .filtri-coordinate button span, .filtri-versione button span,
-.filtri-data-aggiornamento button span, .filtri-data-creazione button span {
+.filtri-regione button span,
+.filtri-software button span,
+.filtri-ambiente button span,
+.filtri-rilascio button span,
+.filtri-branch button span,
+.filtri-commit button span,
+.filtri-deployed-by button span,
+.filtri-build button span,
+.filtri-ultimo-aggiornamento button span,
+.filtri-codice-regione button span,
+.filtri-coordinate button span,
+.filtri-versione button span,
+.filtri-data-aggiornamento button span,
+.filtri-data-creazione button span {
   position: relative;
   z-index: 2;
 }
 
 /* Stato attivo - quando il filtro è selezionato */
-.filtri-regione button.active, .filtri-software button.active, .filtri-ambiente button.active,
-.filtri-codice-regione button.active, .filtri-coordinate button.active, .filtri-versione button.active,
-.filtri-data-aggiornamento button.active, .filtri-data-creazione button.active {
+.filtri-regione button.active,
+.filtri-software button.active,
+.filtri-ambiente button.active,
+.filtri-rilascio button.active,
+.filtri-branch button.active,
+.filtri-commit button.active,
+.filtri-deployed-by button.active,
+.filtri-build button.active,
+.filtri-ultimo-aggiornamento button.active,
+.filtri-codice-regione button.active,
+.filtri-coordinate button.active,
+.filtri-versione button.active,
+.filtri-data-aggiornamento button.active,
+.filtri-data-creazione button.active {
   @apply bg-gradient-to-r from-indigo-500 to-purple-600 text-white border-transparent;
   @apply shadow-lg shadow-indigo-200;
 }
 
-.filtri-regione button.active:hover, .filtri-software button.active:hover, .filtri-ambiente button.active:hover,
-.filtri-codice-regione button.active:hover, .filtri-coordinate button.active:hover, .filtri-versione button.active:hover,
-.filtri-data-aggiornamento button.active:hover, .filtri-data-creazione button.active:hover {
+.filtri-regione button.active:hover,
+.filtri-software button.active:hover,
+.filtri-ambiente button.active:hover,
+.filtri-rilascio button.active:hover,
+.filtri-branch button.active:hover,
+.filtri-commit button.active:hover,
+.filtri-deployed-by button.active:hover,
+.filtri-build button.active:hover,
+.filtri-ultimo-aggiornamento button.active:hover,
+.filtri-codice-regione button.active:hover,
+.filtri-coordinate button.active:hover,
+.filtri-versione button.active:hover,
+.filtri-data-aggiornamento button.active:hover,
+.filtri-data-creazione button.active:hover {
   @apply from-indigo-600 to-purple-700 scale-[1.02];
 }
 
-.filtri-regione button::before, .filtri-software button::before, .filtri-ambiente button::before,
-.filtri-codice-regione button::before, .filtri-coordinate button::before, .filtri-versione button::before,
-.filtri-data-aggiornamento button::before, .filtri-data-creazione button::before {
+.filtri-regione button::before,
+.filtri-software button::before,
+.filtri-ambiente button::before,
+.filtri-rilascio button::before,
+.filtri-branch button::before,
+.filtri-commit button::before,
+.filtri-deployed-by button::before,
+.filtri-build button::before,
+.filtri-ultimo-aggiornamento button::before,
+.filtri-codice-regione button::before,
+.filtri-coordinate button::before,
+.filtri-versione button::before,
+.filtri-data-aggiornamento button::before,
+.filtri-data-creazione button::before {
   content: '';
   @apply absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-600 opacity-0 transition-all duration-300 ease-out;
 }
 
 /* Solo per i bottoni NON attivi - hover effect */
-.filtri-regione button:not(.active):hover::before, 
-.filtri-software button:not(.active):hover::before, 
+.filtri-regione button:not(.active):hover::before,
+.filtri-software button:not(.active):hover::before,
 .filtri-ambiente button:not(.active):hover::before,
+.filtri-rilascio button:not(.active):hover::before,
+.filtri-branch button:not(.active):hover::before,
+.filtri-commit button:not(.active):hover::before,
+.filtri-deployed-by button:not(.active):hover::before,
+.filtri-build button:not(.active):hover::before,
+.filtri-ultimo-aggiornamento button:not(.active):hover::before,
 .filtri-codice-regione button:not(.active):hover::before,
 .filtri-coordinate button:not(.active):hover::before,
 .filtri-versione button:not(.active):hover::before,
@@ -244,9 +322,15 @@
   @apply opacity-5;
 }
 
-.filtri-regione button:not(.active):hover, 
-.filtri-software button:not(.active):hover, 
+.filtri-regione button:not(.active):hover,
+.filtri-software button:not(.active):hover,
 .filtri-ambiente button:not(.active):hover,
+.filtri-rilascio button:not(.active):hover,
+.filtri-branch button:not(.active):hover,
+.filtri-commit button:not(.active):hover,
+.filtri-deployed-by button:not(.active):hover,
+.filtri-build button:not(.active):hover,
+.filtri-ultimo-aggiornamento button:not(.active):hover,
 .filtri-codice-regione button:not(.active):hover,
 .filtri-coordinate button:not(.active):hover,
 .filtri-versione button:not(.active):hover,
@@ -256,9 +340,15 @@
 }
 
 /* Dark theme support for filter buttons hover non-active */
-:host-context(.dark) .filtri-regione button:not(.active):hover, 
-:host-context(.dark) .filtri-software button:not(.active):hover, 
+:host-context(.dark) .filtri-regione button:not(.active):hover,
+:host-context(.dark) .filtri-software button:not(.active):hover,
 :host-context(.dark) .filtri-ambiente button:not(.active):hover,
+:host-context(.dark) .filtri-rilascio button:not(.active):hover,
+:host-context(.dark) .filtri-branch button:not(.active):hover,
+:host-context(.dark) .filtri-commit button:not(.active):hover,
+:host-context(.dark) .filtri-deployed-by button:not(.active):hover,
+:host-context(.dark) .filtri-build button:not(.active):hover,
+:host-context(.dark) .filtri-ultimo-aggiornamento button:not(.active):hover,
 :host-context(.dark) .filtri-codice-regione button:not(.active):hover,
 :host-context(.dark) .filtri-coordinate button:not(.active):hover,
 :host-context(.dark) .filtri-versione button:not(.active):hover,
@@ -267,52 +357,155 @@
   @apply text-indigo-300;
 }
 
-.filter-regione, .filter-software, .filter-ambiente,
-.filter-codice-regione, .filter-coordinate, .filter-versione,
-.filter-data-aggiornamento, .filter-data-creazione {
+.filter-regione,
+.filter-software,
+.filter-ambiente,
+.filter-rilascio,
+.filter-codice-regione,
+.filter-coordinate,
+.filter-versione,
+.filter-data-aggiornamento,
+.filter-data-creazione {
   @apply mt-3 transform transition-all duration-300 ease-out;
 }
 
-.filter-regione > div, .filter-software > div, .filter-ambiente > div,
-.filter-codice-regione > div, .filter-coordinate > div, .filter-versione > div,
-.filter-data-aggiornamento > div, .filter-data-creazione > div {
+.filter-branch>div,
+.filter-commit>div,
+.filter-deployed-by>div,
+.filter-build>div,
+.filter-ultimo-aggiornamento>div,
+
+.filter-regione>div,
+.filter-software>div,
+.filter-ambiente>div,
+.filter-rilascio>div,
+.filter-codice-regione>div,
+.filter-coordinate>div,
+.filter-versione>div,
+.filter-data-aggiornamento>div,
+.filter-data-creazione>div {
   @apply bg-white rounded-xl p-4 border border-gray-200 shadow-sm;
   @apply animate-slideDown;
 }
 
 /* Dark theme support for filter sections */
-:host-context(.dark) .filter-regione > div, 
-:host-context(.dark) .filter-software > div, 
-:host-context(.dark) .filter-ambiente > div,
-:host-context(.dark) .filter-codice-regione > div, 
-:host-context(.dark) .filter-coordinate > div, 
-:host-context(.dark) .filter-versione > div,
-:host-context(.dark) .filter-data-aggiornamento > div, 
-:host-context(.dark) .filter-data-creazione > div {
+:host-context(.dark) .filter-regione>div,
+:host-context(.dark) .filter-branch>div,
+:host-context(.dark) .filter-commit>div,
+:host-context(.dark) .filter-deployed-by>div,
+:host-context(.dark) .filter-build>div,
+:host-context(.dark) .filter-ultimo-aggiornamento>div,
+:host-context(.dark) .filter-software>div,
+:host-context(.dark) .filter-ambiente>div,
+:host-context(.dark) .filter-rilascio>div,
+:host-context(.dark) .filter-codice-regione>div,
+:host-context(.dark) .filter-coordinate>div,
+:host-context(.dark) .filter-versione>div,
+:host-context(.dark) .filter-data-aggiornamento>div,
+:host-context(.dark) .filter-data-creazione>div {
   @apply bg-gray-700 border-gray-600 shadow-xl;
 }
 
-.filter-regione p, .filter-software p, .filter-ambiente p,
-.filter-codice-regione p, .filter-coordinate p, .filter-versione p,
-.filter-data-aggiornamento p, .filter-data-creazione p {
+.filter-regione p,
+.filter-software p,
+.filter-ambiente p,
+.filter-branch p,
+.filter-commit p,
+.filter-deployed-by p,
+.filter-build p,
+.filter-ultimo-aggiornamento p,
+.filter-rilascio p,
+.filter-codice-regione p,
+.filter-coordinate p,
+.filter-versione p,
+.filter-data-aggiornamento p,
+.filter-data-creazione p {
   @apply text-sm font-medium text-gray-600 mb-3;
 }
 
+.date-range-inputs {
+  display: grid;
+  gap: 10px;
+}
+
+.date-input-pair {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.date-input-pair label {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(148, 163, 184, 0.95);
+}
+
+.date-input {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid rgba(100, 116, 139, 0.28);
+  background: rgba(15, 23, 42, 0.55);
+  color: #e2e8f0;
+  padding: 8px 10px;
+  font-size: 13px;
+}
+
+.date-input:focus {
+  outline: none;
+  border-color: rgba(59, 130, 246, 0.55);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.add-date-btn {
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.18), rgba(14, 116, 144, 0.2));
+  color: #cfe7ff;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.add-date-btn:hover {
+  border-color: rgba(59, 130, 246, 0.6);
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.26), rgba(14, 116, 144, 0.26));
+  transform: translateY(-1px);
+}
+
+.selected-dates h4 {
+  margin: 10px 0 8px;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
 /* Dark theme support for filter labels */
-:host-context(.dark) .filter-regione p, 
-:host-context(.dark) .filter-software p, 
+:host-context(.dark) .filter-regione p,
+:host-context(.dark) .filter-software p,
 :host-context(.dark) .filter-ambiente p,
-:host-context(.dark) .filter-codice-regione p, 
-:host-context(.dark) .filter-coordinate p, 
+:host-context(.dark) .filter-branch p,
+:host-context(.dark) .filter-commit p,
+:host-context(.dark) .filter-deployed-by p,
+:host-context(.dark) .filter-build p,
+:host-context(.dark) .filter-ultimo-aggiornamento p,
+:host-context(.dark) .filter-rilascio p,
+:host-context(.dark) .filter-codice-regione p,
+:host-context(.dark) .filter-coordinate p,
 :host-context(.dark) .filter-versione p,
-:host-context(.dark) .filter-data-aggiornamento p, 
+:host-context(.dark) .filter-data-aggiornamento p,
 :host-context(.dark) .filter-data-creazione p {
   @apply text-gray-300;
 }
 
-.filter-regione select, .filter-software select, .filter-ambiente select,
-.filter-codice-regione select, .filter-coordinate select, .filter-versione select,
-.filter-data-aggiornamento select, .filter-data-creazione select {
+.filter-regione select,
+.filter-software select,
+.filter-ambiente select,
+.filter-codice-regione select,
+.filter-coordinate select,
+.filter-versione select,
+.filter-data-aggiornamento select,
+.filter-data-creazione select {
   @apply w-full p-3 rounded-lg border border-gray-300 bg-white text-gray-700;
   @apply focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none;
   @apply transition-all duration-200 ease-out;
@@ -320,22 +513,27 @@
 }
 
 /* Dark theme support for filter selects */
-:host-context(.dark) .filter-regione select, 
-:host-context(.dark) .filter-software select, 
+:host-context(.dark) .filter-regione select,
+:host-context(.dark) .filter-software select,
 :host-context(.dark) .filter-ambiente select,
-:host-context(.dark) .filter-codice-regione select, 
-:host-context(.dark) .filter-coordinate select, 
+:host-context(.dark) .filter-codice-regione select,
+:host-context(.dark) .filter-coordinate select,
 :host-context(.dark) .filter-versione select,
-:host-context(.dark) .filter-data-aggiornamento select, 
+:host-context(.dark) .filter-data-aggiornamento select,
 :host-context(.dark) .filter-data-creazione select {
   @apply border-gray-600 bg-gray-800 text-gray-100;
   @apply focus:border-indigo-400 focus:ring-indigo-400;
   @apply hover:border-indigo-500;
 }
 
-.filter-regione select:focus, .filter-software select:focus, .filter-ambiente select:focus,
-.filter-codice-regione select:focus, .filter-coordinate select:focus, .filter-versione select:focus,
-.filter-data-aggiornamento select:focus, .filter-data-creazione select:focus {
+.filter-regione select:focus,
+.filter-software select:focus,
+.filter-ambiente select:focus,
+.filter-codice-regione select:focus,
+.filter-coordinate select:focus,
+.filter-versione select:focus,
+.filter-data-aggiornamento select:focus,
+.filter-data-creazione select:focus {
   @apply transform scale-[1.02];
 }
 
@@ -345,6 +543,7 @@
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -355,9 +554,11 @@
   0% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(1.05);
   }
+
   100% {
     transform: scale(1);
   }
@@ -368,9 +569,15 @@
 }
 
 /* Animazione di click per tutti i pulsanti */
-.filtri-regione button:active, 
-.filtri-software button:active, 
+.filtri-regione button:active,
+.filtri-software button:active,
 .filtri-ambiente button:active,
+.filtri-rilascio button:active,
+.filtri-branch button:active,
+.filtri-commit button:active,
+.filtri-deployed-by button:active,
+.filtri-build button:active,
+.filtri-ultimo-aggiornamento button:active,
 .offcanvas-footer button:active {
   animation: buttonPulse 0.15s ease-out;
 }
@@ -380,19 +587,19 @@
   .offcanvas {
     @apply w-full;
   }
-  
+
   .offcanvas-header {
     @apply p-4;
   }
-  
+
   .offcanvas-content {
     @apply p-4;
   }
-  
+
   .offcanvas-footer {
     @apply p-4 flex-col gap-2;
   }
-  
+
   .offcanvas-footer button {
     @apply w-full;
   }
@@ -483,12 +690,12 @@
   @apply text-indigo-300;
 }
 
-.checkbox-label input[type="checkbox"]:checked + span {
+.checkbox-label input[type="checkbox"]:checked+span {
   @apply text-indigo-800 font-medium;
 }
 
 /* Dark theme support for checkbox span checked */
-:host-context(.dark) .checkbox-label input[type="checkbox"]:checked + span {
+:host-context(.dark) .checkbox-label input[type="checkbox"]:checked+span {
   @apply text-indigo-300 font-medium;
 }
 

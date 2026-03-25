@@ -15,7 +15,8 @@
 /* Isolette della Navbar - altezza uniforme */
 .navbar-island {
   @apply flex items-center bg-white rounded-xl px-6 py-3 shadow-sm border border-gray-100;
-  height: 60px; /* Altezza fissa per tutte le isolette */
+  height: 60px;
+  /* Altezza fissa per tutte le isolette */
 }
 
 /* Dark theme support per isolette */
@@ -27,8 +28,10 @@
 .navigation-island {
   @apply gap-4;
   /* Padding asimmetrico per centrare perfettamente il dashboard button */
-  padding-left: 32px;  /* Più spazio a sinistra */
-  padding-right: 24px; /* Meno spazio a destra per compensare il separatore */
+  padding-left: 32px;
+  /* Più spazio a sinistra */
+  padding-right: 24px;
+  /* Meno spazio a destra per compensare il separatore */
   padding-top: 12px;
   padding-bottom: 12px;
 }
@@ -57,7 +60,7 @@
   @apply bg-white text-gray-800 border-2 transition-all duration-200 rounded-xl px-6 py-2.5 font-semibold shadow-sm relative;
   border: 2px solid transparent;
   background: linear-gradient(white, white) padding-box,
-              linear-gradient(135deg, #6366f1, #8b5cf6) border-box;
+    linear-gradient(135deg, #6366f1, #8b5cf6) border-box;
   transform: scale(1);
 }
 
@@ -71,7 +74,7 @@
 :host-context(.dark) .dashboard-button:not(.nav-button-active) {
   @apply bg-gray-800 text-gray-100;
   background: linear-gradient(rgb(31, 41, 55), rgb(31, 41, 55)) padding-box,
-              linear-gradient(135deg, #6366f1, #8b5cf6) border-box;
+    linear-gradient(135deg, #6366f1, #8b5cf6) border-box;
 }
 
 :host-context(.dark) .dashboard-button:hover:not(.nav-button-active) {
@@ -195,7 +198,7 @@
 
 .logo-image {
   @apply w-20 h-20 object-contain;
-} 
+}
 
 /* Filter Container */
 .filter-container {
@@ -261,9 +264,11 @@
     transform: scale(0);
     opacity: 0;
   }
+
   50% {
     transform: scale(1.2);
   }
+
   100% {
     transform: scale(1);
     opacity: 1;
@@ -275,10 +280,13 @@
   .navbar-content {
     @apply gap-4;
   }
+
   .navbar-island {
     @apply px-4 py-2;
-    height: 50px; /* Altezza ridotta per tablet */
+    height: 50px;
+    /* Altezza ridotta per tablet */
   }
+
   .navigation-island {
     @apply gap-2;
     /* Padding ridotto ma proporzionale per tablet */
@@ -287,24 +295,31 @@
     padding-top: 8px;
     padding-bottom: 8px;
   }
+
   .search-filters-island {
     @apply gap-2;
   }
+
   .navbar-separator {
     @apply h-6 mx-2;
   }
+
   .dashboard-button {
     @apply px-3 py-2 text-sm;
   }
+
   .nav-buttons-container {
     @apply gap-2;
   }
+
   .nav-button {
     @apply px-2 py-2;
   }
+
   .icon-button:hover {
     @apply min-w-fit px-3;
   }
+
   .filter-container {
     @apply ml-2;
   }
@@ -314,10 +329,13 @@
   .navbar-content {
     @apply gap-2 px-2;
   }
+
   .navbar-island {
     @apply px-3 py-2;
-    height: 45px; /* Altezza ancora più ridotta per mobile */
+    height: 45px;
+    /* Altezza ancora più ridotta per mobile */
   }
+
   .navigation-island {
     /* Padding ottimizzato per mobile mantenendo il centering */
     padding-left: 16px;
@@ -325,12 +343,15 @@
     padding-top: 6px;
     padding-bottom: 6px;
   }
+
   .navbar-separator {
     @apply hidden;
   }
+
   .navigation-island .nav-buttons-container {
     @apply hidden;
   }
+
   .search-filters-island .filter-container {
     @apply hidden;
   }

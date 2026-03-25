@@ -125,6 +125,144 @@
       </div>
     </div>
 
+    <div class="filtri-branch" *ngIf="currentView == 'L'">
+      <button (click)="onFilterBranchClick()" [class.active]="isSelectedBranch">
+        <span>Branch</span>
+      </button>
+      <div class="filter-branch">
+        <div *ngIf="isSelectedBranch">
+          <p>Inserisci branch</p>
+          <input
+            type="text"
+            [(ngModel)]="selectedBranch"
+            placeholder="es. release/1.2.0"
+            class="version-input"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="filtri-commit" *ngIf="currentView == 'L'">
+      <button (click)="onFilterCommitClick()" [class.active]="isSelectedCommit">
+        <span>Commit</span>
+      </button>
+      <div class="filter-commit">
+        <div *ngIf="isSelectedCommit">
+          <p>Inserisci commit</p>
+          <input
+            type="text"
+            [(ngModel)]="selectedCommit"
+            placeholder="hash o parte di hash"
+            class="version-input"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="filtri-deployed-by" *ngIf="currentView == 'L'">
+      <button
+        (click)="onFilterDeployedByClick()"
+        [class.active]="isSelectedDeployedBy"
+      >
+        <span>Deployed By</span>
+      </button>
+      <div class="filter-deployed-by">
+        <div *ngIf="isSelectedDeployedBy">
+          <p>Inserisci utente deploy</p>
+          <input
+            type="text"
+            [(ngModel)]="selectedDeployedBy"
+            placeholder="es. u12345"
+            class="version-input"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="filtri-build" *ngIf="currentView == 'L'">
+      <button (click)="onFilterBuildClick()" [class.active]="isSelectedBuild">
+        <span>Build</span>
+      </button>
+      <div class="filter-build">
+        <div *ngIf="isSelectedBuild">
+          <p>Inserisci build</p>
+          <input
+            type="text"
+            [(ngModel)]="selectedBuild"
+            placeholder="es. 2026.03.25.1"
+            class="version-input"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="filtri-ultimo-aggiornamento" *ngIf="currentView == 'L'">
+      <button
+        (click)="onFilterUltimoAggiornamentoClick()"
+        [class.active]="isSelectedUltimoAggiornamento"
+      >
+        <span>Ultimo Aggiornamento</span>
+      </button>
+      <div class="filter-ultimo-aggiornamento">
+        <div *ngIf="isSelectedUltimoAggiornamento">
+          <p>Seleziona uno o più intervalli</p>
+          <div class="date-range-input-group">
+            <div class="date-range-inputs">
+              <div class="date-input-pair">
+                <label>Data inizio:</label>
+                <input
+                  type="date"
+                  [(ngModel)]="newUltimoAggiornamentoInizio"
+                  class="date-input"
+                />
+              </div>
+              <div class="date-input-pair">
+                <label>Data fine:</label>
+                <input
+                  type="date"
+                  [(ngModel)]="newUltimoAggiornamentoFine"
+                  class="date-input"
+                />
+              </div>
+            </div>
+            <button
+              (click)="addUltimoAggiornamentoRange()"
+              class="add-date-btn"
+            >
+              Aggiungi Intervallo
+            </button>
+          </div>
+
+          <div
+            class="selected-dates"
+            *ngIf="selectedUltimoAggiornamento.length > 0"
+          >
+            <h4>Intervalli selezionati:</h4>
+            <div class="date-list">
+              <div
+                *ngFor="let range of selectedUltimoAggiornamento; let i = index"
+                class="selection-chip"
+              >
+                <span class="selection-chip-text"
+                  >{{ range.inizio | date: "dd/MM/yyyy" }} -
+                  {{ range.fine | date: "dd/MM/yyyy" }}</span
+                >
+                <button
+                  (click)="removeUltimoAggiornamento(i)"
+                  class="selection-chip-remove"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Codice Regione -->
     <div class="filtri-codice-regione" *ngIf="currentView == 'R'">
       <button
@@ -219,93 +357,6 @@
                     </svg>
                   </button>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Versione -->
-    <div class="filtri-versione" *ngIf="currentView == 'S'">
-      <button
-        (click)="onFilterVersioneClick()"
-        [class.active]="isSelectedVersione"
-      >
-        <span>Versione</span>
-      </button>
-      <div class="filter-versione">
-        <div *ngIf="isSelectedVersione">
-          <p>Inserisci numero versione</p>
-          <div class="number-input-group">
-            <input
-              type="text"
-              [(ngModel)]="selectedVersione"
-              placeholder="Numero versione"
-              class="version-input"
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Data Ultimo Aggiornamento -->
-    <div class="filtri-data-aggiornamento" *ngIf="currentView == 'S'">
-      <button
-        (click)="onFilterDataAggiornamentoClick()"
-        [class.active]="isSelectedDataAggiornamento"
-      >
-        <span>Data Ultimo Aggiornamento</span>
-      </button>
-      <div class="filter-data-aggiornamento">
-        <div *ngIf="isSelectedDataAggiornamento">
-          <p>Seleziona uno o più intervalli di date</p>
-          <div class="date-range-input-group">
-            <div class="date-range-inputs">
-              <div class="date-input-pair">
-                <label>Data inizio:</label>
-                <input
-                  type="date"
-                  [(ngModel)]="newDataAggiornamentoInizio"
-                  class="date-input"
-                />
-              </div>
-              <div class="date-input-pair">
-                <label>Data fine:</label>
-                <input
-                  type="date"
-                  [(ngModel)]="newDataAggiornamentoFine"
-                  class="date-input"
-                />
-              </div>
-            </div>
-            <button (click)="addDataAggiornamentoRange()" class="add-date-btn">
-              Aggiungi Intervallo
-            </button>
-          </div>
-          <div
-            class="selected-dates"
-            *ngIf="selectedDataAggiornamento.length > 0"
-          >
-            <h4>Intervalli selezionati:</h4>
-            <div class="date-list">
-              <div
-                *ngFor="let range of selectedDataAggiornamento; let i = index"
-                class="selection-chip"
-              >
-                <span class="selection-chip-text"
-                  >{{ range.inizio | date: "dd/MM/yyyy" }} -
-                  {{ range.fine | date: "dd/MM/yyyy" }}</span
-                >
-                <button
-                  (click)="removeDataAggiornamento(i)"
-                  class="selection-chip-remove"
-                >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                  </svg>
-                </button>
               </div>
             </div>
           </div>

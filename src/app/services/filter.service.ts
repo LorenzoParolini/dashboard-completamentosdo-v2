@@ -3,24 +3,29 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { FilterCriteria } from './filter-utils.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FilterService {
   private filtersSubject = new BehaviorSubject<FilterCriteria>({
     regioni: [],
     software: [],
     ambienti: [],
+    rilasci: [],
+    branch: '',
+    commit: '',
+    deployedBy: '',
+    build: '',
+    ultimoAggiornamento: [],
     codiciRegione: [],
     coordinate: [],
-    versione: '',
-    dataAggiornamento: [],
     dataCreazione: [],
-    searchQuery: ''
+    searchQuery: '',
   });
 
-  public filters$: Observable<FilterCriteria> = this.filtersSubject.asObservable();
+  public filters$: Observable<FilterCriteria> =
+    this.filtersSubject.asObservable();
 
-  constructor() { }
+  constructor() {}
 
   /**
    * Aggiorna i filtri globali
@@ -44,12 +49,16 @@ export class FilterService {
       regioni: [],
       software: [],
       ambienti: [],
+      rilasci: [],
+      branch: '',
+      commit: '',
+      deployedBy: '',
+      build: '',
+      ultimoAggiornamento: [],
       codiciRegione: [],
       coordinate: [],
-      versione: '',
-      dataAggiornamento: [],
       dataCreazione: [],
-      searchQuery: ''
+      searchQuery: '',
     });
   }
 
@@ -60,7 +69,7 @@ export class FilterService {
     const currentFilters = this.getCurrentFilters();
     this.updateFilters({
       ...currentFilters,
-      searchQuery: searchQuery
+      searchQuery: searchQuery,
     });
   }
 
@@ -69,14 +78,20 @@ export class FilterService {
    */
   hasActiveFilters(): boolean {
     const filters = this.getCurrentFilters();
-    return filters.regioni.length > 0 ||
-           filters.software.length > 0 ||
-           filters.ambienti.length > 0 ||
-           filters.codiciRegione.length > 0 ||
-           filters.coordinate.length > 0 ||
-           filters.versione.trim() !== '' ||
-           filters.dataAggiornamento.length > 0 ||
-           filters.dataCreazione.length > 0 ||
-           filters.searchQuery.trim() !== '';
+    return (
+      filters.regioni.length > 0 ||
+      filters.software.length > 0 ||
+      filters.ambienti.length > 0 ||
+      filters.rilasci.length > 0 ||
+      filters.branch.trim() !== '' ||
+      filters.commit.trim() !== '' ||
+      filters.deployedBy.trim() !== '' ||
+      filters.build.trim() !== '' ||
+      filters.ultimoAggiornamento.length > 0 ||
+      filters.codiciRegione.length > 0 ||
+      filters.coordinate.length > 0 ||
+      filters.dataCreazione.length > 0 ||
+      filters.searchQuery.trim() !== ''
+    );
   }
 }

@@ -236,7 +236,7 @@
 }
 
 .software-preview-item {
-  @apply flex justify-between items-center bg-gradient-to-r from-gray-50 to-slate-50 px-4 py-3 rounded-lg border border-gray-200 transition-all duration-200;
+  @apply bg-gradient-to-r from-gray-50 to-slate-50 px-4 py-3 rounded-lg border border-gray-200 transition-all duration-200;
 }
 
 /* Dark theme support for software preview item */
@@ -262,13 +262,32 @@
   @apply text-gray-200;
 }
 
-.software-preview-version {
-  @apply text-xs bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 px-2 py-1 rounded-full font-semibold border border-green-200;
+.software-preview-content {
+  @apply w-full flex flex-col gap-2;
 }
 
-/* Dark theme support for software preview version */
-:host-context(.dark) .software-preview-version {
-  @apply bg-gradient-to-r from-green-900/50 to-emerald-900/50 text-green-300 border-green-700;
+.software-preview-ambienti {
+  @apply flex flex-col gap-2;
+}
+
+.software-preview-ambiente-row {
+  @apply flex items-center justify-between gap-2;
+}
+
+.software-preview-ambiente-name {
+  @apply text-sm text-gray-700;
+}
+
+:host-context(.dark) .software-preview-ambiente-name {
+  @apply text-gray-300;
+}
+
+.software-preview-rilasci-count {
+  @apply text-xs bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-700 px-2 py-1 rounded-full font-semibold border border-blue-200;
+}
+
+:host-context(.dark) .software-preview-rilasci-count {
+  @apply bg-gradient-to-r from-blue-900/50 to-cyan-900/50 text-blue-300 border-blue-700;
 }
 
 .software-more {
@@ -305,9 +324,12 @@
 
 /* Animations */
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.6;
   }
@@ -317,6 +339,7 @@
   0% {
     background-position: -200px 0;
   }
+
   100% {
     background-position: calc(200px + 100%) 0;
   }
@@ -327,31 +350,31 @@
   .homepage-container {
     @apply p-4;
   }
-  
+
   .homepage-title {
     @apply text-3xl;
   }
-  
+
   .clienti-grid {
     @apply grid-cols-1 gap-4;
   }
-  
+
   .details-card {
     @apply p-4;
   }
-  
+
   .cliente-card:hover {
     transform: translateY(-2px);
   }
-  
+
   .card-content {
     @apply p-4;
   }
-  
+
   .details-header {
     @apply mb-4 pb-3;
   }
-  
+
   .details-content {
     @apply space-y-4;
   }

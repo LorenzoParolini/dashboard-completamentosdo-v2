@@ -1,0 +1,199 @@
+<div class="modal-backdrop" (click)="onBackdropClick($event)">
+  <div class="modal-container">
+    <div class="modal-header">
+      <div class="modal-title-section">
+        <h2 class="modal-title">
+          {{ rilascio ? "Modifica Rilascio" : "Aggiungi Rilascio" }}
+        </h2>
+        <span class="modal-subtitle">
+          {{
+            rilascio
+              ? "Aggiorna i dati del rilascio"
+              : "Inserisci i dati del nuovo rilascio"
+          }}
+        </span>
+      </div>
+      <div class="modal-actions">
+        <button
+          class="minimize-button"
+          (click)="minimizeModal()"
+          aria-label="Minimizza modale"
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+        </button>
+        <button
+          class="close-button"
+          (click)="closeModal()"
+          aria-label="Chiudi modale"
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="modal-content">
+      <div class="form-section">
+        <form (ngSubmit)="salva()" class="form-container">
+          <div class="form-grid">
+            <div class="form-field">
+              <label class="form-label">Versione Corrente</label>
+              <input
+                type="text"
+                [(ngModel)]="nuovoRilascio.versioneCorrente"
+                name="versioneCorrente"
+                class="form-input"
+                (input)="onFieldChange()"
+                (blur)="onFieldBlur('versioneCorrente')"
+                [ngClass]="{
+                  'field-invalid': isFieldInvalid('versioneCorrente'),
+                  'field-valid': isFieldValid('versioneCorrente'),
+                }"
+                required
+              />
+              <div
+                class="field-error"
+                *ngIf="isFieldInvalid('versioneCorrente')"
+              >
+                {{ getVersioneCorrenteError() }}
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label class="form-label">Ultimo Aggiornamento</label>
+              <input
+                type="datetime-local"
+                [(ngModel)]="nuovoRilascio.ultimoAggiornamento"
+                name="ultimoAggiornamento"
+                class="form-input"
+                (ngModelChange)="onFieldChange()"
+              />
+            </div>
+
+            <div class="form-field">
+              <label class="form-label">Branch</label>
+              <input
+                type="text"
+                [(ngModel)]="nuovoRilascio.branch"
+                name="branch"
+                class="form-input"
+                (input)="onFieldChange()"
+                (blur)="onFieldBlur('branch')"
+                [ngClass]="{
+                  'field-invalid': isFieldInvalid('branch'),
+                  'field-valid': isFieldValid('branch'),
+                }"
+              />
+              <div class="field-error" *ngIf="isFieldInvalid('branch')">
+                {{ getBranchError() }}
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label class="form-label">Commit</label>
+              <input
+                type="text"
+                [(ngModel)]="nuovoRilascio.commit"
+                name="commit"
+                class="form-input"
+                (input)="onFieldChange()"
+                (blur)="onFieldBlur('commit')"
+                [ngClass]="{
+                  'field-invalid': isFieldInvalid('commit'),
+                  'field-valid': isFieldValid('commit'),
+                }"
+              />
+              <div class="field-error" *ngIf="isFieldInvalid('commit')">
+                {{ getCommitError() }}
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label class="form-label">Deployed By</label>
+              <input
+                type="text"
+                [(ngModel)]="nuovoRilascio.deployedBy"
+                name="deployedBy"
+                class="form-input"
+                (input)="onFieldChange()"
+                (blur)="onFieldBlur('deployedBy')"
+                [ngClass]="{
+                  'field-invalid': isFieldInvalid('deployedBy'),
+                  'field-valid': isFieldValid('deployedBy'),
+                }"
+              />
+              <div class="field-error" *ngIf="isFieldInvalid('deployedBy')">
+                {{ getDeployedByError() }}
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label class="form-label">Build</label>
+              <input
+                type="text"
+                [(ngModel)]="nuovoRilascio.build"
+                name="build"
+                class="form-input"
+                (input)="onFieldChange()"
+                (blur)="onFieldBlur('build')"
+                [ngClass]="{
+                  'field-invalid': isFieldInvalid('build'),
+                  'field-valid': isFieldValid('build'),
+                }"
+              />
+              <div class="field-error" *ngIf="isFieldInvalid('build')">
+                {{ getBuildError() }}
+              </div>
+            </div>
+
+            <div class="form-field form-field-full">
+              <label class="form-label">Note</label>
+              <textarea
+                [(ngModel)]="nuovoRilascio.note"
+                name="note"
+                class="form-textarea"
+                rows="4"
+                (input)="onFieldChange()"
+                (blur)="onFieldBlur('note')"
+                [ngClass]="{
+                  'field-invalid': isFieldInvalid('note'),
+                  'field-valid': isFieldValid('note'),
+                }"
+              ></textarea>
+              <div class="field-error" *ngIf="isFieldInvalid('note')">
+                {{ getNoteError() }}
+              </div>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" (click)="closeModal()">
+              Annulla
+            </button>
+            <button type="submit" class="btn-primary">
+              {{ rilascio ? "Salva" : "Aggiungi" }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

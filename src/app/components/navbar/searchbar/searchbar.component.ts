@@ -38,6 +38,8 @@ export class SearchbarComponent implements OnChanges {
         return 'Cerca software per nome...';
       case 'A':
         return 'Cerca ambienti per nome...';
+      case 'L':
+        return 'Cerca rilasci...';
       case 'D':
       default:
         return 'Cerca clienti per nome...';

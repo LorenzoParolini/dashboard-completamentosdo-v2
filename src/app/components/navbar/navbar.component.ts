@@ -28,7 +28,7 @@ import { CommonModule } from '@angular/common';
 })
 export class NavbarComponent implements OnInit, OnDestroy {
   isFilterOffcanvasOpen = false;
-  currentView: 'D' | 'R' | 'C' | 'S' | 'A' = 'D';
+  currentView: 'D' | 'R' | 'C' | 'S' | 'A' | 'L' = 'D';
   activeFiltersCount = 0;
   isDarkTheme = false;
   filterResetVersion = 0;
@@ -88,13 +88,14 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.routeSubscription.unsubscribe();
   }
 
-  private getViewFromUrl(url: string): 'D' | 'R' | 'C' | 'S' | 'A' {
+  private getViewFromUrl(url: string): 'D' | 'R' | 'C' | 'S' | 'A' | 'L' {
     const normalizedUrl = this.normalizeUrl(url);
 
     if (normalizedUrl.startsWith('/regione')) return 'R';
     if (normalizedUrl.startsWith('/cliente')) return 'C';
     if (normalizedUrl.startsWith('/software')) return 'S';
     if (normalizedUrl.startsWith('/ambiente')) return 'A';
+    if (normalizedUrl.startsWith('/rilascio')) return 'L';
 
     return 'D';
   }
@@ -109,7 +110,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.filterResetVersion++;
   }
 
-  private switchView(view: 'D' | 'R' | 'C' | 'S' | 'A') {
+  private switchView(view: 'D' | 'R' | 'C' | 'S' | 'A' | 'L') {
     if (this.currentView !== view) {
       this.currentView = view;
     }
@@ -126,11 +127,15 @@ export class NavbarComponent implements OnInit, OnDestroy {
     if (filters.regioni && filters.regioni.length > 0) count++;
     if (filters.software && filters.software.length > 0) count++;
     if (filters.ambienti && filters.ambienti.length > 0) count++;
+    if (filters.rilasci && filters.rilasci.length > 0) count++;
+    if (filters.branch && filters.branch.trim() !== '') count++;
+    if (filters.commit && filters.commit.trim() !== '') count++;
+    if (filters.deployedBy && filters.deployedBy.trim() !== '') count++;
+    if (filters.build && filters.build.trim() !== '') count++;
+    if (filters.ultimoAggiornamento && filters.ultimoAggiornamento.length > 0)
+      count++;
     if (filters.codiciRegione && filters.codiciRegione.length > 0) count++;
     if (filters.coordinate && filters.coordinate.length > 0) count++;
-    if (filters.versione && filters.versione.trim() !== '') count++;
-    if (filters.dataAggiornamento && filters.dataAggiornamento.length > 0)
-      count++;
     if (filters.dataCreazione && filters.dataCreazione.length > 0) count++;
 
     return count;
@@ -153,10 +158,14 @@ export class NavbarComponent implements OnInit, OnDestroy {
     regioni: number[];
     software: number[];
     ambienti: number[];
+    rilasci: number[];
+    branch: string;
+    commit: string;
+    deployedBy: string;
+    build: string;
+    ultimoAggiornamento: { inizio: Date; fine: Date }[];
     codiciRegione: string[];
     coordinate: { x: number; y: number }[];
-    versione: string;
-    dataAggiornamento: { inizio: Date; fine: Date }[];
     dataCreazione: { inizio: Date; fine: Date }[];
   }) {
     console.log('Filtri applicati:', filters);
@@ -189,6 +198,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   onClickAmbiente() {
     this.switchView('A');
+  }
+
+  onClickRilascio() {
+    this.switchView('L');
   }
 
   /**

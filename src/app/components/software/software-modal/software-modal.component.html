@@ -98,42 +98,6 @@
               </div>
             </div>
 
-            <div class="form-field">
-              <label class="form-label">Versione Corrente</label>
-              <!-- Versione non obbligatoria ma con limite massimo 50 caratteri -->
-              <input
-                type="text"
-                [(ngModel)]="nuovoSoftware.versioneCorrente"
-                name="versioneCorrente"
-                placeholder="es. 1.0.0"
-                class="form-input"
-                (input)="onFieldChange()"
-                (blur)="onFieldBlur('versioneCorrente')"
-                [ngClass]="{
-                  'field-invalid': isFieldInvalid('versioneCorrente'),
-                  'field-valid': isFieldValid('versioneCorrente'),
-                }"
-              />
-              <div
-                class="field-error"
-                *ngIf="isFieldInvalid('versioneCorrente')"
-              >
-                {{ getVersioneCorrenteError() }}
-              </div>
-            </div>
-
-            <div class="form-field">
-              <label class="form-label">Data Ultimo Aggiornamento</label>
-              <input
-                type="datetime-local"
-                [(ngModel)]="nuovoSoftware.dataUltimoAggiornamento"
-                name="dataUltimoAggiornamento"
-                class="form-input"
-                (ngModelChange)="onFieldChange()"
-                required
-              />
-            </div>
-
             <div class="form-field form-field-full">
               <label class="form-label">Note</label>
               <!-- Note opzionali: feedback visuale quando si supera il limite di lunghezza -->
@@ -207,14 +171,75 @@
                   *ngFor="let ambiente of nuovoSoftware.ambienti"
                   class="ambiente-card"
                 >
-                  <div class="ambiente-info">
-                    <span class="ambiente-name">{{
-                      ambiente.descrizione
-                    }}</span>
-                    <span class="ambiente-date">{{
-                      ambiente.dataCreazione | date: "dd/MM/yyyy"
-                    }}</span>
+                  <div class="ambiente-header">
+                    <button
+                      type="button"
+                      class="ambiente-toggle"
+                      (click)="toggleAmbiente(ambiente.id)"
+                    >
+                      <span class="ambiente-name">{{
+                        ambiente.descrizione
+                      }}</span>
+                      <span class="ambiente-toggle-meta">
+                        <span class="rilasci-count-badge"
+                          >{{ getAmbienteRilasciCount(ambiente) }} rilasci</span
+                        >
+                        <span class="ambiente-toggle-icon">
+                          {{ isAmbienteExpanded(ambiente.id) ? "-" : "+" }}
+                        </span>
+                      </span>
+                    </button>
                   </div>
+
+                  <div
+                    class="ambiente-details"
+                    *ngIf="isAmbienteExpanded(ambiente.id)"
+                  >
+                    <span class="ambiente-date"
+                      >Creato il:
+                      {{ ambiente.dataCreazione | date: "dd/MM/yyyy" }}</span
+                    >
+                    <span class="ambiente-note" *ngIf="ambiente.note">{{
+                      ambiente.note
+                    }}</span>
+
+                    <div
+                      class="rilasci-list"
+                      *ngIf="
+                        getAmbienteRilasciCount(ambiente) > 0;
+                        else noAmbienteRilasci
+                      "
+                    >
+                      <div
+                        class="rilascio-item"
+                        *ngFor="let rilascio of getAmbienteRilasci(ambiente)"
+                      >
+                        <div class="rilascio-item-header">
+                          <span class="rilascio-version">{{
+                            rilascio.versioneCorrente || "Versione N/A"
+                          }}</span>
+                          <span class="rilascio-date">{{
+                            rilascio.ultimoAggiornamento
+                              | date: "dd/MM/yyyy HH:mm"
+                          }}</span>
+                        </div>
+                        <div class="rilascio-item-body">
+                          <span>Branch: {{ rilascio.branch || "N/A" }}</span>
+                          <span>Build: {{ rilascio.build || "N/A" }}</span>
+                          <span
+                            >Deployed By:
+                            {{ rilascio.deployedBy || "N/A" }}</span
+                          >
+                        </div>
+                      </div>
+                    </div>
+                    <ng-template #noAmbienteRilasci>
+                      <span class="no-data-text"
+                        >Nessun rilascio collegato</span
+                      >
+                    </ng-template>
+                  </div>
+
                   <button
                     type="button"
                     class="remove-ambiente-btn"

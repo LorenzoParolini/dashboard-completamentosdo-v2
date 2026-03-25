@@ -8,8 +8,6 @@ import { Observable, of, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { Ambiente, AmbienteInputDTO } from '../models/ambiente.model';
 
-
-
 @Injectable({
   providedIn: 'root',
 })
@@ -98,5 +96,4 @@ export class AmbientiService {
         catchError(this.handleError),
       );
   }
-
 }

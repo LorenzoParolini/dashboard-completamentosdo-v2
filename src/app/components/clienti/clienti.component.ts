@@ -3,7 +3,10 @@ import { Subscription } from 'rxjs';
 import { Cliente } from '../../models/cliente.model';
 import { ClientiService } from '../../services/clienti.service';
 import { FilterService } from '../../services/filter.service';
-import { FilterUtilsService, FilterCriteria } from '../../services/filter-utils.service';
+import {
+  FilterUtilsService,
+  FilterCriteria,
+} from '../../services/filter-utils.service';
 import { CommonModule } from '@angular/common';
 import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
 import { EmptyStateComponent } from '../empty-state/empty-state.component';
@@ -14,7 +17,13 @@ import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-m
 
 @Component({
   selector: 'app-clienti',
-  imports: [CommonModule, LoadingSpinnerComponent, EmptyStateComponent, ServerErrorComponent, NgbModule],
+  imports: [
+    CommonModule,
+    LoadingSpinnerComponent,
+    EmptyStateComponent,
+    ServerErrorComponent,
+    NgbModule,
+  ],
   templateUrl: './clienti.component.html',
   styleUrl: './clienti.component.css',
 })
@@ -28,12 +37,16 @@ export class ClientiComponent implements OnInit, OnDestroy {
     regioni: [],
     software: [],
     ambienti: [],
+    rilasci: [],
+    branch: '',
+    commit: '',
+    deployedBy: '',
+    build: '',
+    ultimoAggiornamento: [],
     codiciRegione: [],
     coordinate: [],
-    versione: '',
-    dataAggiornamento: [],
     dataCreazione: [],
-    searchQuery: ''
+    searchQuery: '',
   };
   private filterSubscription: Subscription = new Subscription();
 
@@ -41,18 +54,20 @@ export class ClientiComponent implements OnInit, OnDestroy {
     private clientiService: ClientiService,
     private modalService: NgbModal,
     private filterService: FilterService,
-    private filterUtilsService: FilterUtilsService
+    private filterUtilsService: FilterUtilsService,
   ) {}
 
   ngOnInit(): void {
     this.loading = true;
     this.clienti = [];
-    
+
     // Subscribe to filter changes
-    this.filterSubscription = this.filterService.filters$.subscribe(filters => {
-      this.currentFilters = filters;
-      this.applyFilters();
-    });
+    this.filterSubscription = this.filterService.filters$.subscribe(
+      (filters) => {
+        this.currentFilters = filters;
+        this.applyFilters();
+      },
+    );
 
     setTimeout(() => {
       this.loadClienti();
@@ -75,8 +90,9 @@ export class ClientiComponent implements OnInit, OnDestroy {
         console.error('Errore nel caricamento dei clienti:', error);
         this.loading = false;
         this.hasError = true;
-        this.errorMessage = error.message || 'Impossibile raggiungere il server';
-      }
+        this.errorMessage =
+          error.message || 'Impossibile raggiungere il server';
+      },
     });
   }
 
@@ -85,13 +101,16 @@ export class ClientiComponent implements OnInit, OnDestroy {
   }
 
   applyFilters() {
-    this.filteredClienti = this.clienti.filter(cliente => 
-      this.filterUtilsService.shouldShowCliente(cliente, this.currentFilters)
+    this.filteredClienti = this.clienti.filter((cliente) =>
+      this.filterUtilsService.shouldShowCliente(cliente, this.currentFilters),
     );
   }
 
   shouldShowCliente(cliente: Cliente): boolean {
-    return this.filterUtilsService.shouldShowCliente(cliente, this.currentFilters);
+    return this.filterUtilsService.shouldShowCliente(
+      cliente,
+      this.currentFilters,
+    );
   }
 
   onDeleteCliente(id_cliente_da_eliminare: number) {
@@ -99,12 +118,13 @@ export class ClientiComponent implements OnInit, OnDestroy {
       backdrop: true,
       keyboard: true,
       centered: true,
-      size: 'sm'
+      size: 'sm',
     });
 
     // Set modal properties
     modalRef.componentInstance.title = 'Attenzione!';
-    modalRef.componentInstance.message = 'Sei sicuro di voler eliminare questo cliente? Questa azione non può essere annullata.';
+    modalRef.componentInstance.message =
+      'Sei sicuro di voler eliminare questo cliente? Questa azione non può essere annullata.';
     modalRef.componentInstance.confirmText = 'Elimina';
     modalRef.componentInstance.cancelText = 'Annulla';
 
@@ -122,16 +142,16 @@ export class ClientiComponent implements OnInit, OnDestroy {
               });
             },
             error: (error) => {
-              console.error('Errore nell\'eliminazione cliente:', error);
+              console.error("Errore nell'eliminazione cliente:", error);
               // Gestisci l'errore (es. mostra un messaggio)
-            }
+            },
           });
         }
       },
       () => {
         // Modal dismissed (user clicked cancel, X, or clicked outside)
         // Do nothing
-      }
+      },
     );
   }
 
@@ -140,12 +160,12 @@ export class ClientiComponent implements OnInit, OnDestroy {
       backdrop: 'static', // impedisce la chiusura cliccando fuori
       keyboard: true, // permette la chiusura con ESC
       centered: true, // centra la modale
-      size: 'lg' // dimensione grande
+      size: 'lg', // dimensione grande
     });
     if (cliente) {
       modalRef.componentInstance.cliente = cliente;
     }
-    
+
     modalRef.result.then(
       (result: Cliente) => {
         if (cliente) {
@@ -153,21 +173,23 @@ export class ClientiComponent implements OnInit, OnDestroy {
           const clienteInputDTO = {
             descrizione: result.descrizione,
             regioneId: result.regione.id,
-            softwareIds: result.software.map(s => s.id)
+            softwareIds: result.software.map((s) => s.id),
           };
-          this.clientiService.updateCliente(result.id, clienteInputDTO).subscribe(() => {
-            // Ricarica la lista dai clienti aggiornati
-            this.clientiService.getAllClienti().subscribe((data) => {
-              this.clienti = data;
-              this.applyFilters();
+          this.clientiService
+            .updateCliente(result.id, clienteInputDTO)
+            .subscribe(() => {
+              // Ricarica la lista dai clienti aggiornati
+              this.clientiService.getAllClienti().subscribe((data) => {
+                this.clienti = data;
+                this.applyFilters();
+              });
             });
-          });
         } else {
           // Aggiunta: converti in InputDTO e usa il servizio per aggiungere
           const clienteInputDTO = {
             descrizione: result.descrizione,
             regioneId: result.regione.id,
-            softwareIds: result.software.map(s => s.id)
+            softwareIds: result.software.map((s) => s.id),
           };
           this.clientiService.addCliente(clienteInputDTO).subscribe(() => {
             // Ricarica la lista dai clienti aggiornati
@@ -178,7 +200,7 @@ export class ClientiComponent implements OnInit, OnDestroy {
           });
         }
       },
-      () => {}
+      () => {},
     );
   }
 

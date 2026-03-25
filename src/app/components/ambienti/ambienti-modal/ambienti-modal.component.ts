@@ -7,7 +7,9 @@ import {
   NgbModal,
 } from '@ng-bootstrap/ng-bootstrap';
 import { Ambiente } from '../../../models/ambiente.model';
+import { Rilascio } from '../../../models/rilascio.model';
 import { AmbientiService } from '../../../services/ambienti.service';
+import { RilasciService } from '../../../services/rilasci.service';
 import { MinimizedModalsService } from '../../../services/minimized-modals.service';
 import { ConfirmationModalComponent } from '../../confirmation-modal/confirmation-modal.component';
 
@@ -32,13 +34,18 @@ export class AmbientiModalComponent implements OnInit {
     descrizione: '',
     note: '',
     dataCreazione: new Date(),
+    rilasci: [],
   };
+
+  rilascioSelezionatoId: number = 0;
+  rilasciDisponibili: Rilascio[] = [];
 
   private originalData: Ambiente = {
     id: 0,
     descrizione: '',
     note: '',
     dataCreazione: new Date(),
+    rilasci: [],
   };
 
   private hasUnsavedChanges = false;
@@ -53,24 +60,32 @@ export class AmbientiModalComponent implements OnInit {
   constructor(
     public activeModal: NgbActiveModal,
     private ambientiService: AmbientiService,
+    private rilasciService: RilasciService,
     private modalService: NgbModal,
     private minimizedModalsService: MinimizedModalsService,
   ) {}
 
   ngOnInit() {
+    this.rilasciService.getAllRilasci().subscribe((rilasci) => {
+      this.rilasciDisponibili = rilasci;
+    });
+
     if (this.ambiente) {
       // Solo se non abbiamo già dati ripristinati da una modale minimizzata
       if (!this.isRestoredFromMinimized) {
         this.nuovoAmbiente = {
           ...this.ambiente,
+          rilasci: [...(this.ambiente.rilasci || [])],
         };
       }
       this.originalData = {
         ...this.ambiente,
+        rilasci: [...(this.ambiente.rilasci || [])],
       };
     } else {
       this.originalData = {
         ...this.nuovoAmbiente,
+        rilasci: [...(this.nuovoAmbiente.rilasci || [])],
       };
     }
   }
@@ -153,10 +168,62 @@ export class AmbientiModalComponent implements OnInit {
   }
 
   private checkForChanges(): boolean {
-    return (
+    const hasBaseChanges =
       this.nuovoAmbiente.descrizione !== this.originalData.descrizione ||
-      this.nuovoAmbiente.note !== this.originalData.note
+      this.nuovoAmbiente.note !== this.originalData.note;
+
+    if (hasBaseChanges) {
+      return true;
+    }
+
+    if (
+      (this.nuovoAmbiente.rilasci || []).length !==
+      (this.originalData.rilasci || []).length
+    ) {
+      return true;
+    }
+
+    const originalRilasciIds = [...(this.originalData.rilasci || [])]
+      .map((r) => r.id)
+      .sort((a, b) => a - b);
+    const currentRilasciIds = [...(this.nuovoAmbiente.rilasci || [])]
+      .map((r) => r.id)
+      .sort((a, b) => a - b);
+
+    return !originalRilasciIds.every(
+      (id, index) => id === currentRilasciIds[index],
     );
+  }
+
+  onRilascioSelezionatoChange(value: string | number) {
+    const rilascioId = Number(value);
+
+    if (rilascioId && rilascioId !== 0) {
+      const rilascioSelezionato = this.rilasciDisponibili.find(
+        (r) => r.id === rilascioId,
+      );
+
+      if (
+        rilascioSelezionato &&
+        !this.nuovoAmbiente.rilasci.find((r) => r.id === rilascioId)
+      ) {
+        this.nuovoAmbiente.rilasci.push(rilascioSelezionato);
+        this.onFieldChange();
+      }
+
+      this.rilascioSelezionatoId = 0;
+    }
+  }
+
+  rimuoviRilascio(rilascioId: number) {
+    this.nuovoAmbiente.rilasci = this.nuovoAmbiente.rilasci.filter(
+      (r) => r.id !== rilascioId,
+    );
+    this.onFieldChange();
+  }
+
+  isRilascioGiaSelezionato(rilascioId: number): boolean {
+    return this.nuovoAmbiente.rilasci.some((r) => r.id === rilascioId);
   }
 
   @HostListener('window:beforeunload', ['$event'])

@@ -6,7 +6,7 @@ import { MinimizedModal } from '../../services/minimized-modals.service';
   selector: 'app-minimized-modal-item',
   imports: [CommonModule],
   templateUrl: './minimized-modal-item.component.html',
-  styleUrls: ['./minimized-modal-item.component.css']
+  styleUrls: ['./minimized-modal-item.component.css'],
 })
 export class MinimizedModalItemComponent {
   @Input() modal!: MinimizedModal;
@@ -27,10 +27,11 @@ export class MinimizedModalItemComponent {
 
   getSectionLabel(): string {
     const sectionLabels: { [key: string]: string } = {
-      'regioni': 'Regioni',
-      'clienti': 'Clienti', 
-      'software': 'Software',
-      'ambienti': 'Ambienti'
+      regioni: 'Regioni',
+      clienti: 'Clienti',
+      software: 'Software',
+      ambienti: 'Ambienti',
+      rilasci: 'Rilasci',
     };
     return sectionLabels[this.modal.section] || this.modal.section;
   }

@@ -12,9 +12,11 @@ import { FormsModule } from '@angular/forms';
 import { RegioniService } from '../../../services/regioni.service';
 import { SoftwareService } from '../../../services/software.service';
 import { AmbientiService } from '../../../services/ambienti.service';
+import { RilasciService } from '../../../services/rilasci.service';
 import { Regione } from '../../../models/regione.model';
 import { Software } from '../../../models/software.model';
 import { Ambiente } from '../../../models/ambiente.model';
+import { Rilascio } from '../../../models/rilascio.model';
 
 @Component({
   selector: 'app-filter-offcanvas',
@@ -24,48 +26,61 @@ import { Ambiente } from '../../../models/ambiente.model';
 })
 export class FilterOffcanvasComponent implements OnInit, OnChanges {
   @Input() isOpen: boolean = false;
-  @Input() currentView: 'D' | 'R' | 'C' | 'S' | 'A' = 'D';
+  @Input() currentView: 'D' | 'R' | 'C' | 'S' | 'A' | 'L' = 'D';
   @Input() resetVersion: number = 0;
   @Output() onClose = new EventEmitter<void>();
   @Output() onFiltersApplied = new EventEmitter<{
     regioni: number[];
     software: number[];
     ambienti: number[];
+    rilasci: number[];
+    branch: string;
+    commit: string;
+    deployedBy: string;
+    build: string;
+    ultimoAggiornamento: { inizio: Date; fine: Date }[];
     codiciRegione: string[];
     coordinate: { x: number; y: number }[];
-    versione: string;
-    dataAggiornamento: { inizio: Date; fine: Date }[];
     dataCreazione: { inizio: Date; fine: Date }[];
   }>();
 
   isSelectedRegione: boolean = false;
   isSelectedSoftware: boolean = false;
   isSelectedAmbiente: boolean = false;
+  isSelectedRilascio: boolean = false;
+  isSelectedBranch: boolean = false;
+  isSelectedCommit: boolean = false;
+  isSelectedDeployedBy: boolean = false;
+  isSelectedBuild: boolean = false;
+  isSelectedUltimoAggiornamento: boolean = false;
   isSelectedCodiceRegione: boolean = false;
   isSelectedCoordinate: boolean = false;
-  isSelectedVersione: boolean = false;
-  isSelectedDataAggiornamento: boolean = false;
   isSelectedDataCreazione: boolean = false;
 
   regioni: Regione[] = [];
   software: Software[] = [];
   ambienti: Ambiente[] = [];
+  rilasci: Rilascio[] = [];
   codiciRegione: string[] = [];
 
   selectedRegioni: number[] = [];
   selectedSoftware: number[] = [];
   selectedAmbienti: number[] = [];
+  selectedRilasci: number[] = [];
+  selectedBranch: string = '';
+  selectedCommit: string = '';
+  selectedDeployedBy: string = '';
+  selectedBuild: string = '';
+  selectedUltimoAggiornamento: { inizio: Date; fine: Date }[] = [];
   selectedCodiciRegione: string[] = [];
   selectedCoordinate: { x: number; y: number }[] = [];
-  selectedVersione: string = '';
-  selectedDataAggiornamento: { inizio: Date; fine: Date }[] = [];
   selectedDataCreazione: { inizio: Date; fine: Date }[] = [];
 
   // Temporary variables for input
   newCoordinateX: number | null = null;
   newCoordinateY: number | null = null;
-  newDataAggiornamentoInizio: string = '';
-  newDataAggiornamentoFine: string = '';
+  newUltimoAggiornamentoInizio: string = '';
+  newUltimoAggiornamentoFine: string = '';
   newDataCreazioneInizio: string = '';
   newDataCreazioneFine: string = '';
 
@@ -74,6 +89,7 @@ export class FilterOffcanvasComponent implements OnInit, OnChanges {
     private regioniService: RegioniService,
     private softwareService: SoftwareService,
     private ambientiService: AmbientiService,
+    private rilasciService: RilasciService,
   ) {}
 
   //subscribe per ottenere i dati di regioni, software e ambienti
@@ -88,6 +104,9 @@ export class FilterOffcanvasComponent implements OnInit, OnChanges {
     });
     this.ambientiService.getAllAmbienti().subscribe((data: Ambiente[]) => {
       this.ambienti = data;
+    });
+    this.rilasciService.getAllRilasci().subscribe((data: Rilascio[]) => {
+      this.rilasci = data;
     });
   }
 
@@ -115,17 +134,29 @@ export class FilterOffcanvasComponent implements OnInit, OnChanges {
   onFilterAmbienteClick() {
     this.isSelectedAmbiente = !this.isSelectedAmbiente;
   }
+  onFilterRilascioClick() {
+    this.isSelectedRilascio = !this.isSelectedRilascio;
+  }
+  onFilterBranchClick() {
+    this.isSelectedBranch = !this.isSelectedBranch;
+  }
+  onFilterCommitClick() {
+    this.isSelectedCommit = !this.isSelectedCommit;
+  }
+  onFilterDeployedByClick() {
+    this.isSelectedDeployedBy = !this.isSelectedDeployedBy;
+  }
+  onFilterBuildClick() {
+    this.isSelectedBuild = !this.isSelectedBuild;
+  }
+  onFilterUltimoAggiornamentoClick() {
+    this.isSelectedUltimoAggiornamento = !this.isSelectedUltimoAggiornamento;
+  }
   onFilterCodiceRegioneClick() {
     this.isSelectedCodiceRegione = !this.isSelectedCodiceRegione;
   }
   onFilterCoordinateClick() {
     this.isSelectedCoordinate = !this.isSelectedCoordinate;
-  }
-  onFilterVersioneClick() {
-    this.isSelectedVersione = !this.isSelectedVersione;
-  }
-  onFilterDataAggiornamentoClick() {
-    this.isSelectedDataAggiornamento = !this.isSelectedDataAggiornamento;
   }
   onFilterDataCreazioneClick() {
     this.isSelectedDataCreazione = !this.isSelectedDataCreazione;
@@ -164,6 +195,17 @@ export class FilterOffcanvasComponent implements OnInit, OnChanges {
     }
   }
 
+  onRilascioChange(rilascioId: number, event: any) {
+    if (event.target.checked) {
+      this.selectedRilasci.push(rilascioId);
+    } else {
+      const index = this.selectedRilasci.indexOf(rilascioId);
+      if (index > -1) {
+        this.selectedRilasci.splice(index, 1);
+      }
+    }
+  }
+
   onCodiceRegioneChange(codice: string, event: any) {
     if (event.target.checked) {
       this.selectedCodiciRegione.push(codice);
@@ -187,6 +229,10 @@ export class FilterOffcanvasComponent implements OnInit, OnChanges {
     return this.selectedAmbienti.includes(ambienteId);
   }
 
+  isRilascioSelected(rilascioId: number): boolean {
+    return this.selectedRilasci.includes(rilascioId);
+  }
+
   isCodiceRegioneSelected(codice: string): boolean {
     return this.selectedCodiciRegione.includes(codice);
   }
@@ -207,35 +253,32 @@ export class FilterOffcanvasComponent implements OnInit, OnChanges {
     this.selectedCoordinate.splice(index, 1);
   }
 
-  // Date methods
-  addDataAggiornamentoRange() {
-    if (this.newDataAggiornamentoInizio && this.newDataAggiornamentoFine) {
-      const dataInizio = new Date(this.newDataAggiornamentoInizio);
-      const dataFine = new Date(this.newDataAggiornamentoFine);
+  addUltimoAggiornamentoRange() {
+    if (this.newUltimoAggiornamentoInizio && this.newUltimoAggiornamentoFine) {
+      const dataInizio = new Date(this.newUltimoAggiornamentoInizio);
+      const dataFine = new Date(this.newUltimoAggiornamentoFine);
 
-      // Verifica che la data inizio sia precedente o uguale alla data fine
       if (dataInizio <= dataFine) {
         const range = { inizio: dataInizio, fine: dataFine };
 
-        // Verifica che non ci sia già lo stesso intervallo
-        const exists = this.selectedDataAggiornamento.some(
+        const exists = this.selectedUltimoAggiornamento.some(
           (r) =>
             r.inizio.getTime() === range.inizio.getTime() &&
             r.fine.getTime() === range.fine.getTime(),
         );
 
         if (!exists) {
-          this.selectedDataAggiornamento.push(range);
+          this.selectedUltimoAggiornamento.push(range);
         }
 
-        this.newDataAggiornamentoInizio = '';
-        this.newDataAggiornamentoFine = '';
+        this.newUltimoAggiornamentoInizio = '';
+        this.newUltimoAggiornamentoFine = '';
       }
     }
   }
 
-  removeDataAggiornamento(index: number) {
-    this.selectedDataAggiornamento.splice(index, 1);
+  removeUltimoAggiornamento(index: number) {
+    this.selectedUltimoAggiornamento.splice(index, 1);
   }
 
   addDataCreazioneRange() {
@@ -277,23 +320,31 @@ export class FilterOffcanvasComponent implements OnInit, OnChanges {
     this.selectedRegioni = [];
     this.selectedSoftware = [];
     this.selectedAmbienti = [];
+    this.selectedRilasci = [];
+    this.selectedBranch = '';
+    this.selectedCommit = '';
+    this.selectedDeployedBy = '';
+    this.selectedBuild = '';
+    this.selectedUltimoAggiornamento = [];
     this.selectedCodiciRegione = [];
     this.selectedCoordinate = [];
-    this.selectedVersione = '';
-    this.selectedDataAggiornamento = [];
     this.selectedDataCreazione = [];
     this.isSelectedRegione = false;
     this.isSelectedSoftware = false;
     this.isSelectedAmbiente = false;
+    this.isSelectedRilascio = false;
+    this.isSelectedBranch = false;
+    this.isSelectedCommit = false;
+    this.isSelectedDeployedBy = false;
+    this.isSelectedBuild = false;
+    this.isSelectedUltimoAggiornamento = false;
     this.isSelectedCodiceRegione = false;
     this.isSelectedCoordinate = false;
-    this.isSelectedVersione = false;
-    this.isSelectedDataAggiornamento = false;
     this.isSelectedDataCreazione = false;
     this.newCoordinateX = null;
     this.newCoordinateY = null;
-    this.newDataAggiornamentoInizio = '';
-    this.newDataAggiornamentoFine = '';
+    this.newUltimoAggiornamentoInizio = '';
+    this.newUltimoAggiornamentoFine = '';
     this.newDataCreazioneInizio = '';
     this.newDataCreazioneFine = '';
   }
@@ -303,10 +354,14 @@ export class FilterOffcanvasComponent implements OnInit, OnChanges {
       regioni: this.selectedRegioni,
       software: this.selectedSoftware,
       ambienti: this.selectedAmbienti,
+      rilasci: this.selectedRilasci,
+      branch: this.selectedBranch,
+      commit: this.selectedCommit,
+      deployedBy: this.selectedDeployedBy,
+      build: this.selectedBuild,
+      ultimoAggiornamento: this.selectedUltimoAggiornamento,
       codiciRegione: this.selectedCodiciRegione,
       coordinate: this.selectedCoordinate,
-      versione: this.selectedVersione,
-      dataAggiornamento: this.selectedDataAggiornamento,
       dataCreazione: this.selectedDataCreazione,
     };
     this.onFiltersApplied.emit(filters);

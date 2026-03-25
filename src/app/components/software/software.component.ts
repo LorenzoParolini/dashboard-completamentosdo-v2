@@ -3,7 +3,10 @@ import { Subscription } from 'rxjs';
 import { Software as SoftwareModel } from '../../models/software.model';
 import { SoftwareService } from '../../services/software.service';
 import { FilterService } from '../../services/filter.service';
-import { FilterUtilsService, FilterCriteria } from '../../services/filter-utils.service';
+import {
+  FilterUtilsService,
+  FilterCriteria,
+} from '../../services/filter-utils.service';
 import { CommonModule } from '@angular/common';
 import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
 import { EmptyStateComponent } from '../empty-state/empty-state.component';
@@ -14,7 +17,13 @@ import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-m
 
 @Component({
   selector: 'app-software',
-  imports: [CommonModule, LoadingSpinnerComponent, EmptyStateComponent, ServerErrorComponent, NgbModule],
+  imports: [
+    CommonModule,
+    LoadingSpinnerComponent,
+    EmptyStateComponent,
+    ServerErrorComponent,
+    NgbModule,
+  ],
   templateUrl: './software.component.html',
   styleUrl: './software.component.css',
 })
@@ -28,12 +37,16 @@ export class SoftwareComponent implements OnInit, OnDestroy {
     regioni: [],
     software: [],
     ambienti: [],
+    rilasci: [],
+    branch: '',
+    commit: '',
+    deployedBy: '',
+    build: '',
+    ultimoAggiornamento: [],
     codiciRegione: [],
     coordinate: [],
-    versione: '',
-    dataAggiornamento: [],
     dataCreazione: [],
-    searchQuery: ''
+    searchQuery: '',
   };
   private filterSubscription: Subscription = new Subscription();
 
@@ -41,18 +54,20 @@ export class SoftwareComponent implements OnInit, OnDestroy {
     private softwareService: SoftwareService,
     private modalService: NgbModal,
     private filterService: FilterService,
-    private filterUtilsService: FilterUtilsService
+    private filterUtilsService: FilterUtilsService,
   ) {}
 
   ngOnInit(): void {
     this.loading = true;
     this.software = [];
-    
+
     // Subscribe to filter changes
-    this.filterSubscription = this.filterService.filters$.subscribe(filters => {
-      this.currentFilters = filters;
-      this.applyFilters();
-    });
+    this.filterSubscription = this.filterService.filters$.subscribe(
+      (filters) => {
+        this.currentFilters = filters;
+        this.applyFilters();
+      },
+    );
 
     setTimeout(() => {
       this.loadSoftware();
@@ -75,8 +90,9 @@ export class SoftwareComponent implements OnInit, OnDestroy {
         console.error('Errore nel caricamento del software:', error);
         this.loading = false;
         this.hasError = true;
-        this.errorMessage = error.message || 'Impossibile raggiungere il server';
-      }
+        this.errorMessage =
+          error.message || 'Impossibile raggiungere il server';
+      },
     });
   }
 
@@ -85,13 +101,16 @@ export class SoftwareComponent implements OnInit, OnDestroy {
   }
 
   applyFilters() {
-    this.filteredSoftware = this.software.filter(software => 
-      this.filterUtilsService.shouldShowSoftware(software, this.currentFilters)
+    this.filteredSoftware = this.software.filter((software) =>
+      this.filterUtilsService.shouldShowSoftware(software, this.currentFilters),
     );
   }
 
   shouldShowSoftware(software: SoftwareModel): boolean {
-    return this.filterUtilsService.shouldShowSoftware(software, this.currentFilters);
+    return this.filterUtilsService.shouldShowSoftware(
+      software,
+      this.currentFilters,
+    );
   }
 
   onDeleteSoftware(id_software_da_eliminare: number) {
@@ -99,12 +118,13 @@ export class SoftwareComponent implements OnInit, OnDestroy {
       backdrop: true,
       keyboard: true,
       centered: true,
-      size: 'sm'
+      size: 'sm',
     });
 
     // Set modal properties
     modalRef.componentInstance.title = 'Attenzione!';
-    modalRef.componentInstance.message = 'Sei sicuro di voler eliminare questo software? Questa azione non può essere annullata.';
+    modalRef.componentInstance.message =
+      'Sei sicuro di voler eliminare questo software? Questa azione non può essere annullata.';
     modalRef.componentInstance.confirmText = 'Elimina';
     modalRef.componentInstance.cancelText = 'Annulla';
 
@@ -112,26 +132,28 @@ export class SoftwareComponent implements OnInit, OnDestroy {
     modalRef.result.then(
       (confirmed: boolean) => {
         if (confirmed) {
-          this.softwareService.deleteSoftware(id_software_da_eliminare).subscribe({
-            next: () => {
-              console.log('Software eliminato con successo');
-              // Ricarica la lista aggiornata
-              this.softwareService.getAllSoftware().subscribe((data) => {
-                this.software = data;
-                this.applyFilters();
-              });
-            },
-            error: (error) => {
-              console.error('Errore nell\'eliminazione software:', error);
-              // Gestisci l'errore (es. mostra un messaggio)
-            }
-          });
+          this.softwareService
+            .deleteSoftware(id_software_da_eliminare)
+            .subscribe({
+              next: () => {
+                console.log('Software eliminato con successo');
+                // Ricarica la lista aggiornata
+                this.softwareService.getAllSoftware().subscribe((data) => {
+                  this.software = data;
+                  this.applyFilters();
+                });
+              },
+              error: (error) => {
+                console.error("Errore nell'eliminazione software:", error);
+                // Gestisci l'errore (es. mostra un messaggio)
+              },
+            });
         }
       },
       () => {
         // Modal dismissed (user clicked cancel, X, or clicked outside)
         // Do nothing
-      }
+      },
     );
   }
 
@@ -140,12 +162,12 @@ export class SoftwareComponent implements OnInit, OnDestroy {
       backdrop: true, // permette la chiusura cliccando fuori
       keyboard: true, // permette la chiusura con ESC
       centered: true, // centra la modale
-      size: 'lg' // dimensione grande
+      size: 'lg', // dimensione grande
     });
     if (software) {
       modalRef.componentInstance.software = software;
     }
-    
+
     modalRef.result.then(
       (result: SoftwareModel) => {
         if (software) {
@@ -153,25 +175,23 @@ export class SoftwareComponent implements OnInit, OnDestroy {
           const softwareInputDTO = {
             descrizione: result.descrizione,
             note: result.note,
-            versioneCorrente: result.versioneCorrente,
-            dataUltimoAggiornamento: result.dataUltimoAggiornamento,
-            ambienteIds: result.ambienti.map(a => a.id)
+            ambienteIds: result.ambienti.map((a) => a.id),
           };
-          this.softwareService.updateSoftware(result.id, softwareInputDTO).subscribe(() => {
-            // Ricarica la lista dai software aggiornati
-            this.softwareService.getAllSoftware().subscribe((data) => {
-              this.software = data;
-              this.applyFilters();
+          this.softwareService
+            .updateSoftware(result.id, softwareInputDTO)
+            .subscribe(() => {
+              // Ricarica la lista dai software aggiornati
+              this.softwareService.getAllSoftware().subscribe((data) => {
+                this.software = data;
+                this.applyFilters();
+              });
             });
-          });
         } else {
           // Aggiunta: converti in InputDTO e usa il servizio per aggiungere
           const softwareInputDTO = {
             descrizione: result.descrizione,
             note: result.note,
-            versioneCorrente: result.versioneCorrente,
-            dataUltimoAggiornamento: result.dataUltimoAggiornamento,
-            ambienteIds: result.ambienti.map(a => a.id)
+            ambienteIds: result.ambienti.map((a) => a.id),
           };
           this.softwareService.addSoftware(softwareInputDTO).subscribe(() => {
             // Ricarica la lista dai software aggiornati
@@ -182,7 +202,7 @@ export class SoftwareComponent implements OnInit, OnDestroy {
           });
         }
       },
-      () => {}
+      () => {},
     );
   }
 

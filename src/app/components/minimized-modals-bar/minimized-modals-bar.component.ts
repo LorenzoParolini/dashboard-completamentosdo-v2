@@ -1,7 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Observable, Subscription } from 'rxjs';
-import { MinimizedModalsService, MinimizedModal } from '../../services/minimized-modals.service';
+import {
+  MinimizedModalsService,
+  MinimizedModal,
+} from '../../services/minimized-modals.service';
 import { MinimizedModalItemComponent } from '../minimized-modal-item/minimized-modal-item.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -10,12 +13,13 @@ import { ClientiModalComponent } from '../clienti/clienti-modal/clienti-modal.co
 import { RegioniModalComponent } from '../regioni/regioni-modal/regioni-modal.component';
 import { SoftwareModalComponent } from '../software/software-modal/software-modal.component';
 import { AmbientiModalComponent } from '../ambienti/ambienti-modal/ambienti-modal.component';
+import { RilasciModalComponent } from '../rilasci/rilasci-modal/rilasci-modal.component';
 
 @Component({
   selector: 'app-minimized-modals-bar',
   imports: [CommonModule, MinimizedModalItemComponent],
   templateUrl: './minimized-modals-bar.component.html',
-  styleUrls: ['./minimized-modals-bar.component.css']
+  styleUrls: ['./minimized-modals-bar.component.css'],
 })
 export class MinimizedModalsBarComponent implements OnInit, OnDestroy {
   minimizedModals$: Observable<MinimizedModal[]>;
@@ -23,7 +27,7 @@ export class MinimizedModalsBarComponent implements OnInit, OnDestroy {
 
   constructor(
     private minimizedModalsService: MinimizedModalsService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
   ) {
     this.minimizedModals$ = this.minimizedModalsService.minimizedModals$;
   }
@@ -31,7 +35,7 @@ export class MinimizedModalsBarComponent implements OnInit, OnDestroy {
   ngOnInit(): void {}
 
   ngOnDestroy(): void {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
 
   onRestoreModal(modalId: string): void {
@@ -58,13 +62,13 @@ export class MinimizedModalsBarComponent implements OnInit, OnDestroy {
 
   private openModalByType(modal: MinimizedModal): void {
     let modalRef: any;
-    
+
     switch (modal.section) {
       case 'clienti':
-        modalRef = this.modalService.open(ClientiModalComponent, { 
+        modalRef = this.modalService.open(ClientiModalComponent, {
           size: 'lg',
           backdrop: false,
-          container: 'body'
+          container: 'body',
         });
         if (modal.type === 'edit' && modal.data) {
           modalRef.componentInstance.cliente = modal.data;
@@ -75,18 +79,19 @@ export class MinimizedModalsBarComponent implements OnInit, OnDestroy {
           modalRef.componentInstance.nuovoCliente = { ...modal.formData };
           // Ripristina anche il campo di selezione se presente
           if (modal.formData.softwareSelezionatoId) {
-            modalRef.componentInstance.softwareSelezionatoId = modal.formData.softwareSelezionatoId;
+            modalRef.componentInstance.softwareSelezionatoId =
+              modal.formData.softwareSelezionatoId;
           }
           // Marca che questi sono dati ripristinati
           modalRef.componentInstance.isRestoredFromMinimized = true;
         }
         break;
-        
+
       case 'regioni':
-        modalRef = this.modalService.open(RegioniModalComponent, { 
+        modalRef = this.modalService.open(RegioniModalComponent, {
           size: 'lg',
           backdrop: false,
-          container: 'body'
+          container: 'body',
         });
         if (modal.type === 'edit' && modal.data) {
           modalRef.componentInstance.regione = modal.data;
@@ -96,12 +101,12 @@ export class MinimizedModalsBarComponent implements OnInit, OnDestroy {
           modalRef.componentInstance.isRestoredFromMinimized = true;
         }
         break;
-        
+
       case 'software':
-        modalRef = this.modalService.open(SoftwareModalComponent, { 
+        modalRef = this.modalService.open(SoftwareModalComponent, {
           size: 'lg',
           backdrop: false,
-          container: 'body'
+          container: 'body',
         });
         if (modal.type === 'edit' && modal.data) {
           modalRef.componentInstance.software = modal.data;
@@ -110,17 +115,18 @@ export class MinimizedModalsBarComponent implements OnInit, OnDestroy {
           modalRef.componentInstance.nuovoSoftware = { ...modal.formData };
           // Ripristina anche il campo di selezione se presente
           if (modal.formData.ambienteSelezionatoId) {
-            modalRef.componentInstance.ambienteSelezionatoId = modal.formData.ambienteSelezionatoId;
+            modalRef.componentInstance.ambienteSelezionatoId =
+              modal.formData.ambienteSelezionatoId;
           }
           modalRef.componentInstance.isRestoredFromMinimized = true;
         }
         break;
-        
+
       case 'ambienti':
-        modalRef = this.modalService.open(AmbientiModalComponent, { 
+        modalRef = this.modalService.open(AmbientiModalComponent, {
           size: 'lg',
           backdrop: false,
-          container: 'body'
+          container: 'body',
         });
         if (modal.type === 'edit' && modal.data) {
           modalRef.componentInstance.ambiente = modal.data;
@@ -130,17 +136,32 @@ export class MinimizedModalsBarComponent implements OnInit, OnDestroy {
           modalRef.componentInstance.isRestoredFromMinimized = true;
         }
         break;
+
+      case 'rilasci':
+        modalRef = this.modalService.open(RilasciModalComponent, {
+          size: 'lg',
+          backdrop: false,
+          container: 'body',
+        });
+        if (modal.type === 'edit' && modal.data) {
+          modalRef.componentInstance.rilascio = modal.data;
+        }
+        if (modal.formData) {
+          modalRef.componentInstance.nuovoRilascio = { ...modal.formData };
+          modalRef.componentInstance.isRestoredFromMinimized = true;
+        }
+        break;
     }
 
     // Aggiorna l'ID della modale per prevenire conflitti
     if (modalRef) {
       const newModalId = this.minimizedModalsService.generateModalId(
-        modal.section, 
-        modal.type, 
-        modal.data?.id
+        modal.section,
+        modal.type,
+        modal.data?.id,
       );
       modalRef.componentInstance.modalId = newModalId;
-      
+
       // Gestisci la chiusura della modale ripristinata
       modalRef.result.catch(() => {
         // La modale è stata chiusa, non fare nulla di speciale

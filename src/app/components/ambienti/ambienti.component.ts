@@ -3,7 +3,10 @@ import { Subscription } from 'rxjs';
 import { Ambiente } from '../../models/ambiente.model';
 import { AmbientiService } from '../../services/ambienti.service';
 import { FilterService } from '../../services/filter.service';
-import { FilterUtilsService, FilterCriteria } from '../../services/filter-utils.service';
+import {
+  FilterUtilsService,
+  FilterCriteria,
+} from '../../services/filter-utils.service';
 import { CommonModule } from '@angular/common';
 import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
 import { EmptyStateComponent } from '../empty-state/empty-state.component';
@@ -14,7 +17,13 @@ import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-m
 
 @Component({
   selector: 'app-ambienti',
-  imports: [CommonModule, LoadingSpinnerComponent, EmptyStateComponent, ServerErrorComponent, NgbModule],
+  imports: [
+    CommonModule,
+    LoadingSpinnerComponent,
+    EmptyStateComponent,
+    ServerErrorComponent,
+    NgbModule,
+  ],
   templateUrl: './ambienti.component.html',
   styleUrl: './ambienti.component.css',
 })
@@ -28,12 +37,16 @@ export class AmbientiComponent implements OnInit, OnDestroy {
     regioni: [],
     software: [],
     ambienti: [],
+    rilasci: [],
+    branch: '',
+    commit: '',
+    deployedBy: '',
+    build: '',
+    ultimoAggiornamento: [],
     codiciRegione: [],
     coordinate: [],
-    versione: '',
-    dataAggiornamento: [],
     dataCreazione: [],
-    searchQuery: ''
+    searchQuery: '',
   };
   private filterSubscription: Subscription = new Subscription();
 
@@ -41,18 +54,20 @@ export class AmbientiComponent implements OnInit, OnDestroy {
     private ambientiService: AmbientiService,
     private modalService: NgbModal,
     private filterService: FilterService,
-    private filterUtilsService: FilterUtilsService
+    private filterUtilsService: FilterUtilsService,
   ) {}
 
   ngOnInit(): void {
     this.loading = true;
     this.ambienti = [];
-    
+
     // Subscribe to filter changes
-    this.filterSubscription = this.filterService.filters$.subscribe(filters => {
-      this.currentFilters = filters;
-      this.applyFilters();
-    });
+    this.filterSubscription = this.filterService.filters$.subscribe(
+      (filters) => {
+        this.currentFilters = filters;
+        this.applyFilters();
+      },
+    );
 
     setTimeout(() => {
       this.loadAmbienti();
@@ -75,8 +90,9 @@ export class AmbientiComponent implements OnInit, OnDestroy {
         console.error('Errore nel caricamento degli ambienti:', error);
         this.loading = false;
         this.hasError = true;
-        this.errorMessage = error.message || 'Impossibile raggiungere il server';
-      }
+        this.errorMessage =
+          error.message || 'Impossibile raggiungere il server';
+      },
     });
   }
 
@@ -85,29 +101,33 @@ export class AmbientiComponent implements OnInit, OnDestroy {
   }
 
   applyFilters() {
-    this.filteredAmbienti = this.ambienti.filter(ambiente => 
-      this.filterUtilsService.shouldShowAmbiente(ambiente, this.currentFilters)
+    this.filteredAmbienti = this.ambienti.filter((ambiente) =>
+      this.filterUtilsService.shouldShowAmbiente(ambiente, this.currentFilters),
     );
   }
 
   shouldShowAmbiente(ambiente: Ambiente): boolean {
-    return this.filterUtilsService.shouldShowAmbiente(ambiente, this.currentFilters);
+    return this.filterUtilsService.shouldShowAmbiente(
+      ambiente,
+      this.currentFilters,
+    );
   }
 
   onDeleteAmbiente(id_ambiente_da_eliminare: number) {
     console.log('🔍 ID DA ELIMINARE:', id_ambiente_da_eliminare); // ← AGGIUNGI QUESTO
     console.log('🔍 TIPO DI ID:', typeof id_ambiente_da_eliminare); // ← AGGIUNGI QUESTO
-    
+
     const modalRef = this.modalService.open(ConfirmationModalComponent, {
       backdrop: true,
       keyboard: true,
       centered: true,
-      size: 'sm'
+      size: 'sm',
     });
 
     // Set modal properties
     modalRef.componentInstance.title = 'Attenzione!';
-    modalRef.componentInstance.message = 'Sei sicuro di voler eliminare questo ambiente? Questa azione non può essere annullata.';
+    modalRef.componentInstance.message =
+      'Sei sicuro di voler eliminare questo ambiente? Questa azione non può essere annullata.';
     modalRef.componentInstance.confirmText = 'Elimina';
     modalRef.componentInstance.cancelText = 'Annulla';
 
@@ -115,26 +135,28 @@ export class AmbientiComponent implements OnInit, OnDestroy {
     modalRef.result.then(
       (confirmed: boolean) => {
         if (confirmed) {
-          this.ambientiService.deleteAmbiente(id_ambiente_da_eliminare).subscribe({
-            next: () => {
-              console.log('Ambiente eliminato con successo');
-              // Ricarica la lista aggiornata
-              this.ambientiService.getAllAmbienti().subscribe((data) => {
-                this.ambienti = data;
-                this.applyFilters();
-              });
-            },
-            error: (error) => {
-              console.error('Errore nell\'eliminazione ambiente:', error);
-              // Gestisci l'errore (es. mostra un messaggio)
-            }
-          });
+          this.ambientiService
+            .deleteAmbiente(id_ambiente_da_eliminare)
+            .subscribe({
+              next: () => {
+                console.log('Ambiente eliminato con successo');
+                // Ricarica la lista aggiornata
+                this.ambientiService.getAllAmbienti().subscribe((data) => {
+                  this.ambienti = data;
+                  this.applyFilters();
+                });
+              },
+              error: (error) => {
+                console.error("Errore nell'eliminazione ambiente:", error);
+                // Gestisci l'errore (es. mostra un messaggio)
+              },
+            });
         }
       },
       () => {
         // Modal dismissed (user clicked cancel, X, or clicked outside)
         // Do nothing
-      }
+      },
     );
   }
 
@@ -143,12 +165,12 @@ export class AmbientiComponent implements OnInit, OnDestroy {
       backdrop: 'static', // impedisce la chiusura cliccando fuori
       keyboard: true, // permette la chiusura con ESC
       centered: true, // centra la modale
-      size: 'lg' // dimensione grande
+      size: 'lg', // dimensione grande
     });
     if (ambiente) {
       modalRef.componentInstance.ambiente = ambiente;
     }
-    
+
     modalRef.result.then(
       (result: Ambiente) => {
         if (ambiente) {
@@ -156,21 +178,25 @@ export class AmbientiComponent implements OnInit, OnDestroy {
           const ambienteInputDTO = {
             descrizione: result.descrizione,
             note: result.note,
-            dataCreazione: result.dataCreazione
+            dataCreazione: result.dataCreazione,
+            rilascioIds: (result.rilasci || []).map((rilascio) => rilascio.id),
           };
-          this.ambientiService.updateAmbiente(result.id, ambienteInputDTO).subscribe(() => {
-            // Ricarica la lista dagli ambienti aggiornati
-            this.ambientiService.getAllAmbienti().subscribe((data) => {
-              this.ambienti = data;
-              this.applyFilters();
+          this.ambientiService
+            .updateAmbiente(result.id, ambienteInputDTO)
+            .subscribe(() => {
+              // Ricarica la lista dagli ambienti aggiornati
+              this.ambientiService.getAllAmbienti().subscribe((data) => {
+                this.ambienti = data;
+                this.applyFilters();
+              });
             });
-          });
         } else {
           // Aggiunta: converti in InputDTO e usa il servizio per aggiungere
           const ambienteInputDTO = {
             descrizione: result.descrizione,
             note: result.note,
-            dataCreazione: result.dataCreazione
+            dataCreazione: result.dataCreazione,
+            rilascioIds: (result.rilasci || []).map((rilascio) => rilascio.id),
           };
           this.ambientiService.addAmbiente(ambienteInputDTO).subscribe(() => {
             // Ricarica la lista dagli ambienti aggiornati
@@ -181,7 +207,7 @@ export class AmbientiComponent implements OnInit, OnDestroy {
           });
         }
       },
-      () => {}
+      () => {},
     );
   }
 

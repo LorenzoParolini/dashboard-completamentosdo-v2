@@ -1,5 +1,4 @@
 <div class="page-container">
-  <!-- Header Section -->
   <div class="page-header">
     <div class="header-content">
       <div class="title-section">
@@ -12,17 +11,19 @@
             stroke="currentColor"
             stroke-width="2"
           >
-            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-            <line x1="8" y1="21" x2="16" y2="21"></line>
-            <line x1="12" y1="17" x2="12" y2="21"></line>
+            <path
+              d="M4 13a8 8 0 0 1 7 7a6 6 0 0 0 3 -5a9 9 0 0 0 6 -8a3 3 0 0 0 -3 -3a9 9 0 0 0 -8 6a6 6 0 0 0 -5 3"
+            ></path>
+            <path d="M7 14a6 6 0 0 0 -3 6a6 6 0 0 0 6 -3"></path>
+            <circle cx="15" cy="9" r="1"></circle>
           </svg>
-          Gestione Software
+          Gestione Rilasci
         </h1>
         <p class="page-subtitle">
-          Visualizza e gestisci tutti i software del sistema
+          Visualizza e gestisci tutti i rilasci del sistema
         </p>
       </div>
-      <button class="add-button icon-button" (click)="openSoftwareModal()">
+      <button class="add-button icon-button" (click)="openRilascioModal()">
         <div class="icon-container">
           <svg
             width="20"
@@ -43,67 +44,65 @@
     </div>
   </div>
 
-  <!-- Content Section -->
   <div class="page-content">
     <ng-container *ngIf="!loading; else loadingBlock">
       <app-server-error
         *ngIf="hasError"
         [errorMessage]="errorMessage"
-        (retry)="retryLoadSoftware()"
+        (retry)="retryLoadRilasci()"
       >
       </app-server-error>
+
       <div
         class="data-table-container"
-        *ngIf="!hasError && filteredSoftware.length > 0; else noDataBlock"
+        *ngIf="!hasError && filteredRilasci.length > 0; else noDataBlock"
       >
         <div class="table-wrapper">
           <table class="data-table">
             <thead class="table-header">
               <tr>
                 <th class="table-th">#</th>
-                <th class="table-th">Descrizione</th>
+                <th class="table-th">Versione</th>
+                <th class="table-th">Branch</th>
+                <th class="table-th">Commit</th>
+                <th class="table-th">Deployed By</th>
+                <th class="table-th">Build</th>
+                <th class="table-th">Ultimo Aggiornamento</th>
                 <th class="table-th">Note</th>
-                <th class="table-th">Ambienti</th>
                 <th class="table-th actions-column">Azioni</th>
               </tr>
             </thead>
             <tbody class="table-body">
               <tr
                 class="table-row"
-                *ngFor="let sw of filteredSoftware; let i = index"
+                *ngFor="let rilascio of filteredRilasci; let i = index"
               >
                 <td class="table-td id-column">{{ i + 1 }}</td>
-                <td class="table-td">{{ sw.descrizione }}</td>
                 <td class="table-td">
-                  <span class="note-text" *ngIf="sw.note; else noNote">{{
-                    sw.note
+                  <span class="version-badge">{{
+                    rilascio.versioneCorrente || "N/A"
+                  }}</span>
+                </td>
+                <td class="table-td">{{ rilascio.branch || "N/A" }}</td>
+                <td class="table-td">{{ rilascio.commit || "N/A" }}</td>
+                <td class="table-td">{{ rilascio.deployedBy || "N/A" }}</td>
+                <td class="table-td">{{ rilascio.build || "N/A" }}</td>
+                <td class="table-td date-text">
+                  {{ rilascio.ultimoAggiornamento | date: "dd/MM/yyyy HH:mm" }}
+                </td>
+                <td class="table-td">
+                  <span class="note-text" *ngIf="rilascio.note; else noNote">{{
+                    rilascio.note
                   }}</span>
                   <ng-template #noNote>
                     <span class="no-data">N/A</span>
-                  </ng-template>
-                </td>
-                <td class="table-td">
-                  <div
-                    class="ambiente-list"
-                    *ngIf="sw.ambienti.length > 0; else noAmbienti"
-                  >
-                    <span
-                      class="ambiente-item"
-                      *ngFor="let amb of sw.ambienti; let last = last"
-                    >
-                      {{ amb.descrizione
-                      }}<span class="ambiente-separator" *ngIf="!last">, </span>
-                    </span>
-                  </div>
-                  <ng-template #noAmbienti>
-                    <span class="no-data">Nessun ambiente</span>
                   </ng-template>
                 </td>
                 <td class="table-td actions-column">
                   <div class="action-buttons">
                     <button
                       class="action-button edit-button icon-button"
-                      (click)="openSoftwareModal(sw)"
+                      (click)="openRilascioModal(rilascio)"
                     >
                       <div class="icon-container">
                         <svg
@@ -122,13 +121,11 @@
                           ></path>
                         </svg>
                       </div>
-                      <div class="text-container">
-                        <span>Modifica</span>
-                      </div>
+                      <div class="text-container"><span>Modifica</span></div>
                     </button>
                     <button
                       class="action-button delete-button icon-button"
-                      (click)="onDeleteSoftware(sw.id)"
+                      (click)="onDeleteRilascio(rilascio.id)"
                     >
                       <div class="icon-container">
                         <svg
@@ -145,9 +142,7 @@
                           ></path>
                         </svg>
                       </div>
-                      <div class="text-container">
-                        <span>Elimina</span>
-                      </div>
+                      <div class="text-container"><span>Elimina</span></div>
                     </button>
                   </div>
                 </td>
@@ -167,8 +162,8 @@
     <ng-template #noDataBlock>
       <app-empty-state
         *ngIf="!hasError"
-        message="Nessun software trovato"
-        description="Inizia aggiungendo il primo software al sistema"
+        message="Nessun rilascio trovato"
+        description="Inizia aggiungendo il primo rilascio al sistema"
       >
       </app-empty-state>
     </ng-template>

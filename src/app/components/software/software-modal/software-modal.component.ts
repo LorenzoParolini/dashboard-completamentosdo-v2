@@ -8,6 +8,7 @@ import {
 } from '@ng-bootstrap/ng-bootstrap';
 import { Software } from '../../../models/software.model';
 import { Ambiente } from '../../../models/ambiente.model';
+import { Rilascio } from '../../../models/rilascio.model';
 import { SoftwareService } from '../../../services/software.service';
 import { AmbientiService } from '../../../services/ambienti.service';
 import { MinimizedModalsService } from '../../../services/minimized-modals.service';
@@ -33,8 +34,6 @@ export class SoftwareModalComponent implements OnInit {
     descrizione: '',
     note: '',
     ambienti: [],
-    versioneCorrente: '',
-    dataUltimoAggiornamento: '',
   };
 
   // Campo per il menu a tendina
@@ -42,14 +41,13 @@ export class SoftwareModalComponent implements OnInit {
 
   // Mock data per le select
   ambientiDisponibili: Ambiente[] = [];
+  expandedAmbienti = new Set<number>();
 
   private originalData: Software = {
     id: 0,
     descrizione: '',
     note: '',
     ambienti: [],
-    versioneCorrente: '',
-    dataUltimoAggiornamento: '',
   };
 
   private hasUnsavedChanges = false;
@@ -59,7 +57,6 @@ export class SoftwareModalComponent implements OnInit {
   touchedFields = {
     descrizione: false,
     note: false,
-    versioneCorrente: false,
   };
 
   constructor(
@@ -75,6 +72,15 @@ export class SoftwareModalComponent implements OnInit {
     this.ambientiService.getAllAmbienti().subscribe((ambienti) => {
       this.ambientiDisponibili = ambienti;
       console.log('Ambienti disponibili caricati:', this.ambientiDisponibili);
+
+      // I DTO nested di alcuni endpoint possono non includere i rilasci:
+      // riallineiamo gli ambienti selezionati con quelli completi disponibili.
+      this.nuovoSoftware.ambienti = this.enrichAmbientiConRilasci(
+        this.nuovoSoftware.ambienti,
+      );
+      this.originalData.ambienti = this.enrichAmbientiConRilasci(
+        this.originalData.ambienti,
+      );
     });
 
     if (this.software) {
@@ -84,26 +90,25 @@ export class SoftwareModalComponent implements OnInit {
         this.nuovoSoftware = {
           ...this.software,
           ambienti: [...this.software.ambienti],
-          dataUltimoAggiornamento: this.toDateTimeLocalValue(
-            this.software.dataUltimoAggiornamento,
-          ),
         };
       } else {
         this.nuovoSoftware = {
           ...this.nuovoSoftware,
           ambienti: [...this.nuovoSoftware.ambienti],
-          dataUltimoAggiornamento: this.toDateTimeLocalValue(
-            this.nuovoSoftware.dataUltimoAggiornamento,
-          ),
         };
       }
       this.originalData = {
         ...this.software,
         ambienti: [...this.software.ambienti],
-        dataUltimoAggiornamento: this.toBackendLocalDateTime(
-          this.software.dataUltimoAggiornamento,
-        ),
       };
+
+      this.nuovoSoftware.ambienti = this.enrichAmbientiConRilasci(
+        this.nuovoSoftware.ambienti,
+      );
+      this.originalData.ambienti = this.enrichAmbientiConRilasci(
+        this.originalData.ambienti,
+      );
+
       console.log('Ambienti del software:', this.nuovoSoftware.ambienti);
     } else {
       console.log('Modalità aggiunta - Nuovo software');
@@ -111,19 +116,61 @@ export class SoftwareModalComponent implements OnInit {
       this.nuovoSoftware = {
         ...this.nuovoSoftware,
         ambienti: [...this.nuovoSoftware.ambienti],
-        dataUltimoAggiornamento: this.toDateTimeLocalValue(
-          this.nuovoSoftware.dataUltimoAggiornamento || new Date(),
-        ),
       };
 
       this.originalData = {
         ...this.nuovoSoftware,
         ambienti: [...this.nuovoSoftware.ambienti],
-        dataUltimoAggiornamento: this.toBackendLocalDateTime(
-          this.nuovoSoftware.dataUltimoAggiornamento,
-        ),
       };
+
+      this.nuovoSoftware.ambienti = this.enrichAmbientiConRilasci(
+        this.nuovoSoftware.ambienti,
+      );
+      this.originalData.ambienti = this.enrichAmbientiConRilasci(
+        this.originalData.ambienti,
+      );
     }
+  }
+
+  toggleAmbiente(ambienteId: number): void {
+    if (this.expandedAmbienti.has(ambienteId)) {
+      this.expandedAmbienti.delete(ambienteId);
+      return;
+    }
+    this.expandedAmbienti.add(ambienteId);
+  }
+
+  isAmbienteExpanded(ambienteId: number): boolean {
+    return this.expandedAmbienti.has(ambienteId);
+  }
+
+  getAmbienteRilasci(ambiente: Ambiente): Rilascio[] {
+    return this.normalizeAmbienteConRilasci(ambiente).rilasci || [];
+  }
+
+  getAmbienteRilasciCount(ambiente: Ambiente): number {
+    return this.getAmbienteRilasci(ambiente).length;
+  }
+
+  private enrichAmbientiConRilasci(ambienti: Ambiente[]): Ambiente[] {
+    return (ambienti || []).map((ambiente) =>
+      this.normalizeAmbienteConRilasci(ambiente),
+    );
+  }
+
+  private normalizeAmbienteConRilasci(ambiente: Ambiente): Ambiente {
+    const fromPayload = ambiente?.rilasci || [];
+    if (fromPayload.length > 0) {
+      return { ...ambiente, rilasci: fromPayload };
+    }
+
+    const fullAmbiente = this.ambientiDisponibili.find(
+      (a) => a.id === ambiente.id,
+    );
+    return {
+      ...ambiente,
+      rilasci: fullAmbiente?.rilasci || [],
+    };
   }
 
   onFieldChange() {
@@ -140,7 +187,6 @@ export class SoftwareModalComponent implements OnInit {
   private markAllFieldsAsTouched() {
     this.touchedFields.descrizione = true;
     this.touchedFields.note = true;
-    this.touchedFields.versioneCorrente = true;
   }
 
   // Normalizza stringhe in input per coerenza tra validazione e salvataggio.
@@ -179,22 +225,9 @@ export class SoftwareModalComponent implements OnInit {
     return '';
   }
 
-  // Vincolo SoftwareInputDTO: versioneCorrente max 50 caratteri.
-  isVersioneCorrenteValid(): boolean {
-    return (this.nuovoSoftware.versioneCorrente ?? '').length <= 50;
-  }
-
-  // Messaggio per overflow lunghezza versione.
-  getVersioneCorrenteError(): string {
-    if ((this.nuovoSoftware.versioneCorrente ?? '').length > 50) {
-      return 'La versione non può superare 50 caratteri';
-    }
-    return '';
-  }
-
   // Un campo è invalid quando è stato toccato e non rispetta il suo vincolo.
   // Usato da template per bordo rosso e messaggio.
-  isFieldInvalid(field: 'descrizione' | 'note' | 'versioneCorrente'): boolean {
+  isFieldInvalid(field: 'descrizione' | 'note'): boolean {
     if (!this.touchedFields[field]) {
       return false;
     }
@@ -207,106 +240,26 @@ export class SoftwareModalComponent implements OnInit {
       return !this.isNoteValid();
     }
 
-    return !this.isVersioneCorrenteValid();
+    return false;
   }
 
   // Un campo è valid quando è toccato e non invalid.
   // Usato da template per bordo verde.
-  isFieldValid(field: 'descrizione' | 'note' | 'versioneCorrente'): boolean {
+  isFieldValid(field: 'descrizione' | 'note'): boolean {
     return this.touchedFields[field] && !this.isFieldInvalid(field);
   }
 
   // Validazione complessiva chiamata prima del submit.
   private isFormValid(): boolean {
-    return (
-      this.isDescrizioneValid() &&
-      this.isNoteValid() &&
-      this.isVersioneCorrenteValid()
-    );
-  }
-
-  private formatLocalDateTime(
-    date: Date,
-    includeSeconds: boolean = false,
-  ): string {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-
-    if (includeSeconds) {
-      const seconds = String(date.getSeconds()).padStart(2, '0');
-      return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
-    }
-
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
-  }
-
-  private toDateTimeLocalValue(value?: string | Date | null): string {
-    if (!value) {
-      return '';
-    }
-
-    if (typeof value === 'string') {
-      const normalized = value.trim().replace(' ', 'T').replace('Z', '');
-      const dateTimeMatch = normalized.match(
-        /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2})/,
-      );
-      if (dateTimeMatch) {
-        return dateTimeMatch[1];
-      }
-    }
-
-    const parsedDate = value instanceof Date ? value : new Date(value);
-    return Number.isNaN(parsedDate.getTime())
-      ? ''
-      : this.formatLocalDateTime(parsedDate);
-  }
-
-  private toBackendLocalDateTime(value?: string | Date | null): string {
-    if (!value) {
-      return '';
-    }
-
-    if (typeof value === 'string') {
-      const normalized = value.trim().replace(' ', 'T').replace('Z', '');
-
-      if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(normalized)) {
-        return `${normalized}:00`;
-      }
-
-      const dateTimeWithSecondsMatch = normalized.match(
-        /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})/,
-      );
-      if (dateTimeWithSecondsMatch) {
-        return dateTimeWithSecondsMatch[1];
-      }
-    }
-
-    const parsedDate = value instanceof Date ? value : new Date(value);
-    return Number.isNaN(parsedDate.getTime())
-      ? ''
-      : this.formatLocalDateTime(parsedDate, true);
+    return this.isDescrizioneValid() && this.isNoteValid();
   }
 
   private checkForChanges(): boolean {
     // Verifica cambiamenti nei campi base
     if (
       this.nuovoSoftware.descrizione !== this.originalData.descrizione ||
-      this.nuovoSoftware.note !== this.originalData.note ||
-      this.nuovoSoftware.versioneCorrente !== this.originalData.versioneCorrente
+      this.nuovoSoftware.note !== this.originalData.note
     ) {
-      return true;
-    }
-
-    const currentDateTime = this.toBackendLocalDateTime(
-      this.nuovoSoftware.dataUltimoAggiornamento,
-    );
-    const originalDateTime = this.toBackendLocalDateTime(
-      this.originalData.dataUltimoAggiornamento,
-    );
-    if (currentDateTime !== originalDateTime) {
       return true;
     }
 
@@ -349,13 +302,6 @@ export class SoftwareModalComponent implements OnInit {
     this.nuovoSoftware.descrizione = this.normalizeText(
       this.nuovoSoftware.descrizione,
     );
-
-    const normalizedDateTime = this.toBackendLocalDateTime(
-      this.nuovoSoftware.dataUltimoAggiornamento || new Date(),
-    );
-
-    this.nuovoSoftware.dataUltimoAggiornamento =
-      normalizedDateTime || this.toBackendLocalDateTime(new Date());
 
     this.hasUnsavedChanges = false;
     this.activeModal.close(this.nuovoSoftware);
@@ -438,6 +384,7 @@ export class SoftwareModalComponent implements OnInit {
     this.nuovoSoftware.ambienti = this.nuovoSoftware.ambienti.filter(
       (a) => a.id !== ambienteId,
     );
+    this.expandedAmbienti.delete(ambienteId);
     this.onFieldChange();
   }
 

@@ -105,9 +105,7 @@
             class="detail-section"
             *ngIf="($any(cliente.software)?.length || 0) > 0"
           >
-            <h5 class="detail-section-title">
-              Software
-            </h5>
+            <h5 class="detail-section-title">Software</h5>
             <div class="software-preview">
               <div
                 class="software-preview-item"
@@ -115,12 +113,41 @@
                   let software of ($any(cliente.software) || []).slice(0, 2)
                 "
               >
-                <span class="software-preview-name">{{
-                  software.descrizione
-                }}</span>
-                <span class="software-preview-version"
-                  >v{{ software.versioneCorrente }}</span
-                >
+                <div class="software-preview-content">
+                  <span class="software-preview-name">{{
+                    software.descrizione
+                  }}</span>
+                  <div
+                    class="software-preview-ambienti"
+                    *ngIf="
+                      (software.ambienti?.length || 0) > 0;
+                      else noHoverAmbienti
+                    "
+                  >
+                    <div
+                      class="software-preview-ambiente-row"
+                      *ngFor="
+                        let ambiente of (software.ambienti || []).slice(0, 2)
+                      "
+                    >
+                      <span class="software-preview-ambiente-name">{{
+                        ambiente.descrizione
+                      }}</span>
+                      <span class="software-preview-rilasci-count"
+                        >{{ ambiente.rilasci?.length || 0 }} rilasci</span
+                      >
+                    </div>
+                    <div
+                      class="software-more"
+                      *ngIf="(software.ambienti?.length || 0) > 2"
+                    >
+                      +{{ (software.ambienti?.length || 0) - 2 }} ambienti...
+                    </div>
+                  </div>
+                  <ng-template #noHoverAmbienti>
+                    <span class="software-more">Nessun ambiente associato</span>
+                  </ng-template>
+                </div>
               </div>
               <div
                 class="software-more"

@@ -6,13 +6,13 @@ import {
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
-import { Software, SoftwareInputDTO } from '../models/software.model';
+import { Rilascio, RilascioInputDTO } from '../models/rilascio.model';
 
 @Injectable({
   providedIn: 'root',
 })
-export class SoftwareService {
-  private readonly baseUrl = 'http://localhost:8085/api/software';
+export class RilasciService {
+  private readonly baseUrl = 'http://localhost:8085/api/rilasci';
 
   private readonly httpOptions = {
     headers: new HttpHeaders({
@@ -48,50 +48,42 @@ export class SoftwareService {
     return throwError(() => new Error(errorMessage));
   }
 
-  //GET - OK
-  getAllSoftware(): Observable<Software[]> {
-    return this.http.get<Software[]>(this.baseUrl).pipe(
-      tap((softwareHTTP) => console.log('Software caricati:', softwareHTTP)),
+  getAllRilasci(): Observable<Rilascio[]> {
+    return this.http.get<Rilascio[]>(this.baseUrl).pipe(
+      tap((rilasciHTTP) => console.log('Rilasci caricati:', rilasciHTTP)),
       catchError(this.handleError),
     );
   }
 
-  //DELETE - OK
-  deleteSoftware(id: number): Observable<void> {
+  deleteRilascio(id: number): Observable<void> {
     const url = `${this.baseUrl}/${id}`;
     return this.http.delete<void>(url, this.httpOptions).pipe(
-      tap(() => console.log(`Software con ID ${id} eliminato`)),
+      tap(() => console.log(`Rilascio con ID ${id} eliminato`)),
       catchError(this.handleError),
     );
   }
 
-  //POST
-  addSoftware(newSoftware: SoftwareInputDTO): Observable<SoftwareInputDTO> {
-    // software.push(newSoftware);
-    // return of(newSoftware);
+  addRilascio(newRilascio: RilascioInputDTO): Observable<Rilascio> {
     return this.http
-      .post<SoftwareInputDTO>(this.baseUrl, newSoftware, this.httpOptions)
+      .post<Rilascio>(this.baseUrl, newRilascio, this.httpOptions)
       .pipe(
-        tap((addedSoftware: SoftwareInputDTO) =>
-          console.log('Software aggiunto:', addedSoftware),
+        tap((addedRilascio: Rilascio) =>
+          console.log('Rilascio aggiunto:', addedRilascio),
         ),
         catchError(this.handleError),
       );
   }
 
-  //PUT
-  updateSoftware(
+  updateRilascio(
     id: number,
-    updatedSoftware: SoftwareInputDTO,
-  ): Observable<SoftwareInputDTO> {
+    updatedRilascio: RilascioInputDTO,
+  ): Observable<Rilascio> {
     const url = `${this.baseUrl}/${id}`;
-    return this.http
-      .put<SoftwareInputDTO>(url, updatedSoftware, this.httpOptions)
-      .pipe(
-        tap((software: SoftwareInputDTO) =>
-          console.log('Software aggiornato:', software),
-        ),
-        catchError(this.handleError),
-      );
+    return this.http.put<Rilascio>(url, updatedRilascio, this.httpOptions).pipe(
+      tap((rilascio: Rilascio) =>
+        console.log('Rilascio aggiornato:', rilascio),
+      ),
+      catchError(this.handleError),
+    );
   }
 }

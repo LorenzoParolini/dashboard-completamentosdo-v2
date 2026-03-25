@@ -3,15 +3,20 @@ import { Regione } from '../models/regione.model';
 import { Software } from '../models/software.model';
 import { Ambiente } from '../models/ambiente.model';
 import { Cliente } from '../models/cliente.model';
+import { Rilascio } from '../models/rilascio.model';
 
 export interface FilterCriteria {
   regioni: number[];
   software: number[];
   ambienti: number[];
+  rilasci: number[];
+  branch: string;
+  commit: string;
+  deployedBy: string;
+  build: string;
+  ultimoAggiornamento: { inizio: Date; fine: Date }[];
   codiciRegione: string[];
   coordinate: { x: number; y: number }[];
-  versione: string;
-  dataAggiornamento: { inizio: Date; fine: Date }[];
   dataCreazione: { inizio: Date; fine: Date }[];
   searchQuery: string;
 }
@@ -27,7 +32,7 @@ export class FilterUtilsService {
    * Funziona per tutti i tipi di entità (Cliente, Regione, Software, Ambiente)
    */
   matchesSearchQuery(
-    item: Cliente | Regione | Software | Ambiente,
+    item: Cliente | Regione | Software | Ambiente | Rilascio,
     searchQuery: string,
   ): boolean {
     if (!searchQuery || searchQuery.trim() === '') {
@@ -35,7 +40,12 @@ export class FilterUtilsService {
     }
 
     const normalizedQuery = searchQuery.toLowerCase().trim();
-    const description = item.descrizione?.toLowerCase() || '';
+    const description =
+      (
+        item as Cliente | Regione | Software | Ambiente
+      ).descrizione?.toLowerCase() ||
+      (item as Rilascio).versioneCorrente?.toLowerCase() ||
+      '';
 
     return description.includes(normalizedQuery);
   }
@@ -109,25 +119,6 @@ export class FilterUtilsService {
       }
     }
 
-    // Filtro per versione
-    if (filters.versione && filters.versione.trim() !== '') {
-      if (software.versioneCorrente !== filters.versione) {
-        return false;
-      }
-    }
-
-    // Filtro per data ultimo aggiornamento
-    if (filters.dataAggiornamento && filters.dataAggiornamento.length > 0) {
-      const softwareDate = new Date(software.dataUltimoAggiornamento);
-      const isInDateRange = filters.dataAggiornamento.some(
-        (dateRange) =>
-          softwareDate >= dateRange.inizio && softwareDate <= dateRange.fine,
-      );
-      if (!isInDateRange) {
-        return false;
-      }
-    }
-
     // Filtro per ambienti associati
     if (filters.ambienti && filters.ambienti.length > 0) {
       const hasMatchingAmbiente = ambienti.some((ambiente) =>
@@ -175,6 +166,68 @@ export class FilterUtilsService {
   }
 
   /**
+   * Verifica se un rilascio dovrebbe essere mostrato in base ai filtri applicati
+   */
+  shouldShowRilascio(rilascio: Rilascio, filters: FilterCriteria): boolean {
+    if (!filters) return true;
+
+    if (!this.matchesSearchQuery(rilascio, filters.searchQuery)) {
+      return false;
+    }
+
+    if (filters.rilasci && filters.rilasci.length > 0) {
+      if (!filters.rilasci.includes(rilascio.id)) {
+        return false;
+      }
+    }
+
+    const branchFilter = (filters.branch || '').trim().toLowerCase();
+    if (
+      branchFilter &&
+      !(rilascio.branch || '').toLowerCase().includes(branchFilter)
+    ) {
+      return false;
+    }
+
+    const commitFilter = (filters.commit || '').trim().toLowerCase();
+    if (
+      commitFilter &&
+      !(rilascio.commit || '').toLowerCase().includes(commitFilter)
+    ) {
+      return false;
+    }
+
+    const deployedByFilter = (filters.deployedBy || '').trim().toLowerCase();
+    if (
+      deployedByFilter &&
+      !(rilascio.deployedBy || '').toLowerCase().includes(deployedByFilter)
+    ) {
+      return false;
+    }
+
+    const buildFilter = (filters.build || '').trim().toLowerCase();
+    if (
+      buildFilter &&
+      !(rilascio.build || '').toLowerCase().includes(buildFilter)
+    ) {
+      return false;
+    }
+
+    if (filters.ultimoAggiornamento && filters.ultimoAggiornamento.length > 0) {
+      const rilascioDate = new Date(rilascio.ultimoAggiornamento);
+      const isInDateRange = filters.ultimoAggiornamento.some(
+        (dateRange) =>
+          rilascioDate >= dateRange.inizio && rilascioDate <= dateRange.fine,
+      );
+      if (!isInDateRange) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
    * Verifica se un cliente dovrebbe essere mostrato in base ai filtri applicati
    */
   shouldShowCliente(cliente: Cliente, filters: FilterCriteria): boolean {
@@ -199,30 +252,6 @@ export class FilterUtilsService {
         filters.software.includes(software.id),
       );
       if (!hasMatchingSoftware) {
-        return false;
-      }
-    }
-
-    // Filtro per versione software del cliente
-    if (filters.versione && filters.versione.trim() !== '') {
-      const hasMatchingVersion = softwareList.some(
-        (software) => software.versioneCorrente === filters.versione,
-      );
-      if (!hasMatchingVersion) {
-        return false;
-      }
-    }
-
-    // Filtro per data aggiornamento software del cliente
-    if (filters.dataAggiornamento && filters.dataAggiornamento.length > 0) {
-      const hasMatchingUpdateDate = softwareList.some((software) => {
-        const softwareDate = new Date(software.dataUltimoAggiornamento);
-        return filters.dataAggiornamento.some(
-          (dateRange) =>
-            softwareDate >= dateRange.inizio && softwareDate <= dateRange.fine,
-        );
-      });
-      if (!hasMatchingUpdateDate) {
         return false;
       }
     }
@@ -263,9 +292,9 @@ export class FilterUtilsService {
    * Funzione generica che determina quale metodo di filtro utilizzare
    */
   shouldShow(
-    item: Regione | Software | Ambiente | Cliente,
+    item: Regione | Software | Ambiente | Cliente | Rilascio,
     filters: FilterCriteria,
-    itemType: 'regione' | 'software' | 'ambiente' | 'cliente',
+    itemType: 'regione' | 'software' | 'ambiente' | 'cliente' | 'rilascio',
   ): boolean {
     switch (itemType) {
       case 'regione':
@@ -276,6 +305,8 @@ export class FilterUtilsService {
         return this.shouldShowAmbiente(item as Ambiente, filters);
       case 'cliente':
         return this.shouldShowCliente(item as Cliente, filters);
+      case 'rilascio':
+        return this.shouldShowRilascio(item as Rilascio, filters);
       default:
         return true;
     }
