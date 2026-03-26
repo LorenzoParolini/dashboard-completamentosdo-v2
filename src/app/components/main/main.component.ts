@@ -13,6 +13,8 @@ import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.comp
 import { EmptyStateComponent } from '../empty-state/empty-state.component';
 import { DetailsModalComponent } from './details-modal/details-modal.component';
 import { ServerErrorComponent } from '../server-error/server-error.component';
+import { Ambiente } from '../../models/ambiente.model';
+import { AmbientiService } from '../../services/ambienti.service';
 
 @Component({
   selector: 'app-main',
@@ -51,15 +53,19 @@ export class MainComponent implements OnInit, OnDestroy {
     searchQuery: '',
   };
   private filterSubscription: Subscription = new Subscription();
+  private ambienteRilasciCountById = new Map<number, number>();
 
   constructor(
     private clientiService: ClientiService,
+    private ambientiService: AmbientiService,
     private filterService: FilterService,
     private filterUtilsService: FilterUtilsService,
   ) {}
 
   ngOnInit() {
     this.loading = true;
+
+    this.loadAmbientiRilasciCounts();
 
     // Subscribe to filter changes
     this.filterSubscription = this.filterService.filters$.subscribe(
@@ -117,6 +123,25 @@ export class MainComponent implements OnInit, OnDestroy {
     this.selectedCliente = cliente;
   }
 
+  getAmbienteRilasciCount(ambiente: Ambiente): number {
+    const ambienteAny = ambiente as Ambiente & { rilascioIds?: number[] };
+
+    if (Array.isArray(ambienteAny.rilasci) && ambienteAny.rilasci.length > 0) {
+      return ambienteAny.rilasci.length;
+    }
+
+    const countFromMap = this.ambienteRilasciCountById.get(ambiente.id);
+    if (countFromMap !== undefined) {
+      return countFromMap;
+    }
+
+    if (Array.isArray(ambienteAny.rilascioIds)) {
+      return ambienteAny.rilascioIds.length;
+    }
+
+    return 0;
+  }
+
   openModal(cliente: Cliente) {
     this.modalCliente = cliente;
     this.isModalOpen = true;
@@ -129,5 +154,18 @@ export class MainComponent implements OnInit, OnDestroy {
 
   retryLoadClienti() {
     this.loadClienti();
+  }
+
+  private loadAmbientiRilasciCounts(): void {
+    this.ambientiService.getAllAmbienti().subscribe((ambienti) => {
+      this.ambienteRilasciCountById.clear();
+
+      ambienti.forEach((ambiente) => {
+        this.ambienteRilasciCountById.set(
+          ambiente.id,
+          (ambiente.rilasci || []).length,
+        );
+      });
+    });
   }
 }
