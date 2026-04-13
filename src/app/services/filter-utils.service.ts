@@ -106,8 +106,6 @@ export class FilterUtilsService {
   shouldShowSoftware(software: Software, filters: FilterCriteria): boolean {
     if (!filters) return true;
 
-    const ambienti = software.ambienti || [];
-
     // Filtro per ricerca nella descrizione
     if (!this.matchesSearchQuery(software, filters.searchQuery)) {
       return false;
@@ -116,16 +114,6 @@ export class FilterUtilsService {
     // Filtro per ID software
     if (filters.software && filters.software.length > 0) {
       if (!filters.software.includes(software.id)) {
-        return false;
-      }
-    }
-
-    // Filtro per ambienti associati
-    if (filters.ambienti && filters.ambienti.length > 0) {
-      const hasMatchingAmbiente = ambienti.some((ambiente) =>
-        filters.ambienti.includes(ambiente.id),
-      );
-      if (!hasMatchingAmbiente) {
         return false;
       }
     }
@@ -174,6 +162,18 @@ export class FilterUtilsService {
 
     if (!this.matchesSearchQuery(rilascio, filters.searchQuery)) {
       return false;
+    }
+
+    if (filters.software && filters.software.length > 0) {
+      if (!filters.software.includes(rilascio.softwareId)) {
+        return false;
+      }
+    }
+
+    if (filters.ambienti && filters.ambienti.length > 0) {
+      if (!filters.ambienti.includes(rilascio.ambienteId)) {
+        return false;
+      }
     }
 
     if (filters.rilasci && filters.rilasci.length > 0) {

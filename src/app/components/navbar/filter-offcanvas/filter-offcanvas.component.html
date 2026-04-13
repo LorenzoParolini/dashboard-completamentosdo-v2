@@ -63,7 +63,12 @@
     <!-- Filtri per Software -->
     <div
       class="filtri-software"
-      *ngIf="currentView == 'D' || currentView == 'C'"
+      *ngIf="
+        currentView == 'D' ||
+        currentView == 'C' ||
+        currentView == 'S' ||
+        currentView == 'L'
+      "
     >
       <button
         (click)="onFilterSoftwareClick()"
@@ -95,7 +100,7 @@
     </div>
 
     <!-- Filtri per Ambiente -->
-    <div class="filtri-ambiente" *ngIf="currentView == 'S'">
+    <div class="filtri-ambiente" *ngIf="currentView == 'L'">
       <button
         (click)="onFilterAmbienteClick()"
         [class.active]="isSelectedAmbiente"
