@@ -55,25 +55,103 @@
         <form (ngSubmit)="salva()" class="form-container">
           <div class="form-grid">
             <div class="form-field">
-              <label class="form-label">Versione Corrente</label>
+              <label class="form-label">Versione</label>
               <input
                 type="text"
-                [(ngModel)]="nuovoRilascio.versioneCorrente"
-                name="versioneCorrente"
+                [(ngModel)]="nuovoRilascio.versione"
+                name="versione"
                 class="form-input"
                 (input)="onFieldChange()"
-                (blur)="onFieldBlur('versioneCorrente')"
+                (blur)="onFieldBlur('versione')"
                 [ngClass]="{
-                  'field-invalid': isFieldInvalid('versioneCorrente'),
-                  'field-valid': isFieldValid('versioneCorrente'),
+                  'field-invalid': isFieldInvalid('versione'),
+                  'field-valid': isFieldValid('versione'),
                 }"
                 required
               />
-              <div
-                class="field-error"
-                *ngIf="isFieldInvalid('versioneCorrente')"
+              <div class="field-error" *ngIf="isFieldInvalid('versione')">
+                {{ getVersioneError() }}
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label class="form-label">Software</label>
+              <select
+                [(ngModel)]="nuovoRilascio.softwareId"
+                name="softwareId"
+                class="form-input"
+                (ngModelChange)="onFieldChange()"
+                (blur)="onFieldBlur('softwareId')"
+                [ngClass]="{
+                  'field-invalid': isFieldInvalid('softwareId'),
+                  'field-valid': isFieldValid('softwareId'),
+                }"
+                required
               >
-                {{ getVersioneCorrenteError() }}
+                <option [ngValue]="0">Seleziona software</option>
+                <option
+                  *ngFor="let option of softwareOptions"
+                  [ngValue]="option.id"
+                >
+                  {{ option.descrizione }}
+                </option>
+              </select>
+              <div class="field-error" *ngIf="isFieldInvalid('softwareId')">
+                {{ getSoftwareError() }}
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label class="form-label">Cliente</label>
+              <select
+                [(ngModel)]="nuovoRilascio.clienteId"
+                name="clienteId"
+                class="form-input"
+                (ngModelChange)="onFieldChange()"
+                (blur)="onFieldBlur('clienteId')"
+                [ngClass]="{
+                  'field-invalid': isFieldInvalid('clienteId'),
+                  'field-valid': isFieldValid('clienteId'),
+                }"
+                required
+              >
+                <option [ngValue]="0">Seleziona cliente</option>
+                <option
+                  *ngFor="let option of clienteOptions"
+                  [ngValue]="option.id"
+                >
+                  {{ option.descrizione }}
+                </option>
+              </select>
+              <div class="field-error" *ngIf="isFieldInvalid('clienteId')">
+                {{ getClienteError() }}
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label class="form-label">Ambiente</label>
+              <select
+                [(ngModel)]="nuovoRilascio.ambienteId"
+                name="ambienteId"
+                class="form-input"
+                (ngModelChange)="onFieldChange()"
+                (blur)="onFieldBlur('ambienteId')"
+                [ngClass]="{
+                  'field-invalid': isFieldInvalid('ambienteId'),
+                  'field-valid': isFieldValid('ambienteId'),
+                }"
+                required
+              >
+                <option [ngValue]="0">Seleziona ambiente</option>
+                <option
+                  *ngFor="let option of ambientiOptions"
+                  [ngValue]="option.id"
+                >
+                  {{ option.descrizione }}
+                </option>
+              </select>
+              <div class="field-error" *ngIf="isFieldInvalid('ambienteId')">
+                {{ getAmbienteError() }}
               </div>
             </div>
 

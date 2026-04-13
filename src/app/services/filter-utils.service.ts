@@ -44,6 +44,7 @@ export class FilterUtilsService {
       (
         item as Cliente | Regione | Software | Ambiente
       ).descrizione?.toLowerCase() ||
+      (item as Rilascio).versione?.toLowerCase() ||
       (item as Rilascio).versioneCorrente?.toLowerCase() ||
       '';
 

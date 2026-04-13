@@ -173,7 +173,6 @@ export class ClientiComponent implements OnInit, OnDestroy {
           const clienteInputDTO = {
             descrizione: result.descrizione,
             regioneId: result.regione.id,
-            softwareIds: result.software.map((s) => s.id),
           };
           this.clientiService
             .updateCliente(result.id, clienteInputDTO)
@@ -189,7 +188,6 @@ export class ClientiComponent implements OnInit, OnDestroy {
           const clienteInputDTO = {
             descrizione: result.descrizione,
             regioneId: result.regione.id,
-            softwareIds: result.software.map((s) => s.id),
           };
           this.clientiService.addCliente(clienteInputDTO).subscribe(() => {
             // Ricarica la lista dai clienti aggiornati

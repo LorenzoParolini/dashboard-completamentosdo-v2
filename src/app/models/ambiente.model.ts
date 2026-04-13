@@ -1,7 +1,7 @@
 // ============================================================================
 // AMBIENTE - Response dal backend (con ID)
 
-import { Rilascio } from "./rilascio.model";
+import { Rilascio } from './rilascio.model';
 
 // ============================================================================
 export type Ambiente = {
@@ -19,5 +19,5 @@ export type AmbienteInputDTO = {
   descrizione: string;
   note: string;
   dataCreazione?: Date;
-  rilascioIds: number[];
+  rilascioIds?: number[];
 };

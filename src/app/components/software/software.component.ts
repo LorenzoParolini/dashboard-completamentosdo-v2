@@ -175,7 +175,6 @@ export class SoftwareComponent implements OnInit, OnDestroy {
           const softwareInputDTO = {
             descrizione: result.descrizione,
             note: result.note,
-            ambienteIds: result.ambienti.map((a) => a.id),
           };
           this.softwareService
             .updateSoftware(result.id, softwareInputDTO)
@@ -191,7 +190,6 @@ export class SoftwareComponent implements OnInit, OnDestroy {
           const softwareInputDTO = {
             descrizione: result.descrizione,
             note: result.note,
-            ambienteIds: result.ambienti.map((a) => a.id),
           };
           this.softwareService.addSoftware(softwareInputDTO).subscribe(() => {
             // Ricarica la lista dai software aggiornati

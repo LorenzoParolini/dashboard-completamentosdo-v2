@@ -4,7 +4,7 @@ import {
   HttpHeaders,
   HttpErrorResponse,
 } from '@angular/common/http';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, map, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { Ambiente, AmbienteInputDTO } from '../models/ambiente.model';
 
@@ -23,10 +23,20 @@ export class AmbientiService {
 
   constructor(private http: HttpClient) {}
 
+  private normalizeAmbiente(item: Ambiente): Ambiente {
+    return {
+      ...item,
+      rilasci: item.rilasci ?? [],
+    };
+  }
+
   private handleError(error: HttpErrorResponse): Observable<never> {
     let errorMessage = 'Errore sconosciuto';
 
-    if (error.error instanceof ErrorEvent) {
+    if (
+      typeof ErrorEvent !== 'undefined' &&
+      error.error instanceof ErrorEvent
+    ) {
       errorMessage = `Errore client: ${error.error.message}`;
     } else {
       errorMessage = `Errore server ${error.status}: ${error.message}`;
@@ -52,6 +62,7 @@ export class AmbientiService {
   getAllAmbienti(): Observable<Ambiente[]> {
     // return of(ambienti);
     return this.http.get<Ambiente[]>(this.baseUrl).pipe(
+      map((items) => items.map((item) => this.normalizeAmbiente(item))),
       tap((ambientiHTTP) => console.log('Ambienti caricati:', ambientiHTTP)),
       catchError(this.handleError),
     );
@@ -68,13 +79,14 @@ export class AmbientiService {
   }
 
   //POST
-  addAmbiente(ambiente: AmbienteInputDTO): Observable<AmbienteInputDTO> {
+  addAmbiente(ambiente: AmbienteInputDTO): Observable<Ambiente> {
     // ambienti.push(ambiente);
     // return of(ambiente);
     return this.http
-      .post<AmbienteInputDTO>(this.baseUrl, ambiente, this.httpOptions)
+      .post<Ambiente>(this.baseUrl, ambiente, this.httpOptions)
       .pipe(
-        tap((addedAmbiente: AmbienteInputDTO) =>
+        map((item) => this.normalizeAmbiente(item)),
+        tap((addedAmbiente: Ambiente) =>
           console.log('Ambiente aggiunto:', addedAmbiente),
         ),
         catchError(this.handleError),
@@ -82,18 +94,14 @@ export class AmbientiService {
   }
 
   //PUT
-  updateAmbiente(
-    id: number,
-    ambiente: AmbienteInputDTO,
-  ): Observable<AmbienteInputDTO> {
+  updateAmbiente(id: number, ambiente: AmbienteInputDTO): Observable<Ambiente> {
     const url = `${this.baseUrl}/${id}`;
-    return this.http
-      .put<AmbienteInputDTO>(url, ambiente, this.httpOptions)
-      .pipe(
-        tap((updatedAmbiente: AmbienteInputDTO) =>
-          console.log('Ambiente aggiornato:', updatedAmbiente),
-        ),
-        catchError(this.handleError),
-      );
+    return this.http.put<Ambiente>(url, ambiente, this.httpOptions).pipe(
+      map((item) => this.normalizeAmbiente(item)),
+      tap((updatedAmbiente: Ambiente) =>
+        console.log('Ambiente aggiornato:', updatedAmbiente),
+      ),
+      catchError(this.handleError),
+    );
   }
 }

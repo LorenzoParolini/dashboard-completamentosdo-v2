@@ -63,7 +63,6 @@
                 <th class="table-th">#</th>
                 <th class="table-th">Descrizione</th>
                 <th class="table-th">Note</th>
-                <th class="table-th">Ambienti</th>
                 <th class="table-th actions-column">Azioni</th>
               </tr>
             </thead>
@@ -80,23 +79,6 @@
                   }}</span>
                   <ng-template #noNote>
                     <span class="no-data">N/A</span>
-                  </ng-template>
-                </td>
-                <td class="table-td">
-                  <div
-                    class="ambiente-list"
-                    *ngIf="sw.ambienti.length > 0; else noAmbienti"
-                  >
-                    <span
-                      class="ambiente-item"
-                      *ngFor="let amb of sw.ambienti; let last = last"
-                    >
-                      {{ amb.descrizione
-                      }}<span class="ambiente-separator" *ngIf="!last">, </span>
-                    </span>
-                  </div>
-                  <ng-template #noAmbienti>
-                    <span class="no-data">Nessun ambiente</span>
                   </ng-template>
                 </td>
                 <td class="table-td actions-column">

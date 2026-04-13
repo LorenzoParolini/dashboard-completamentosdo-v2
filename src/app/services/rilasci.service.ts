@@ -4,7 +4,7 @@ import {
   HttpHeaders,
   HttpErrorResponse,
 } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { Observable, map, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { Rilascio, RilascioInputDTO } from '../models/rilascio.model';
 
@@ -23,10 +23,28 @@ export class RilasciService {
 
   constructor(private http: HttpClient) {}
 
+  private normalizeRilascio(rilascio: Rilascio): Rilascio {
+    return {
+      ...rilascio,
+      versione: rilascio.versione ?? rilascio.versioneCorrente ?? '',
+      versioneCorrente: rilascio.versione ?? rilascio.versioneCorrente ?? '',
+    };
+  }
+
+  private toInputDTO(input: RilascioInputDTO): RilascioInputDTO {
+    return {
+      ...input,
+      versione: input.versione ?? input.versioneCorrente ?? '',
+    };
+  }
+
   private handleError(error: HttpErrorResponse): Observable<never> {
     let errorMessage = 'Errore sconosciuto';
 
-    if (error.error instanceof ErrorEvent) {
+    if (
+      typeof ErrorEvent !== 'undefined' &&
+      error.error instanceof ErrorEvent
+    ) {
       errorMessage = `Errore client: ${error.error.message}`;
     } else {
       errorMessage = `Errore server ${error.status}: ${error.message}`;
@@ -50,6 +68,9 @@ export class RilasciService {
 
   getAllRilasci(): Observable<Rilascio[]> {
     return this.http.get<Rilascio[]>(this.baseUrl).pipe(
+      map((rilasci) =>
+        rilasci.map((rilascio) => this.normalizeRilascio(rilascio)),
+      ),
       tap((rilasciHTTP) => console.log('Rilasci caricati:', rilasciHTTP)),
       catchError(this.handleError),
     );
@@ -65,8 +86,13 @@ export class RilasciService {
 
   addRilascio(newRilascio: RilascioInputDTO): Observable<Rilascio> {
     return this.http
-      .post<Rilascio>(this.baseUrl, newRilascio, this.httpOptions)
+      .post<Rilascio>(
+        this.baseUrl,
+        this.toInputDTO(newRilascio),
+        this.httpOptions,
+      )
       .pipe(
+        map((rilascio) => this.normalizeRilascio(rilascio)),
         tap((addedRilascio: Rilascio) =>
           console.log('Rilascio aggiunto:', addedRilascio),
         ),
@@ -79,11 +105,14 @@ export class RilasciService {
     updatedRilascio: RilascioInputDTO,
   ): Observable<Rilascio> {
     const url = `${this.baseUrl}/${id}`;
-    return this.http.put<Rilascio>(url, updatedRilascio, this.httpOptions).pipe(
-      tap((rilascio: Rilascio) =>
-        console.log('Rilascio aggiornato:', rilascio),
-      ),
-      catchError(this.handleError),
-    );
+    return this.http
+      .put<Rilascio>(url, this.toInputDTO(updatedRilascio), this.httpOptions)
+      .pipe(
+        map((rilascio) => this.normalizeRilascio(rilascio)),
+        tap((rilascio: Rilascio) =>
+          console.log('Rilascio aggiornato:', rilascio),
+        ),
+        catchError(this.handleError),
+      );
   }
 }

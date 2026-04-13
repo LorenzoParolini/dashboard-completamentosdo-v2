@@ -11,7 +11,11 @@ export type Rilascio = {
   ultimoAggiornamento: LocalDateTimeString;
   build: string;
   note: string;
-  versioneCorrente: string;
+  versione: string;
+  softwareId: number;
+  clienteId: number;
+  ambienteId: number;
+  versioneCorrente?: string;
 };
 
 // ============================================================================
@@ -24,5 +28,9 @@ export type RilascioInputDTO = {
   ultimoAggiornamento?: LocalDateTimeString;
   build: string;
   note: string;
-  versioneCorrente: string;
+  versione: string;
+  softwareId: number;
+  clienteId: number;
+  ambienteId: number;
+  versioneCorrente?: string;
 };

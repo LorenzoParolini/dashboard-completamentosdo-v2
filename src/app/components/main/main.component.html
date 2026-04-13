@@ -117,36 +117,11 @@
                   <span class="software-preview-name">{{
                     software.descrizione
                   }}</span>
-                  <div
-                    class="software-preview-ambienti"
-                    *ngIf="
-                      (software.ambienti?.length || 0) > 0;
-                      else noHoverAmbienti
-                    "
-                  >
-                    <div
-                      class="software-preview-ambiente-row"
-                      *ngFor="
-                        let ambiente of (software.ambienti || []).slice(0, 2)
-                      "
+                  <div class="software-preview-summary">
+                    <span class="software-preview-rilasci-count"
+                      >{{ getSoftwareRilasciCount(software) }} rilasci</span
                     >
-                      <span class="software-preview-ambiente-name">{{
-                        ambiente.descrizione
-                      }}</span>
-                      <span class="software-preview-rilasci-count"
-                        >{{ getAmbienteRilasciCount(ambiente) }} rilasci</span
-                      >
-                    </div>
-                    <div
-                      class="software-more"
-                      *ngIf="(software.ambienti?.length || 0) > 2"
-                    >
-                      +{{ (software.ambienti?.length || 0) - 2 }} ambienti...
-                    </div>
                   </div>
-                  <ng-template #noHoverAmbienti>
-                    <span class="software-more">Nessun ambiente associato</span>
-                  </ng-template>
                 </div>
               </div>
               <div

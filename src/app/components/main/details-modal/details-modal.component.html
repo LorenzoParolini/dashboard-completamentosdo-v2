@@ -162,129 +162,57 @@
                 </div>
               </div>
 
-              <!-- Ambienti del Software -->
               <div
                 class="ambienti-section"
-                *ngIf="software.ambienti && software.ambienti.length > 0"
+                *ngIf="
+                  getSoftwareRilasci(software).length > 0;
+                  else noRilasciSoftware
+                "
               >
                 <h5 class="ambienti-title">
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                  >
-                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-                  </svg>
-                  Ambienti ({{ software.ambienti.length }})
+                  Rilasci ({{ getSoftwareRilasci(software).length }})
                 </h5>
-                <div class="ambienti-grid">
+
+                <div class="rilasci-list">
                   <div
-                    class="ambiente-card"
+                    class="rilascio-item"
                     *ngFor="
-                      let ambiente of software.ambienti;
-                      trackBy: trackByAmbienteId
+                      let rilascio of getSoftwareRilasci(software);
+                      trackBy: trackByRilascioId
                     "
                   >
-                    <div class="ambiente-header ambiente-toggle-header">
-                      <button
-                        type="button"
-                        class="ambiente-toggle"
-                        (click)="toggleAmbiente(software.id, ambiente.id)"
-                      >
-                        <span class="ambiente-name">{{
-                          ambiente.descrizione
-                        }}</span>
-                        <span class="ambiente-toggle-meta">
-                          <span class="rilasci-count-badge"
-                            >{{
-                              getAmbienteRilasciCount(ambiente)
-                            }}
-                            rilasci</span
-                          >
-                          <span class="ambiente-toggle-icon">
-                            {{
-                              isAmbienteExpanded(software.id, ambiente.id)
-                                ? "-"
-                                : "+"
-                            }}
-                          </span>
-                        </span>
-                      </button>
+                    <div class="rilascio-item-header">
+                      <span class="rilascio-version">{{
+                        rilascio.versione ||
+                          rilascio.versioneCorrente ||
+                          "Versione N/A"
+                      }}</span>
+                      <span class="rilascio-date">{{
+                        rilascio.ultimoAggiornamento | date: "dd/MM/yyyy HH:mm"
+                      }}</span>
                     </div>
-
-                    <div
-                      class="ambiente-details"
-                      *ngIf="isAmbienteExpanded(software.id, ambiente.id)"
-                    >
-                      <div class="ambiente-detail">
-                        <span class="detail-label">Creato il:</span>
-                        <span class="detail-value">{{
-                          ambiente.dataCreazione | date: "dd/MM/yyyy HH:mm"
-                        }}</span>
-                      </div>
-                      <div class="ambiente-detail" *ngIf="ambiente.note">
-                        <span class="detail-label">Note:</span>
-                        <span class="detail-value note-text">{{
-                          ambiente.note
-                        }}</span>
-                      </div>
-
-                      <div
-                        class="rilasci-list"
-                        *ngIf="
-                          getAmbienteRilasciCount(ambiente) > 0;
-                          else noRilasci
-                        "
+                    <div class="rilascio-item-body">
+                      <span
+                        >Ambiente: {{ getAmbienteDescrizione(rilascio) }}</span
                       >
-                        <div
-                          class="rilascio-item"
-                          *ngFor="
-                            let rilascio of getAmbienteRilasci(ambiente);
-                            trackBy: trackByRilascioId
-                          "
-                        >
-                          <div class="rilascio-item-header">
-                            <span class="rilascio-version">{{
-                              rilascio.versioneCorrente || "Versione N/A"
-                            }}</span>
-                            <span class="rilascio-date">{{
-                              rilascio.ultimoAggiornamento
-                                | date: "dd/MM/yyyy HH:mm"
-                            }}</span>
-                          </div>
-                          <div class="rilascio-item-body">
-                            <span>Branch: {{ rilascio.branch || "N/A" }}</span>
-                            <span>Build: {{ rilascio.build || "N/A" }}</span>
-                            <span
-                              >Deployed By:
-                              {{ rilascio.deployedBy || "N/A" }}</span
-                            >
-                            <span *ngIf="rilascio.note"
-                              >Note: {{ rilascio.note }}</span
-                            >
-                          </div>
-                        </div>
-                      </div>
-                      <ng-template #noRilasci>
-                        <span class="no-data-text"
-                          >Nessun rilascio collegato</span
-                        >
-                      </ng-template>
+                      <span>Branch: {{ rilascio.branch || "N/A" }}</span>
+                      <span>Build: {{ rilascio.build || "N/A" }}</span>
+                      <span
+                        >Deployed By: {{ rilascio.deployedBy || "N/A" }}</span
+                      >
+                      <span *ngIf="rilascio.note"
+                        >Note: {{ rilascio.note }}</span
+                      >
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div
-                class="no-ambienti"
-                *ngIf="!software.ambienti || software.ambienti.length === 0"
-              >
-                <span class="no-data-text">Nessun ambiente configurato</span>
-              </div>
+              <ng-template #noRilasciSoftware>
+                <div class="no-ambienti">
+                  <span class="no-data-text">Nessun rilascio disponibile</span>
+                </div>
+              </ng-template>
             </div>
           </div>
         </div>

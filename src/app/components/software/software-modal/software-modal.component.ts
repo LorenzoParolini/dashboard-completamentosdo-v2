@@ -33,6 +33,7 @@ export class SoftwareModalComponent implements OnInit {
     id: 0,
     descrizione: '',
     note: '',
+    assegnazioni: [],
     ambienti: [],
   };
 
@@ -47,6 +48,7 @@ export class SoftwareModalComponent implements OnInit {
     id: 0,
     descrizione: '',
     note: '',
+    assegnazioni: [],
     ambienti: [],
   };
 
@@ -89,16 +91,19 @@ export class SoftwareModalComponent implements OnInit {
       if (!this.isRestoredFromMinimized) {
         this.nuovoSoftware = {
           ...this.software,
+          assegnazioni: [...(this.software.assegnazioni || [])],
           ambienti: [...this.software.ambienti],
         };
       } else {
         this.nuovoSoftware = {
           ...this.nuovoSoftware,
+          assegnazioni: [...(this.nuovoSoftware.assegnazioni || [])],
           ambienti: [...this.nuovoSoftware.ambienti],
         };
       }
       this.originalData = {
         ...this.software,
+        assegnazioni: [...(this.software.assegnazioni || [])],
         ambienti: [...this.software.ambienti],
       };
 
@@ -150,6 +155,35 @@ export class SoftwareModalComponent implements OnInit {
 
   getAmbienteRilasciCount(ambiente: Ambiente): number {
     return this.getAmbienteRilasci(ambiente).length;
+  }
+
+  getSoftwareRilasci(): Rilascio[] {
+    const flattened = (this.nuovoSoftware.assegnazioni ?? []).flatMap(
+      (assegnazione) => assegnazione.rilasci ?? [],
+    );
+    const uniqueById = new Map<number, Rilascio>();
+    flattened.forEach((rilascio) => uniqueById.set(rilascio.id, rilascio));
+    return Array.from(uniqueById.values());
+  }
+
+  getAssegnazioniConRilasci(): Array<{
+    clienteId: number;
+    rilasci: Rilascio[];
+  }> {
+    return (this.nuovoSoftware.assegnazioni ?? [])
+      .map((assegnazione) => ({
+        clienteId: assegnazione.clienteId,
+        rilasci: assegnazione.rilasci ?? [],
+      }))
+      .filter((entry) => entry.rilasci.length > 0);
+  }
+
+  getAmbienteDescrizioneForRilascio(rilascio: Rilascio): string {
+    return (
+      this.ambientiDisponibili.find(
+        (ambiente) => ambiente.id === rilascio.ambienteId,
+      )?.descrizione || `ID ${rilascio.ambienteId}`
+    );
   }
 
   private enrichAmbientiConRilasci(ambienti: Ambiente[]): Ambiente[] {

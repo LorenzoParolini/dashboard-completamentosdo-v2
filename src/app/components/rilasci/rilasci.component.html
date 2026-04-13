@@ -63,10 +63,12 @@
               <tr>
                 <th class="table-th">#</th>
                 <th class="table-th">Versione</th>
+                <th class="table-th">Software</th>
                 <th class="table-th">Branch</th>
                 <th class="table-th">Commit</th>
                 <th class="table-th">Deployed By</th>
                 <th class="table-th">Build</th>
+                <th class="table-th">Ambiente</th>
                 <th class="table-th">Ultimo Aggiornamento</th>
                 <th class="table-th">Note</th>
                 <th class="table-th actions-column">Azioni</th>
@@ -80,13 +82,19 @@
                 <td class="table-td id-column">{{ i + 1 }}</td>
                 <td class="table-td">
                   <span class="version-badge">{{
-                    rilascio.versioneCorrente || "N/A"
+                    rilascio.versione || rilascio.versioneCorrente || "N/A"
                   }}</span>
+                </td>
+                <td class="table-td">
+                  {{ getSoftwareDescrizione(rilascio.softwareId) }}
                 </td>
                 <td class="table-td">{{ rilascio.branch || "N/A" }}</td>
                 <td class="table-td">{{ rilascio.commit || "N/A" }}</td>
                 <td class="table-td">{{ rilascio.deployedBy || "N/A" }}</td>
                 <td class="table-td">{{ rilascio.build || "N/A" }}</td>
+                <td class="table-td">
+                  {{ getAmbienteDescrizione(rilascio.ambienteId) }}
+                </td>
                 <td class="table-td date-text">
                   {{ rilascio.ultimoAggiornamento | date: "dd/MM/yyyy HH:mm" }}
                 </td>

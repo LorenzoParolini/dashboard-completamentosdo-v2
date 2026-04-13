@@ -6,10 +6,22 @@ import {
   NgbModule,
   NgbModal,
 } from '@ng-bootstrap/ng-bootstrap';
+import { forkJoin } from 'rxjs';
 
 import { Rilascio } from '../../../models/rilascio.model';
+import { Ambiente } from '../../../models/ambiente.model';
+import { Cliente } from '../../../models/cliente.model';
+import { Software } from '../../../models/software.model';
+import { AmbientiService } from '../../../services/ambienti.service';
+import { ClientiService } from '../../../services/clienti.service';
+import { SoftwareService } from '../../../services/software.service';
 import { MinimizedModalsService } from '../../../services/minimized-modals.service';
 import { ConfirmationModalComponent } from '../../confirmation-modal/confirmation-modal.component';
+
+type SelectOption = {
+  id: number;
+  descrizione: string;
+};
 
 @Component({
   selector: 'app-rilasci-modal',
@@ -22,6 +34,10 @@ export class RilasciModalComponent implements OnInit {
   @Input() modalId?: string;
   @Input() isRestoredFromMinimized?: boolean = false;
 
+  softwareOptions: SelectOption[] = [];
+  clienteOptions: SelectOption[] = [];
+  ambientiOptions: SelectOption[] = [];
+
   nuovoRilascio: Rilascio = {
     id: 0,
     branch: '',
@@ -30,7 +46,10 @@ export class RilasciModalComponent implements OnInit {
     ultimoAggiornamento: '',
     build: '',
     note: '',
-    versioneCorrente: '',
+    versione: '',
+    softwareId: 0,
+    clienteId: 0,
+    ambienteId: 0,
   };
 
   private originalData: Rilascio = {
@@ -41,7 +60,10 @@ export class RilasciModalComponent implements OnInit {
     ultimoAggiornamento: '',
     build: '',
     note: '',
-    versioneCorrente: '',
+    versione: '',
+    softwareId: 0,
+    clienteId: 0,
+    ambienteId: 0,
   };
 
   private hasUnsavedChanges = false;
@@ -52,20 +74,30 @@ export class RilasciModalComponent implements OnInit {
     deployedBy: false,
     build: false,
     note: false,
-    versioneCorrente: false,
+    versione: false,
+    softwareId: false,
+    clienteId: false,
+    ambienteId: false,
   };
 
   constructor(
     public activeModal: NgbActiveModal,
     private modalService: NgbModal,
+    private softwareService: SoftwareService,
+    private clientiService: ClientiService,
+    private ambientiService: AmbientiService,
     private minimizedModalsService: MinimizedModalsService,
   ) {}
 
   ngOnInit() {
+    this.loadOptions();
+
     if (this.rilascio) {
       if (!this.isRestoredFromMinimized) {
         this.nuovoRilascio = {
           ...this.rilascio,
+          versione:
+            this.rilascio.versione || this.rilascio.versioneCorrente || '',
           ultimoAggiornamento: this.toDateTimeLocalValue(
             this.rilascio.ultimoAggiornamento,
           ),
@@ -73,15 +105,44 @@ export class RilasciModalComponent implements OnInit {
       }
       this.originalData = {
         ...this.rilascio,
+        versione:
+          this.rilascio.versione || this.rilascio.versioneCorrente || '',
       };
-    } else {
-      this.nuovoRilascio.ultimoAggiornamento = this.toDateTimeLocalValue(
-        new Date(),
-      );
-      this.originalData = {
-        ...this.nuovoRilascio,
-      };
+      return;
     }
+
+    this.nuovoRilascio.ultimoAggiornamento = this.toDateTimeLocalValue(
+      new Date(),
+    );
+    this.originalData = {
+      ...this.nuovoRilascio,
+    };
+  }
+
+  private loadOptions(): void {
+    forkJoin({
+      software: this.softwareService.getAllSoftware(),
+      clienti: this.clientiService.getAllClienti(),
+      ambienti: this.ambientiService.getAllAmbienti(),
+    }).subscribe({
+      next: ({ software, clienti, ambienti }) => {
+        this.softwareOptions = this.toOptions(software);
+        this.clienteOptions = this.toOptions(clienti);
+        this.ambientiOptions = this.toOptions(ambienti);
+      },
+      error: (error) => {
+        console.error('Errore caricamento opzioni rilascio:', error);
+      },
+    });
+  }
+
+  private toOptions(
+    items: Array<Software | Cliente | Ambiente>,
+  ): SelectOption[] {
+    return items.map((item) => ({
+      id: item.id,
+      descrizione: item.descrizione,
+    }));
   }
 
   onFieldChange() {
@@ -98,7 +159,10 @@ export class RilasciModalComponent implements OnInit {
     this.touchedFields.deployedBy = true;
     this.touchedFields.build = true;
     this.touchedFields.note = true;
-    this.touchedFields.versioneCorrente = true;
+    this.touchedFields.versione = true;
+    this.touchedFields.softwareId = true;
+    this.touchedFields.clienteId = true;
+    this.touchedFields.ambienteId = true;
   }
 
   private normalizeText(value?: string | null): string {
@@ -125,9 +189,21 @@ export class RilasciModalComponent implements OnInit {
     return (this.nuovoRilascio.note ?? '').length <= 1000;
   }
 
-  isVersioneCorrenteValid(): boolean {
-    const versione = this.normalizeText(this.nuovoRilascio.versioneCorrente);
+  isVersioneValid(): boolean {
+    const versione = this.normalizeText(this.nuovoRilascio.versione);
     return versione.length > 0 && versione.length <= 50;
+  }
+
+  isSoftwareIdValid(): boolean {
+    return Number(this.nuovoRilascio.softwareId) > 0;
+  }
+
+  isClienteIdValid(): boolean {
+    return Number(this.nuovoRilascio.clienteId) > 0;
+  }
+
+  isAmbienteIdValid(): boolean {
+    return Number(this.nuovoRilascio.ambienteId) > 0;
   }
 
   getBranchError(): string {
@@ -165,13 +241,34 @@ export class RilasciModalComponent implements OnInit {
     return '';
   }
 
-  getVersioneCorrenteError(): string {
-    const versione = this.normalizeText(this.nuovoRilascio.versioneCorrente);
+  getVersioneError(): string {
+    const versione = this.normalizeText(this.nuovoRilascio.versione);
     if (!versione) {
-      return 'Versione corrente obbligatoria';
+      return 'Versione obbligatoria';
     }
     if (versione.length > 50) {
       return 'La versione non puo superare 50 caratteri';
+    }
+    return '';
+  }
+
+  getSoftwareError(): string {
+    if (!this.isSoftwareIdValid()) {
+      return 'Selezionare un software';
+    }
+    return '';
+  }
+
+  getClienteError(): string {
+    if (!this.isClienteIdValid()) {
+      return 'Selezionare un cliente';
+    }
+    return '';
+  }
+
+  getAmbienteError(): string {
+    if (!this.isAmbienteIdValid()) {
+      return 'Selezionare un ambiente';
     }
     return '';
   }
@@ -183,7 +280,10 @@ export class RilasciModalComponent implements OnInit {
       | 'deployedBy'
       | 'build'
       | 'note'
-      | 'versioneCorrente',
+      | 'versione'
+      | 'softwareId'
+      | 'clienteId'
+      | 'ambienteId',
   ): boolean {
     if (!this.touchedFields[field]) {
       return false;
@@ -194,8 +294,11 @@ export class RilasciModalComponent implements OnInit {
     if (field === 'deployedBy') return !this.isDeployedByValid();
     if (field === 'build') return !this.isBuildValid();
     if (field === 'note') return !this.isNoteValid();
+    if (field === 'softwareId') return !this.isSoftwareIdValid();
+    if (field === 'clienteId') return !this.isClienteIdValid();
+    if (field === 'ambienteId') return !this.isAmbienteIdValid();
 
-    return !this.isVersioneCorrenteValid();
+    return !this.isVersioneValid();
   }
 
   isFieldValid(
@@ -205,7 +308,10 @@ export class RilasciModalComponent implements OnInit {
       | 'deployedBy'
       | 'build'
       | 'note'
-      | 'versioneCorrente',
+      | 'versione'
+      | 'softwareId'
+      | 'clienteId'
+      | 'ambienteId',
   ): boolean {
     return this.touchedFields[field] && !this.isFieldInvalid(field);
   }
@@ -217,7 +323,10 @@ export class RilasciModalComponent implements OnInit {
       this.isDeployedByValid() &&
       this.isBuildValid() &&
       this.isNoteValid() &&
-      this.isVersioneCorrenteValid()
+      this.isVersioneValid() &&
+      this.isSoftwareIdValid() &&
+      this.isClienteIdValid() &&
+      this.isAmbienteIdValid()
     );
   }
 
@@ -293,8 +402,13 @@ export class RilasciModalComponent implements OnInit {
       this.nuovoRilascio.deployedBy !== this.originalData.deployedBy ||
       this.nuovoRilascio.build !== this.originalData.build ||
       this.nuovoRilascio.note !== this.originalData.note ||
-      this.nuovoRilascio.versioneCorrente !==
-        this.originalData.versioneCorrente ||
+      this.nuovoRilascio.versione !== this.originalData.versione ||
+      Number(this.nuovoRilascio.softwareId) !==
+        Number(this.originalData.softwareId) ||
+      Number(this.nuovoRilascio.clienteId) !==
+        Number(this.originalData.clienteId) ||
+      Number(this.nuovoRilascio.ambienteId) !==
+        Number(this.originalData.ambienteId) ||
       this.toBackendLocalDateTime(this.nuovoRilascio.ultimoAggiornamento) !==
         this.toBackendLocalDateTime(this.originalData.ultimoAggiornamento)
     );
@@ -321,9 +435,14 @@ export class RilasciModalComponent implements OnInit {
     );
     this.nuovoRilascio.build = this.normalizeText(this.nuovoRilascio.build);
     this.nuovoRilascio.note = this.normalizeText(this.nuovoRilascio.note);
-    this.nuovoRilascio.versioneCorrente = this.normalizeText(
-      this.nuovoRilascio.versioneCorrente,
+    this.nuovoRilascio.versione = this.normalizeText(
+      this.nuovoRilascio.versione,
     );
+    this.nuovoRilascio.versioneCorrente = this.nuovoRilascio.versione;
+
+    this.nuovoRilascio.softwareId = Number(this.nuovoRilascio.softwareId);
+    this.nuovoRilascio.clienteId = Number(this.nuovoRilascio.clienteId);
+    this.nuovoRilascio.ambienteId = Number(this.nuovoRilascio.ambienteId);
 
     const normalizedDateTime = this.toBackendLocalDateTime(
       this.nuovoRilascio.ultimoAggiornamento || new Date(),
@@ -384,8 +503,8 @@ export class RilasciModalComponent implements OnInit {
       );
 
     const description =
-      this.nuovoRilascio.versioneCorrente ||
-      (this.rilascio ? this.rilascio.versioneCorrente : 'Nuovo Rilascio');
+      this.nuovoRilascio.versione ||
+      (this.rilascio ? this.rilascio.versione : 'Nuovo Rilascio');
 
     this.minimizedModalsService.addMinimizedModal({
       id: modalId,

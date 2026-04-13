@@ -173,7 +173,16 @@
                 class="software-card"
                 style="width: 100%; max-width: 100%"
               >
-                
+                <div class="software-info">
+                  <span class="software-name">{{ software.descrizione }}</span>
+                  <span class="software-version">
+                    {{
+                      (software.assegnazioni?.length || 0) > 0
+                        ? (software.assegnazioni?.length || 0) + " assegnazioni"
+                        : "Nessuna assegnazione"
+                    }}
+                  </span>
+                </div>
                 <button
                   type="button"
                   class="remove-software-btn"

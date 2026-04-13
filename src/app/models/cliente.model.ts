@@ -1,4 +1,5 @@
 import type { Regione } from './regione.model';
+import type { Assegnazione } from './assegnazione.model';
 import type { Software } from './software.model';
 
 // ============================================================================
@@ -8,6 +9,7 @@ export type Cliente = {
   id: number;
   descrizione: string;
   regione: Regione;
+  assegnazioni?: Assegnazione[];
   software: Software[];
 };
 
@@ -17,5 +19,5 @@ export type Cliente = {
 export type ClienteInputDTO = {
   descrizione: string;
   regioneId: number;
-  softwareIds: number[];
+  softwareIds?: number[];
 };

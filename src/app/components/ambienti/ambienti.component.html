@@ -66,7 +66,6 @@
                 <th class="table-th">Descrizione</th>
                 <th class="table-th">Note</th>
                 <th class="table-th">Data Creazione</th>
-                <th class="table-th">Rilasci</th>
                 <th class="table-th actions-column">Azioni</th>
               </tr>
             </thead>
@@ -88,11 +87,6 @@
                 <td class="table-td">
                   <span class="date-text">{{
                     ambiente.dataCreazione | date: "dd/MM/yyyy"
-                  }}</span>
-                </td>
-                <td class="table-td">
-                  <span class="version-badge">{{
-                    (ambiente.rilasci || []).length
                   }}</span>
                 </td>
                 <td class="table-td actions-column">

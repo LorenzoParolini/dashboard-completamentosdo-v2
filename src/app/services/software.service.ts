@@ -4,15 +4,17 @@ import {
   HttpHeaders,
   HttpErrorResponse,
 } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { Observable, forkJoin, map, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { Software, SoftwareInputDTO } from '../models/software.model';
+import { Ambiente } from '../models/ambiente.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SoftwareService {
   private readonly baseUrl = 'http://localhost:8085/api/software';
+  private readonly ambientiUrl = 'http://localhost:8085/api/ambienti';
 
   private readonly httpOptions = {
     headers: new HttpHeaders({
@@ -23,10 +25,36 @@ export class SoftwareService {
 
   constructor(private http: HttpClient) {}
 
+  private normalizeSoftware(
+    item: Software,
+    ambientiById: Map<number, Ambiente>,
+  ): Software {
+    const ambienteIds = new Set<number>();
+
+    (item.assegnazioni ?? []).forEach((assegnazione) => {
+      (assegnazione.rilasci ?? []).forEach((rilascio) => {
+        if (rilascio.ambienteId) {
+          ambienteIds.add(rilascio.ambienteId);
+        }
+      });
+    });
+
+    return {
+      ...item,
+      assegnazioni: item.assegnazioni ?? [],
+      ambienti: Array.from(ambienteIds)
+        .map((id) => ambientiById.get(id))
+        .filter((ambiente): ambiente is Ambiente => Boolean(ambiente)),
+    };
+  }
+
   private handleError(error: HttpErrorResponse): Observable<never> {
     let errorMessage = 'Errore sconosciuto';
 
-    if (error.error instanceof ErrorEvent) {
+    if (
+      typeof ErrorEvent !== 'undefined' &&
+      error.error instanceof ErrorEvent
+    ) {
       errorMessage = `Errore client: ${error.error.message}`;
     } else {
       errorMessage = `Errore server ${error.status}: ${error.message}`;
@@ -50,7 +78,18 @@ export class SoftwareService {
 
   //GET - OK
   getAllSoftware(): Observable<Software[]> {
-    return this.http.get<Software[]>(this.baseUrl).pipe(
+    return forkJoin({
+      software: this.http.get<Software[]>(this.baseUrl),
+      ambienti: this.http.get<Ambiente[]>(this.ambientiUrl),
+    }).pipe(
+      map(({ software, ambienti }) => {
+        const ambientiById = new Map(
+          ambienti.map((ambiente) => [ambiente.id, ambiente]),
+        );
+        return software.map((item) =>
+          this.normalizeSoftware(item, ambientiById),
+        );
+      }),
       tap((softwareHTTP) => console.log('Software caricati:', softwareHTTP)),
       catchError(this.handleError),
     );
@@ -66,13 +105,13 @@ export class SoftwareService {
   }
 
   //POST
-  addSoftware(newSoftware: SoftwareInputDTO): Observable<SoftwareInputDTO> {
+  addSoftware(newSoftware: SoftwareInputDTO): Observable<Software> {
     // software.push(newSoftware);
     // return of(newSoftware);
     return this.http
-      .post<SoftwareInputDTO>(this.baseUrl, newSoftware, this.httpOptions)
+      .post<Software>(this.baseUrl, newSoftware, this.httpOptions)
       .pipe(
-        tap((addedSoftware: SoftwareInputDTO) =>
+        tap((addedSoftware: Software) =>
           console.log('Software aggiunto:', addedSoftware),
         ),
         catchError(this.handleError),
@@ -83,15 +122,13 @@ export class SoftwareService {
   updateSoftware(
     id: number,
     updatedSoftware: SoftwareInputDTO,
-  ): Observable<SoftwareInputDTO> {
+  ): Observable<Software> {
     const url = `${this.baseUrl}/${id}`;
-    return this.http
-      .put<SoftwareInputDTO>(url, updatedSoftware, this.httpOptions)
-      .pipe(
-        tap((software: SoftwareInputDTO) =>
-          console.log('Software aggiornato:', software),
-        ),
-        catchError(this.handleError),
-      );
+    return this.http.put<Software>(url, updatedSoftware, this.httpOptions).pipe(
+      tap((software: Software) =>
+        console.log('Software aggiornato:', software),
+      ),
+      catchError(this.handleError),
+    );
   }
 }

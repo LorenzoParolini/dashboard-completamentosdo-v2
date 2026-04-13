@@ -4,7 +4,11 @@ import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { Subscription } from 'rxjs';
 
 import { Rilascio } from '../../models/rilascio.model';
+import { Ambiente } from '../../models/ambiente.model';
+import { Software } from '../../models/software.model';
 import { RilasciService } from '../../services/rilasci.service';
+import { AmbientiService } from '../../services/ambienti.service';
+import { SoftwareService } from '../../services/software.service';
 import { FilterService } from '../../services/filter.service';
 import {
   FilterCriteria,
@@ -30,6 +34,8 @@ import { RilasciModalComponent } from './rilasci-modal/rilasci-modal.component';
 })
 export class RilasciComponent implements OnInit, OnDestroy {
   rilasci: Rilascio[] = [];
+  ambienti: Ambiente[] = [];
+  software: Software[] = [];
   filteredRilasci: Rilascio[] = [];
   loading: boolean = false;
   hasError: boolean = false;
@@ -53,6 +59,8 @@ export class RilasciComponent implements OnInit, OnDestroy {
 
   constructor(
     private rilasciService: RilasciService,
+    private ambientiService: AmbientiService,
+    private softwareService: SoftwareService,
     private modalService: NgbModal,
     private filterService: FilterService,
     private filterUtilsService: FilterUtilsService,
@@ -69,6 +77,8 @@ export class RilasciComponent implements OnInit, OnDestroy {
     );
 
     setTimeout(() => {
+      this.loadAmbienti();
+      this.loadSoftware();
       this.loadRilasci();
     }, 1200);
   }
@@ -95,6 +105,28 @@ export class RilasciComponent implements OnInit, OnDestroy {
         this.hasError = true;
         this.errorMessage =
           error.message || 'Impossibile raggiungere il server';
+      },
+    });
+  }
+
+  loadAmbienti() {
+    this.ambientiService.getAllAmbienti().subscribe({
+      next: (data) => {
+        this.ambienti = data;
+      },
+      error: () => {
+        this.ambienti = [];
+      },
+    });
+  }
+
+  loadSoftware() {
+    this.softwareService.getAllSoftware().subscribe({
+      next: (data) => {
+        this.software = data;
+      },
+      error: () => {
+        this.software = [];
       },
     });
   }
@@ -157,7 +189,10 @@ export class RilasciComponent implements OnInit, OnDestroy {
           ultimoAggiornamento: result.ultimoAggiornamento,
           build: result.build,
           note: result.note,
-          versioneCorrente: result.versioneCorrente,
+          versione: result.versione || result.versioneCorrente || '',
+          softwareId: result.softwareId,
+          clienteId: result.clienteId,
+          ambienteId: result.ambienteId,
         };
 
         if (rilascio) {
@@ -178,5 +213,19 @@ export class RilasciComponent implements OnInit, OnDestroy {
 
   retryLoadRilasci() {
     this.loadRilasci();
+  }
+
+  getAmbienteDescrizione(ambienteId: number): string {
+    return (
+      this.ambienti.find((ambiente) => ambiente.id === ambienteId)
+        ?.descrizione || `ID ${ambienteId}`
+    );
+  }
+
+  getSoftwareDescrizione(softwareId: number): string {
+    return (
+      this.software.find((software) => software.id === softwareId)
+        ?.descrizione || `ID ${softwareId}`
+    );
   }
 }

@@ -9,8 +9,6 @@ import {
 import { throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
-
-
 @Injectable({
   providedIn: 'root',
 })
@@ -29,7 +27,10 @@ export class RegioniService {
   private handleError(error: HttpErrorResponse): Observable<never> {
     let errorMessage = 'Errore sconosciuto';
 
-    if (error.error instanceof ErrorEvent) {
+    if (
+      typeof ErrorEvent !== 'undefined' &&
+      error.error instanceof ErrorEvent
+    ) {
       errorMessage = `Errore client: ${error.error.message}`;
     } else {
       errorMessage = `Errore server ${error.status}: ${error.message}`;
@@ -96,6 +97,4 @@ export class RegioniService {
       catchError(this.handleError),
     );
   }
-
-
 }

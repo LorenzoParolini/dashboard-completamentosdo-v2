@@ -266,20 +266,8 @@
   @apply w-full flex flex-col gap-2;
 }
 
-.software-preview-ambienti {
-  @apply flex flex-col gap-2;
-}
-
-.software-preview-ambiente-row {
-  @apply flex items-center justify-between gap-2;
-}
-
-.software-preview-ambiente-name {
-  @apply text-sm text-gray-700;
-}
-
-:host-context(.dark) .software-preview-ambiente-name {
-  @apply text-gray-300;
+.software-preview-summary {
+  @apply flex items-center;
 }
 
 .software-preview-rilasci-count {

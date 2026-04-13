@@ -179,7 +179,6 @@ export class AmbientiComponent implements OnInit, OnDestroy {
             descrizione: result.descrizione,
             note: result.note,
             dataCreazione: result.dataCreazione,
-            rilascioIds: (result.rilasci || []).map((rilascio) => rilascio.id),
           };
           this.ambientiService
             .updateAmbiente(result.id, ambienteInputDTO)
@@ -196,7 +195,6 @@ export class AmbientiComponent implements OnInit, OnDestroy {
             descrizione: result.descrizione,
             note: result.note,
             dataCreazione: result.dataCreazione,
-            rilascioIds: (result.rilasci || []).map((rilascio) => rilascio.id),
           };
           this.ambientiService.addAmbiente(ambienteInputDTO).subscribe(() => {
             // Ricarica la lista dagli ambienti aggiornati

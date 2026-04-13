@@ -23,8 +23,7 @@ export class DetailsModalComponent implements OnChanges {
   @Input() cliente: Cliente | null = null;
   @Input() isOpen: boolean = false;
   @Output() closeModal = new EventEmitter<void>();
-  expandedAmbienti = new Set<string>();
-  private ambienteRilasciById = new Map<number, Rilascio[]>();
+  private ambientiById = new Map<number, Ambiente>();
   private ambientiCompletiLoaded = false;
 
   constructor(private ambientiService: AmbientiService) {}
@@ -45,47 +44,32 @@ export class DetailsModalComponent implements OnChanges {
     this.closeModal.emit();
   }
 
-  toggleAmbiente(softwareId: number, ambienteId: number): void {
-    const key = this.getAmbienteKey(softwareId, ambienteId);
-    if (this.expandedAmbienti.has(key)) {
-      this.expandedAmbienti.delete(key);
-      return;
-    }
-    this.expandedAmbienti.add(key);
-  }
-
-  isAmbienteExpanded(softwareId: number, ambienteId: number): boolean {
-    return this.expandedAmbienti.has(
-      this.getAmbienteKey(softwareId, ambienteId),
-    );
-  }
-
-  private getAmbienteKey(softwareId: number, ambienteId: number): string {
-    return `${softwareId}-${ambienteId}`;
-  }
-
   trackBySoftwareId(index: number, software: Software): number {
     return software.id;
-  }
-
-  trackByAmbienteId(index: number, ambiente: Ambiente): number {
-    return ambiente.id;
   }
 
   trackByRilascioId(index: number, rilascio: Rilascio): number {
     return rilascio.id;
   }
 
-  getAmbienteRilasci(ambiente: Ambiente): Rilascio[] {
-    if (ambiente.rilasci && ambiente.rilasci.length > 0) {
-      return ambiente.rilasci;
-    }
-
-    return this.ambienteRilasciById.get(ambiente.id) || [];
+  getSoftwareRilasci(software: Software): Rilascio[] {
+    const flattened = (software.assegnazioni ?? []).flatMap(
+      (assegnazione) => assegnazione.rilasci ?? [],
+    );
+    const uniqueById = new Map<number, Rilascio>();
+    flattened.forEach((rilascio) => uniqueById.set(rilascio.id, rilascio));
+    return Array.from(uniqueById.values());
   }
 
-  getAmbienteRilasciCount(ambiente: Ambiente): number {
-    return this.getAmbienteRilasci(ambiente).length;
+  getAmbienteDescrizione(rilascio: Rilascio): string {
+    if (!rilascio.ambienteId) {
+      return 'N/A';
+    }
+
+    return (
+      this.ambientiById.get(rilascio.ambienteId)?.descrizione ||
+      `ID ${rilascio.ambienteId}`
+    );
   }
 
   private loadAmbientiCompleti(): void {
@@ -94,9 +78,9 @@ export class DetailsModalComponent implements OnChanges {
     }
 
     this.ambientiService.getAllAmbienti().subscribe((ambienti) => {
-      this.ambienteRilasciById.clear();
+      this.ambientiById.clear();
       ambienti.forEach((ambiente) => {
-        this.ambienteRilasciById.set(ambiente.id, ambiente.rilasci || []);
+        this.ambientiById.set(ambiente.id, ambiente);
       });
       this.ambientiCompletiLoaded = true;
     });
