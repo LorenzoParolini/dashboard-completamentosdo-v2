@@ -105,6 +105,50 @@
   box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
 }
 
+.group-row {
+  @apply cursor-pointer;
+}
+
+.group-row .group-row-content {
+  @apply py-3;
+}
+
+.group-row-inner {
+  @apply flex items-center justify-between;
+}
+
+.group-row-left {
+  @apply flex items-center gap-3;
+}
+
+.group-title {
+  @apply font-semibold text-gray-800;
+}
+
+:host-context(.dark) .group-title {
+  @apply text-gray-100;
+}
+
+.group-count {
+  @apply text-xs text-gray-500;
+}
+
+:host-context(.dark) .group-count {
+  @apply text-gray-400;
+}
+
+.group-chevron {
+  @apply inline-flex items-center justify-center text-indigo-600 transition-transform duration-200;
+}
+
+:host-context(.dark) .group-chevron {
+  @apply text-indigo-400;
+}
+
+.group-chevron.expanded {
+  transform: rotate(180deg);
+}
+
 .table-td {
   @apply px-6 py-4 text-sm text-gray-900;
 }

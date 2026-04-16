@@ -41,6 +41,12 @@ export class RilasciComponent implements OnInit, OnDestroy {
   clienti: Cliente[] = [];
 
   filteredRilasci: Rilascio[] = [];
+  groupedRilasci: {
+    clienteId: number;
+    clienteDescrizione: string;
+    rilasci: Rilascio[];
+  }[] = [];
+  expandedClienti: Set<number> = new Set<number>();
   loading: boolean = false;
   hasError: boolean = false;
   errorMessage: string = '';
@@ -142,6 +148,7 @@ export class RilasciComponent implements OnInit, OnDestroy {
     this.clientiService.getAllClienti().subscribe({
       next: (data) => {
         this.clienti = data;
+        this.buildGroupedRilasci();
       },
       error: () => {
         this.clienti = [];
@@ -153,6 +160,54 @@ export class RilasciComponent implements OnInit, OnDestroy {
     this.filteredRilasci = this.rilasci.filter((rilascio) =>
       this.filterUtilsService.shouldShowRilascio(rilascio, this.currentFilters),
     );
+
+    this.buildGroupedRilasci();
+  }
+
+  buildGroupedRilasci() {
+    const groupedMap = new Map<
+      number,
+      {
+        clienteId: number;
+        clienteDescrizione: string;
+        rilasci: Rilascio[];
+      }
+    >();
+
+    this.filteredRilasci.forEach((rilascio) => {
+      if (!groupedMap.has(rilascio.clienteId)) {
+        groupedMap.set(rilascio.clienteId, {
+          clienteId: rilascio.clienteId,
+          clienteDescrizione: this.getClienteDescrizione(rilascio.clienteId),
+          rilasci: [],
+        });
+      }
+
+      groupedMap.get(rilascio.clienteId)?.rilasci.push(rilascio);
+    });
+
+    this.groupedRilasci = Array.from(groupedMap.values()).sort((a, b) =>
+      a.clienteDescrizione.localeCompare(b.clienteDescrizione),
+    );
+
+    this.expandedClienti.forEach((clienteId) => {
+      if (!this.groupedRilasci.some((group) => group.clienteId === clienteId)) {
+        this.expandedClienti.delete(clienteId);
+      }
+    });
+  }
+
+  toggleClienteGroup(clienteId: number) {
+    if (this.expandedClienti.has(clienteId)) {
+      this.expandedClienti.delete(clienteId);
+      return;
+    }
+
+    this.expandedClienti.add(clienteId);
+  }
+
+  isClienteGroupExpanded(clienteId: number): boolean {
+    return this.expandedClienti.has(clienteId);
   }
 
   onDeleteRilascio(idRilascioDaEliminare: number) {
@@ -250,7 +305,7 @@ export class RilasciComponent implements OnInit, OnDestroy {
   getClienteDescrizione(clienteId: number): string {
     return (
       this.clienti.find((cliente) => cliente.id === clienteId)?.descrizione ||
-      `ID ${clienteId}`
+      'Cliente non disponibile'
     );
   }
 }

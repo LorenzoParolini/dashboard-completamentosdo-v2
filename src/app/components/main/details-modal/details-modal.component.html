@@ -178,7 +178,7 @@
               </span>
             </div>
 
-            <div class="software-details" *ngIf="isSoftwareExpanded(software)">
+            <div class="software-details" *ngIf="!isSoftwareExpanded(software)">
               <div class="software-detail-grid">
                 <div class="detail-item" *ngIf="software.note">
                   <span class="detail-label">Note:</span>
