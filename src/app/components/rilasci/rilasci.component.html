@@ -64,6 +64,7 @@
                 <th class="table-th">#</th>
                 <th class="table-th">Versione</th>
                 <th class="table-th">Software</th>
+                <th class="table-th">Cliente</th>
                 <th class="table-th">Branch</th>
                 <th class="table-th">Commit</th>
                 <th class="table-th">Deployed By</th>
@@ -87,6 +88,9 @@
                 </td>
                 <td class="table-td">
                   {{ getSoftwareDescrizione(rilascio.softwareId) }}
+                </td>
+                <td class="table-td">
+                  {{ getClienteDescrizione(rilascio.clienteId) }}
                 </td>
                 <td class="table-td">{{ rilascio.branch || "N/A" }}</td>
                 <td class="table-td">{{ rilascio.commit || "N/A" }}</td>

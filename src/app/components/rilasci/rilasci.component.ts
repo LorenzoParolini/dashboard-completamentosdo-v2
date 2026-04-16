@@ -19,6 +19,8 @@ import { EmptyStateComponent } from '../empty-state/empty-state.component';
 import { ServerErrorComponent } from '../server-error/server-error.component';
 import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-modal.component';
 import { RilasciModalComponent } from './rilasci-modal/rilasci-modal.component';
+import { Cliente } from '../../models/cliente.model';
+import { ClientiService } from '../../services/clienti.service';
 
 @Component({
   selector: 'app-rilasci',
@@ -36,6 +38,8 @@ export class RilasciComponent implements OnInit, OnDestroy {
   rilasci: Rilascio[] = [];
   ambienti: Ambiente[] = [];
   software: Software[] = [];
+  clienti: Cliente[] = [];
+
   filteredRilasci: Rilascio[] = [];
   loading: boolean = false;
   hasError: boolean = false;
@@ -43,6 +47,7 @@ export class RilasciComponent implements OnInit, OnDestroy {
   currentFilters: FilterCriteria = {
     regioni: [],
     software: [],
+
     ambienti: [],
     rilasci: [],
     branch: '',
@@ -61,6 +66,7 @@ export class RilasciComponent implements OnInit, OnDestroy {
     private rilasciService: RilasciService,
     private ambientiService: AmbientiService,
     private softwareService: SoftwareService,
+    private clientiService: ClientiService,
     private modalService: NgbModal,
     private filterService: FilterService,
     private filterUtilsService: FilterUtilsService,
@@ -80,6 +86,7 @@ export class RilasciComponent implements OnInit, OnDestroy {
       this.loadAmbienti();
       this.loadSoftware();
       this.loadRilasci();
+      this.loadClienti();
     }, 1200);
   }
 
@@ -127,6 +134,17 @@ export class RilasciComponent implements OnInit, OnDestroy {
       },
       error: () => {
         this.software = [];
+      },
+    });
+  }
+
+  loadClienti() {
+    this.clientiService.getAllClienti().subscribe({
+      next: (data) => {
+        this.clienti = data;
+      },
+      error: () => {
+        this.clienti = [];
       },
     });
   }
@@ -226,6 +244,13 @@ export class RilasciComponent implements OnInit, OnDestroy {
     return (
       this.software.find((software) => software.id === softwareId)
         ?.descrizione || `ID ${softwareId}`
+    );
+  }
+
+  getClienteDescrizione(clienteId: number): string {
+    return (
+      this.clienti.find((cliente) => cliente.id === clienteId)?.descrizione ||
+      `ID ${clienteId}`
     );
   }
 }
