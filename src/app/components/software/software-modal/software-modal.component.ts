@@ -64,9 +64,20 @@ export class SoftwareModalComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.clientiService.getAllClienti().subscribe((clienti) => {
-      this.clientiDisponibili = clienti;
-    });
+    if (!this.software) {
+      this.clientiService.getAllClienti().subscribe({
+        next: (clienti) => {
+          this.clientiDisponibili = clienti;
+        },
+        error: (error) => {
+          console.error(
+            'Errore nel caricamento clienti per la modale software:',
+            error,
+          );
+          this.clientiDisponibili = [];
+        },
+      });
+    }
 
     if (this.software) {
       console.log('Modalità modifica - Software ricevuto:', this.software);

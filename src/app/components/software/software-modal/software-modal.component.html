@@ -1,5 +1,5 @@
 <div class="modal-backdrop" (click)="onBackdropClick($event)">
-  <div class="modal-container">
+  <div class="modal-container" (click)="$event.stopPropagation()">
     <!-- Header -->
     <div class="modal-header">
       <div class="modal-title-section">
@@ -118,9 +118,9 @@
                 {{ getNoteError() }}
               </div>
             </div>
-
+            <!-- Sezione cliente -->
             <div class="form-field form-field-full" *ngIf="!software">
-              <label class="form-label">Cliente da associare</label>
+              <label class="form-label">Associa a un cliente</label>
               <select
                 [(ngModel)]="clienteSelezionatoId"
                 name="clienteSelezionato"
@@ -137,6 +137,7 @@
             </div>
           </div>
 
+          <!-- Actions Button -->
           <div class="form-actions">
             <button type="button" class="btn-secondary" (click)="closeModal()">
               Annulla
