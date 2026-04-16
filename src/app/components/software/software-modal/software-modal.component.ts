@@ -35,9 +35,14 @@ export class SoftwareModalComponent implements OnInit {
     ambienti: [],
   };
 
+  // Compatibilita con il vecchio flusso a selezione singola.
   clienteSelezionatoId: number = 0;
+  clientiSelezionatiIds: number[] = [];
+  clienteSearchTerm = '';
 
   clientiDisponibili: Cliente[] = [];
+
+  isClienteSectionVisible = false;
 
   private originalData: Software = {
     id: 0,
@@ -48,6 +53,7 @@ export class SoftwareModalComponent implements OnInit {
   };
 
   private hasUnsavedChanges = false;
+  private originalClienteIds: number[] = [];
 
   // Tracciamo il blur dei campi che hanno regole specifiche nel DTO.
   // Questo evita feedback prematuri mentre l'utente sta scrivendo.
@@ -113,10 +119,110 @@ export class SoftwareModalComponent implements OnInit {
         ambienti: [...this.nuovoSoftware.ambienti],
       };
     }
+
+    // Supporta ripristino da modali minimizzate anche se arriva il vecchio campo singolo.
+    this.clientiSelezionatiIds = this.getSortedUniquePositiveIds(
+      this.clientiSelezionatiIds,
+    );
+    if (
+      this.clientiSelezionatiIds.length === 0 &&
+      this.clienteSelezionatoId > 0
+    ) {
+      this.clientiSelezionatiIds = [this.clienteSelezionatoId];
+    }
+    this.syncLegacySingleSelection();
+    this.originalClienteIds = [...this.clientiSelezionatiIds];
+    this.isClienteSectionVisible = this.clientiSelezionatiIds.length > 0;
   }
 
   onFieldChange() {
     this.hasUnsavedChanges = this.checkForChanges();
+  }
+
+  onClienteSearchChange() {
+    // La ricerca non altera i dati, quindi non influisce sul flag unsaved.
+  }
+
+  // Invio su ricerca: seleziona il primo risultato filtrato e svuota il campo.
+  selectFirstFilteredClienteFromSearch(event?: Event) {
+    event?.preventDefault();
+
+    const firstCliente = this.filteredClientiDisponibili[0];
+    if (!firstCliente) {
+      return;
+    }
+
+    if (!this.isClienteSelezionato(firstCliente.id)) {
+      this.clientiSelezionatiIds = this.getSortedUniquePositiveIds([
+        ...this.clientiSelezionatiIds,
+        firstCliente.id,
+      ]);
+      this.syncLegacySingleSelection();
+      this.onFieldChange();
+    }
+
+    this.clienteSearchTerm = '';
+  }
+
+  isTopSearchResult(index: number): boolean {
+    return this.normalizeText(this.clienteSearchTerm).length > 0 && index === 0;
+  }
+
+  get filteredClientiDisponibili(): Cliente[] {
+    const term = this.normalizeText(this.clienteSearchTerm).toLowerCase();
+    if (!term) {
+      return this.clientiDisponibili;
+    }
+
+    return this.clientiDisponibili.filter((cliente) =>
+      cliente.descrizione.toLowerCase().includes(term),
+    );
+  }
+
+  get clientiSelezionati(): Cliente[] {
+    if (this.clientiSelezionatiIds.length === 0) {
+      return [];
+    }
+
+    const selectedIds = new Set(this.clientiSelezionatiIds);
+    return this.clientiDisponibili.filter((cliente) =>
+      selectedIds.has(cliente.id),
+    );
+  }
+
+  toggleClienteSelection(clienteId: number) {
+    if (this.isClienteSelezionato(clienteId)) {
+      this.clientiSelezionatiIds = this.clientiSelezionatiIds.filter(
+        (id) => id !== clienteId,
+      );
+    } else {
+      this.clientiSelezionatiIds = this.getSortedUniquePositiveIds([
+        ...this.clientiSelezionatiIds,
+        clienteId,
+      ]);
+    }
+
+    this.syncLegacySingleSelection();
+    this.onFieldChange();
+  }
+
+  removeClienteSelection(clienteId: number, event?: MouseEvent) {
+    event?.stopPropagation();
+    this.clientiSelezionatiIds = this.clientiSelezionatiIds.filter(
+      (id) => id !== clienteId,
+    );
+    this.syncLegacySingleSelection();
+    this.onFieldChange();
+  }
+
+  clearClienteSelections() {
+    this.clientiSelezionatiIds = [];
+    this.syncLegacySingleSelection();
+    this.onFieldChange();
+  }
+
+  isClienteSelezionato(clienteId: number): boolean {
+    return this.clientiSelezionatiIds.includes(clienteId);
   }
 
   // Attiva validazione visuale (errore/ok) quando il campo perde il focus.
@@ -199,8 +305,30 @@ export class SoftwareModalComponent implements OnInit {
   private checkForChanges(): boolean {
     return (
       this.nuovoSoftware.descrizione !== this.originalData.descrizione ||
-      this.nuovoSoftware.note !== this.originalData.note
+      this.nuovoSoftware.note !== this.originalData.note ||
+      !this.areIdListsEqual(this.clientiSelezionatiIds, this.originalClienteIds)
     );
+  }
+
+  private getSortedUniquePositiveIds(ids: number[]): number[] {
+    return Array.from(new Set(ids.filter((id) => id > 0))).sort(
+      (a, b) => a - b,
+    );
+  }
+
+  private areIdListsEqual(a: number[], b: number[]): boolean {
+    const aNormalized = this.getSortedUniquePositiveIds(a);
+    const bNormalized = this.getSortedUniquePositiveIds(b);
+
+    if (aNormalized.length !== bNormalized.length) {
+      return false;
+    }
+
+    return aNormalized.every((id, index) => id === bNormalized[index]);
+  }
+
+  private syncLegacySingleSelection() {
+    this.clienteSelezionatoId = this.clientiSelezionatiIds[0] ?? 0;
   }
 
   @HostListener('window:beforeunload', ['$event'])
@@ -227,6 +355,7 @@ export class SoftwareModalComponent implements OnInit {
     this.hasUnsavedChanges = false;
     this.activeModal.close({
       ...this.nuovoSoftware,
+      clientiSelezionatiIds: [...this.clientiSelezionatiIds],
       clienteSelezionatoId: this.clienteSelezionatoId,
     });
   }
@@ -289,6 +418,7 @@ export class SoftwareModalComponent implements OnInit {
     // Crea una copia completa dei dati del form inclusi i campi di selezione
     const formDataToSave = {
       ...this.nuovoSoftware,
+      clientiSelezionatiIds: [...this.clientiSelezionatiIds],
       clienteSelezionatoId: this.clienteSelezionatoId,
       // Salva anche lo stato originale per riferimento
       originalData: this.originalData,

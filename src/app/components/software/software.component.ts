@@ -169,7 +169,12 @@ export class SoftwareComponent implements OnInit, OnDestroy {
     }
 
     modalRef.result.then(
-      (result: SoftwareModel & { clienteSelezionatoId?: number }) => {
+      (
+        result: SoftwareModel & {
+          clienteSelezionatoId?: number;
+          clientiSelezionatiIds?: number[];
+        },
+      ) => {
         if (software) {
           // Modifica: converti in InputDTO e passa l'ID
           const softwareInputDTO = {
@@ -191,9 +196,13 @@ export class SoftwareComponent implements OnInit, OnDestroy {
             descrizione: result.descrizione,
             note: result.note,
           };
-          const clienteIds = result.clienteSelezionatoId
-            ? [result.clienteSelezionatoId]
-            : [];
+          const clienteIds =
+            result.clientiSelezionatiIds &&
+            result.clientiSelezionatiIds.length > 0
+              ? result.clientiSelezionatiIds
+              : result.clienteSelezionatoId
+                ? [result.clienteSelezionatoId]
+                : [];
 
           this.softwareService
             .addSoftware(softwareInputDTO, clienteIds)

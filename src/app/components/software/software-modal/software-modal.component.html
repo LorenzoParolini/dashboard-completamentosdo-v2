@@ -118,22 +118,150 @@
                 {{ getNoteError() }}
               </div>
             </div>
+
             <!-- Sezione cliente -->
             <div class="form-field form-field-full" *ngIf="!software">
-              <label class="form-label">Associa a un cliente</label>
-              <select
-                [(ngModel)]="clienteSelezionatoId"
-                name="clienteSelezionato"
-                class="form-select"
-              >
-                <option [value]="0">Nessuna associazione</option>
-                <option
-                  *ngFor="let cliente of clientiDisponibili"
-                  [value]="cliente.id"
-                >
-                  {{ cliente.descrizione }}
-                </option>
-              </select>
+              <div class="cliente-section">
+                <div class="section-divider cliente-section-header">
+                  <button
+                    type="button"
+                    class="cliente-toggle-btn"
+                    (click)="isClienteSectionVisible = !isClienteSectionVisible"
+                  >
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path
+                        d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"
+                      ></path>
+                      <circle cx="8.5" cy="7" r="4"></circle>
+                      <path d="M20 8v6"></path>
+                      <path d="M23 11h-6"></path>
+                    </svg>
+                    {{
+                      isClienteSectionVisible
+                        ? "Nascondi selezione"
+                        : "Associa a uno o piu clienti"
+                    }}
+                  </button>
+                </div>
+
+                <div class="cliente-selector" *ngIf="isClienteSectionVisible">
+                  <div class="cliente-selector-topbar">
+                    <label class="form-label cliente-selector-label"
+                      >Cerca cliente</label
+                    >
+
+                    <div class="cliente-selection-actions">
+                      <span class="cliente-selected-count"
+                        >{{ clientiSelezionatiIds.length }} selezionati</span
+                      >
+                      <button
+                        type="button"
+                        class="cliente-clear-btn"
+                        (click)="clearClienteSelections()"
+                        [disabled]="clientiSelezionatiIds.length === 0"
+                      >
+                        Pulisci
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="cliente-search-wrap">
+                    <input
+                      type="text"
+                      class="form-input cliente-search-input"
+                      [(ngModel)]="clienteSearchTerm"
+                      name="clienteSearchTerm"
+                      placeholder="Cerca per descrizione cliente"
+                      (input)="onClienteSearchChange()"
+                      (keydown.enter)="
+                        selectFirstFilteredClienteFromSearch($event)
+                      "
+                    />
+                  </div>
+
+                  <div
+                    class="cliente-options-list"
+                    *ngIf="
+                      filteredClientiDisponibili.length > 0;
+                      else noClientiFound
+                    "
+                  >
+                    <button
+                      type="button"
+                      class="cliente-option"
+                      *ngFor="
+                        let cliente of filteredClientiDisponibili;
+                        let i = index
+                      "
+                      [ngClass]="{
+                        selected: isClienteSelezionato(cliente.id),
+                        'search-top-match': isTopSearchResult(i),
+                      }"
+                      (click)="toggleClienteSelection(cliente.id)"
+                    >
+                      <span class="cliente-option-check" aria-hidden="true">
+                        <svg
+                          *ngIf="isClienteSelezionato(cliente.id)"
+                          width="14"
+                          height="14"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="3"
+                        >
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                      </span>
+                      <span class="cliente-option-label">{{
+                        cliente.descrizione
+                      }}</span>
+                    </button>
+                  </div>
+
+                  <ng-template #noClientiFound>
+                    <div class="cliente-empty-state">
+                      Nessun cliente trovato per la ricerca corrente
+                    </div>
+                  </ng-template>
+
+                  <div
+                    class="cliente-selected-list"
+                    *ngIf="clientiSelezionati.length > 0"
+                  >
+                    <span
+                      class="cliente-chip"
+                      *ngFor="let cliente of clientiSelezionati"
+                    >
+                      <span>{{ cliente.descrizione }}</span>
+                      <button
+                        type="button"
+                        class="cliente-chip-remove"
+                        (click)="removeClienteSelection(cliente.id, $event)"
+                        aria-label="Rimuovi cliente selezionato"
+                      >
+                        <svg
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2.5"
+                        >
+                          <line x1="18" y1="6" x2="6" y2="18"></line>
+                          <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                      </button>
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 

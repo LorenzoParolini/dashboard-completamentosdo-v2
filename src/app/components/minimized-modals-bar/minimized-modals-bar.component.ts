@@ -113,6 +113,14 @@ export class MinimizedModalsBarComponent implements OnInit, OnDestroy {
         }
         if (modal.formData) {
           modalRef.componentInstance.nuovoSoftware = { ...modal.formData };
+          if (
+            Array.isArray(modal.formData.clientiSelezionatiIds) &&
+            modal.formData.clientiSelezionatiIds.length > 0
+          ) {
+            modalRef.componentInstance.clientiSelezionatiIds = [
+              ...modal.formData.clientiSelezionatiIds,
+            ];
+          }
           if (modal.formData.clienteSelezionatoId) {
             modalRef.componentInstance.clienteSelezionatoId =
               modal.formData.clienteSelezionatoId;
