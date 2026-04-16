@@ -1,5 +1,5 @@
 .minimized-modal {
-  @apply flex items-center justify-between bg-white border border-gray-300 rounded-lg shadow-lg cursor-pointer transition-all duration-200 p-3 m-0 min-w-[280px] max-w-[320px] h-auto min-h-[60px];
+  @apply flex items-center justify-between bg-white border border-gray-300 rounded-lg shadow-lg cursor-pointer transition-all duration-200 p-3 m-0 min-w-[280px] max-w-[320px] h-auto min-h-[60px] pointer-events-auto;
 }
 
 /* Dark theme support for minimized modal */

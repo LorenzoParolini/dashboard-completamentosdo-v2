@@ -3,7 +3,7 @@
 }
 
 .modals-container {
-  @apply flex items-end justify-start gap-2 p-4 pointer-events-auto overflow-x-auto overflow-y-hidden;
+  @apply flex items-end justify-start gap-2 p-4 overflow-x-auto overflow-y-hidden pointer-events-none;
   scrollbar-width: thin;
   scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
   -ms-overflow-style: scrollbar;
@@ -47,7 +47,7 @@
 }
 
 /* Assicuriamoci che le modali minimizzate siano visibili sopra tutto */
-.modals-container > * {
+.modals-container>* {
   @apply flex-shrink-0 min-w-[280px] max-w-[320px];
 }
 
@@ -57,12 +57,13 @@
     transform: translateY(100%);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
   }
 }
 
-.modals-container > app-minimized-modal-item {
+.modals-container>app-minimized-modal-item {
   animation: slideInFromBottom 0.3s ease-out;
 }
