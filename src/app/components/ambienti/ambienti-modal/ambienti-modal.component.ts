@@ -8,7 +8,6 @@ import {
 } from '@ng-bootstrap/ng-bootstrap';
 import { Ambiente } from '../../../models/ambiente.model';
 import { Rilascio } from '../../../models/rilascio.model';
-import { AmbientiService } from '../../../services/ambienti.service';
 import { RilasciService } from '../../../services/rilasci.service';
 import { MinimizedModalsService } from '../../../services/minimized-modals.service';
 import { ConfirmationModalComponent } from '../../confirmation-modal/confirmation-modal.component';
@@ -59,7 +58,6 @@ export class AmbientiModalComponent implements OnInit {
 
   constructor(
     public activeModal: NgbActiveModal,
-    private ambientiService: AmbientiService,
     private rilasciService: RilasciService,
     private modalService: NgbModal,
     private minimizedModalsService: MinimizedModalsService,

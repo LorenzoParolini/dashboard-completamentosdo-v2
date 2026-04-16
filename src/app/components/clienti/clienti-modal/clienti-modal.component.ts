@@ -9,7 +9,6 @@ import {
 import { Cliente } from '../../../models/cliente.model';
 import { Regione } from '../../../models/regione.model';
 import { Software } from '../../../models/software.model';
-import { ClientiService } from '../../../services/clienti.service';
 import { RegioniService } from '../../../services/regioni.service';
 import { SoftwareService } from '../../../services/software.service';
 import { MinimizedModalsService } from '../../../services/minimized-modals.service';
@@ -61,7 +60,6 @@ export class ClientiModalComponent implements OnInit {
 
   constructor(
     public activeModal: NgbActiveModal,
-    private clientiService: ClientiService,
     private regioniService: RegioniService,
     private softwareService: SoftwareService,
     private modalService: NgbModal,

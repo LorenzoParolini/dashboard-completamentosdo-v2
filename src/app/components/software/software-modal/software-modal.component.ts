@@ -7,10 +7,6 @@ import {
   NgbModal,
 } from '@ng-bootstrap/ng-bootstrap';
 import { Software } from '../../../models/software.model';
-import { Ambiente } from '../../../models/ambiente.model';
-import { Rilascio } from '../../../models/rilascio.model';
-import { SoftwareService } from '../../../services/software.service';
-import { AmbientiService } from '../../../services/ambienti.service';
 import { ClientiService } from '../../../services/clienti.service';
 import { MinimizedModalsService } from '../../../services/minimized-modals.service';
 import { ConfirmationModalComponent } from '../../confirmation-modal/confirmation-modal.component';
@@ -39,14 +35,9 @@ export class SoftwareModalComponent implements OnInit {
     ambienti: [],
   };
 
-  // Campo per il menu a tendina
-  ambienteSelezionatoId: number = 0;
   clienteSelezionatoId: number = 0;
 
-  // Mock data per le select
-  ambientiDisponibili: Ambiente[] = [];
   clientiDisponibili: Cliente[] = [];
-  expandedAmbienti = new Set<number>();
 
   private originalData: Software = {
     id: 0,
@@ -67,29 +58,12 @@ export class SoftwareModalComponent implements OnInit {
 
   constructor(
     public activeModal: NgbActiveModal,
-    private softwareService: SoftwareService,
-    private ambientiService: AmbientiService,
     private clientiService: ClientiService,
     private modalService: NgbModal,
     private minimizedModalsService: MinimizedModalsService,
   ) {}
 
   ngOnInit() {
-    // Carica gli ambienti dal servizio
-    this.ambientiService.getAllAmbienti().subscribe((ambienti) => {
-      this.ambientiDisponibili = ambienti;
-      console.log('Ambienti disponibili caricati:', this.ambientiDisponibili);
-
-      // I DTO nested di alcuni endpoint possono non includere i rilasci:
-      // riallineiamo gli ambienti selezionati con quelli completi disponibili.
-      this.nuovoSoftware.ambienti = this.enrichAmbientiConRilasci(
-        this.nuovoSoftware.ambienti,
-      );
-      this.originalData.ambienti = this.enrichAmbientiConRilasci(
-        this.originalData.ambienti,
-      );
-    });
-
     this.clientiService.getAllClienti().subscribe((clienti) => {
       this.clientiDisponibili = clienti;
     });
@@ -115,15 +89,6 @@ export class SoftwareModalComponent implements OnInit {
         assegnazioni: [...(this.software.assegnazioni || [])],
         ambienti: [...this.software.ambienti],
       };
-
-      this.nuovoSoftware.ambienti = this.enrichAmbientiConRilasci(
-        this.nuovoSoftware.ambienti,
-      );
-      this.originalData.ambienti = this.enrichAmbientiConRilasci(
-        this.originalData.ambienti,
-      );
-
-      console.log('Ambienti del software:', this.nuovoSoftware.ambienti);
     } else {
       console.log('Modalità aggiunta - Nuovo software');
 
@@ -136,84 +101,7 @@ export class SoftwareModalComponent implements OnInit {
         ...this.nuovoSoftware,
         ambienti: [...this.nuovoSoftware.ambienti],
       };
-
-      this.nuovoSoftware.ambienti = this.enrichAmbientiConRilasci(
-        this.nuovoSoftware.ambienti,
-      );
-      this.originalData.ambienti = this.enrichAmbientiConRilasci(
-        this.originalData.ambienti,
-      );
     }
-  }
-
-  toggleAmbiente(ambienteId: number): void {
-    if (this.expandedAmbienti.has(ambienteId)) {
-      this.expandedAmbienti.delete(ambienteId);
-      return;
-    }
-    this.expandedAmbienti.add(ambienteId);
-  }
-
-  isAmbienteExpanded(ambienteId: number): boolean {
-    return this.expandedAmbienti.has(ambienteId);
-  }
-
-  getAmbienteRilasci(ambiente: Ambiente): Rilascio[] {
-    return this.normalizeAmbienteConRilasci(ambiente).rilasci || [];
-  }
-
-  getAmbienteRilasciCount(ambiente: Ambiente): number {
-    return this.getAmbienteRilasci(ambiente).length;
-  }
-
-  getSoftwareRilasci(): Rilascio[] {
-    const flattened = (this.nuovoSoftware.assegnazioni ?? []).flatMap(
-      (assegnazione) => assegnazione.rilasci ?? [],
-    );
-    const uniqueById = new Map<number, Rilascio>();
-    flattened.forEach((rilascio) => uniqueById.set(rilascio.id, rilascio));
-    return Array.from(uniqueById.values());
-  }
-
-  getAssegnazioniConRilasci(): Array<{
-    clienteId: number;
-    rilasci: Rilascio[];
-  }> {
-    return (this.nuovoSoftware.assegnazioni ?? [])
-      .map((assegnazione) => ({
-        clienteId: assegnazione.clienteId,
-        rilasci: assegnazione.rilasci ?? [],
-      }))
-      .filter((entry) => entry.rilasci.length > 0);
-  }
-
-  getAmbienteDescrizioneForRilascio(rilascio: Rilascio): string {
-    return (
-      this.ambientiDisponibili.find(
-        (ambiente) => ambiente.id === rilascio.ambienteId,
-      )?.descrizione || `ID ${rilascio.ambienteId}`
-    );
-  }
-
-  private enrichAmbientiConRilasci(ambienti: Ambiente[]): Ambiente[] {
-    return (ambienti || []).map((ambiente) =>
-      this.normalizeAmbienteConRilasci(ambiente),
-    );
-  }
-
-  private normalizeAmbienteConRilasci(ambiente: Ambiente): Ambiente {
-    const fromPayload = ambiente?.rilasci || [];
-    if (fromPayload.length > 0) {
-      return { ...ambiente, rilasci: fromPayload };
-    }
-
-    const fullAmbiente = this.ambientiDisponibili.find(
-      (a) => a.id === ambiente.id,
-    );
-    return {
-      ...ambiente,
-      rilasci: fullAmbiente?.rilasci || [],
-    };
   }
 
   onFieldChange() {
@@ -298,30 +186,9 @@ export class SoftwareModalComponent implements OnInit {
   }
 
   private checkForChanges(): boolean {
-    // Verifica cambiamenti nei campi base
-    if (
+    return (
       this.nuovoSoftware.descrizione !== this.originalData.descrizione ||
       this.nuovoSoftware.note !== this.originalData.note
-    ) {
-      return true;
-    }
-
-    // Verifica cambiamenti negli ambienti
-    if (
-      this.nuovoSoftware.ambienti.length !== this.originalData.ambienti.length
-    ) {
-      return true;
-    }
-
-    const originalAmbientiIds = this.originalData.ambienti
-      .map((a) => a.id)
-      .sort();
-    const currentAmbientiIds = this.nuovoSoftware.ambienti
-      .map((a) => a.id)
-      .sort();
-
-    return !originalAmbientiIds.every(
-      (id, index) => id === currentAmbientiIds[index],
     );
   }
 
@@ -394,51 +261,6 @@ export class SoftwareModalComponent implements OnInit {
     }
   }
 
-  // Chiamata quando cambia la selezione nel dropdown
-  onAmbienteSelezionatoChange(value: string | number) {
-    console.log('Ambiente selezionato value:', value, typeof value);
-    const ambienteId = Number(value);
-    console.log('Ambiente ID convertito:', ambienteId);
-
-    if (ambienteId && ambienteId !== 0) {
-      const ambienteSelezionato = this.ambientiDisponibili.find(
-        (a) => a.id === ambienteId,
-      );
-      console.log('Ambiente trovato:', ambienteSelezionato);
-
-      if (
-        ambienteSelezionato &&
-        !this.nuovoSoftware.ambienti.find((a) => a.id === ambienteId)
-      ) {
-        this.nuovoSoftware.ambienti.push(ambienteSelezionato);
-        console.log('Ambienti dopo aggiunta:', this.nuovoSoftware.ambienti);
-        this.onFieldChange();
-      }
-
-      // Resetta la selezione
-      this.ambienteSelezionatoId = 0;
-    }
-  }
-
-  // Manteniamo il vecchio metodo per compatibilità
-  onAmbienteSelezionato() {
-    this.onAmbienteSelezionatoChange(this.ambienteSelezionatoId);
-  }
-
-  // Rimuove un ambiente dalla lista
-  rimuoviAmbiente(ambienteId: number) {
-    this.nuovoSoftware.ambienti = this.nuovoSoftware.ambienti.filter(
-      (a) => a.id !== ambienteId,
-    );
-    this.expandedAmbienti.delete(ambienteId);
-    this.onFieldChange();
-  }
-
-  // Controlla se un ambiente è già stato selezionato
-  isAmbienteGiaSelezionato(ambienteId: number): boolean {
-    return this.nuovoSoftware.ambienti.some((a) => a.id === ambienteId);
-  }
-
   // Minimizza la modale salvando i dati nel servizio
   minimizeModal() {
     const modalId =
@@ -456,7 +278,6 @@ export class SoftwareModalComponent implements OnInit {
     // Crea una copia completa dei dati del form inclusi i campi di selezione
     const formDataToSave = {
       ...this.nuovoSoftware,
-      ambienteSelezionatoId: this.ambienteSelezionatoId,
       clienteSelezionatoId: this.clienteSelezionatoId,
       // Salva anche lo stato originale per riferimento
       originalData: this.originalData,

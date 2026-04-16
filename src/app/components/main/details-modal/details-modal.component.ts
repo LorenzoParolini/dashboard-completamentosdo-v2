@@ -46,11 +46,11 @@ export class DetailsModalComponent implements OnChanges {
     this.closeModal.emit();
   }
 
-  trackBySoftwareId(index: number, software: Software): number {
+  trackBySoftwareId(_index: number, software: Software): number {
     return software.id;
   }
 
-  trackByRilascioId(index: number, rilascio: Rilascio): number {
+  trackByRilascioId(_index: number, rilascio: Rilascio): number {
     return rilascio.id;
   }
 

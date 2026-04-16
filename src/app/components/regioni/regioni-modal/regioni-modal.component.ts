@@ -7,7 +7,6 @@ import {
   NgbModal,
 } from '@ng-bootstrap/ng-bootstrap';
 import { Regione } from '../../../models/regione.model';
-import { RegioniService } from '../../../services/regioni.service';
 import { MinimizedModalsService } from '../../../services/minimized-modals.service';
 import { ConfirmationModalComponent } from '../../confirmation-modal/confirmation-modal.component';
 
@@ -53,7 +52,6 @@ export class RegioniModalComponent implements OnInit {
 
   constructor(
     public activeModal: NgbActiveModal,
-    private regioniService: RegioniService,
     private modalService: NgbModal,
     private minimizedModalsService: MinimizedModalsService,
   ) {}

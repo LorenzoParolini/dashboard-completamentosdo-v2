@@ -56,7 +56,7 @@ export class MinimizedModalsBarComponent implements OnInit, OnDestroy {
   }
 
   // TrackBy function per ottimizzare le performance con ngFor
-  trackByModalId(index: number, modal: MinimizedModal): string {
+  trackByModalId(_index: number, modal: MinimizedModal): string {
     return modal.id;
   }
 
@@ -113,11 +113,6 @@ export class MinimizedModalsBarComponent implements OnInit, OnDestroy {
         }
         if (modal.formData) {
           modalRef.componentInstance.nuovoSoftware = { ...modal.formData };
-          // Ripristina anche il campo di selezione se presente
-          if (modal.formData.ambienteSelezionatoId) {
-            modalRef.componentInstance.ambienteSelezionatoId =
-              modal.formData.ambienteSelezionatoId;
-          }
           if (modal.formData.clienteSelezionatoId) {
             modalRef.componentInstance.clienteSelezionatoId =
               modal.formData.clienteSelezionatoId;

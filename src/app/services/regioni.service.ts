@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Regione, RegioneInputDTO } from '../models/regione.model';
-import { delay, Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import {
   HttpClient,
   HttpHeaders,
