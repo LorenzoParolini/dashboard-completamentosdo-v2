@@ -62,6 +62,7 @@
               <tr>
                 <th class="table-th">#</th>
                 <th class="table-th">Descrizione</th>
+                <th class="table-th">N° Clienti Associaati</th>
                 <th class="table-th">Note</th>
                 <th class="table-th actions-column">Azioni</th>
               </tr>
@@ -73,6 +74,11 @@
               >
                 <td class="table-td id-column">{{ i + 1 }}</td>
                 <td class="table-td">{{ sw.descrizione }}</td>
+                <td class="table-td">
+                  <p class="version-badge">
+                    {{ countClientiForSoftware(sw.id) }}
+                  </p>
+                </td>
                 <td class="table-td">
                   <span class="note-text" *ngIf="sw.note; else noNote">{{
                     sw.note

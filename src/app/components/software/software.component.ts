@@ -14,6 +14,8 @@ import { ServerErrorComponent } from '../server-error/server-error.component';
 import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { SoftwareModalComponent } from './software-modal/software-modal.component';
 import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-modal.component';
+import { ClientiService } from '../../services/clienti.service';
+import { Cliente } from '../../models/cliente.model';
 
 @Component({
   selector: 'app-software',
@@ -29,6 +31,7 @@ import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-m
 })
 export class SoftwareComponent implements OnInit, OnDestroy {
   software: SoftwareModel[] = [];
+  clienti: Cliente[] = [];
   filteredSoftware: SoftwareModel[] = [];
   loading: boolean = false;
   hasError: boolean = false;
@@ -52,6 +55,7 @@ export class SoftwareComponent implements OnInit, OnDestroy {
 
   constructor(
     private softwareService: SoftwareService,
+    private clientiService: ClientiService,
     private modalService: NgbModal,
     private filterService: FilterService,
     private filterUtilsService: FilterUtilsService,
@@ -71,6 +75,7 @@ export class SoftwareComponent implements OnInit, OnDestroy {
 
     setTimeout(() => {
       this.loadSoftware();
+      this.loadClienti();
     }, 1200);
   }
 
@@ -94,6 +99,23 @@ export class SoftwareComponent implements OnInit, OnDestroy {
           error.message || 'Impossibile raggiungere il server';
       },
     });
+  }
+
+  loadClienti() {
+    this.clientiService.getAllClienti().subscribe({
+      next: (data) => {
+        this.clienti = data;
+      },
+      error: () => {
+        this.clienti = [];
+      },
+    });
+  }
+
+  // conta i clienti associati a un software (considera che cliente non ha softwareId diretto, ma ha un array di software)
+  countClientiForSoftware(softwareId: number): number {
+    return this.clienti.filter((cliente) => cliente.software.some((s) => s.id === softwareId))
+      .length;
   }
 
   ngOnDestroy() {
