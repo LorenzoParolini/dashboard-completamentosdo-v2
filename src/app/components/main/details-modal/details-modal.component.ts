@@ -25,11 +25,13 @@ export class DetailsModalComponent implements OnChanges {
   @Output() closeModal = new EventEmitter<void>();
   private ambientiById = new Map<number, Ambiente>();
   private ambientiCompletiLoaded = false;
+  private expandedSoftwareIds = new Set<number>();
 
   constructor(private ambientiService: AmbientiService) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if ((changes['isOpen'] || changes['cliente']) && this.isOpen) {
+      this.syncExpandedSoftwareState();
       this.loadAmbientiCompleti();
     }
   }
@@ -50,6 +52,19 @@ export class DetailsModalComponent implements OnChanges {
 
   trackByRilascioId(index: number, rilascio: Rilascio): number {
     return rilascio.id;
+  }
+
+  toggleSoftwareDetails(software: Software): void {
+    if (this.expandedSoftwareIds.has(software.id)) {
+      this.expandedSoftwareIds.delete(software.id);
+      return;
+    }
+
+    this.expandedSoftwareIds.add(software.id);
+  }
+
+  isSoftwareExpanded(software: Software): boolean {
+    return this.expandedSoftwareIds.has(software.id);
   }
 
   getSoftwareRilasci(software: Software): Rilascio[] {
@@ -83,6 +98,25 @@ export class DetailsModalComponent implements OnChanges {
         this.ambientiById.set(ambiente.id, ambiente);
       });
       this.ambientiCompletiLoaded = true;
+    });
+  }
+
+  private syncExpandedSoftwareState(): void {
+    const softwareList = this.cliente?.software ?? [];
+    const currentSoftwareIds = new Set<number>(
+      softwareList.map((software) => software.id),
+    );
+
+    this.expandedSoftwareIds.forEach((softwareId) => {
+      if (!currentSoftwareIds.has(softwareId)) {
+        this.expandedSoftwareIds.delete(softwareId);
+      }
+    });
+
+    softwareList.forEach((software) => {
+      if (!this.expandedSoftwareIds.has(software.id)) {
+        this.expandedSoftwareIds.add(software.id);
+      }
     });
   }
 }

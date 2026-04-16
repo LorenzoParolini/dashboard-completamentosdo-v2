@@ -118,6 +118,23 @@
                 {{ getNoteError() }}
               </div>
             </div>
+
+            <div class="form-field form-field-full" *ngIf="!software">
+              <label class="form-label">Cliente da associare</label>
+              <select
+                [(ngModel)]="clienteSelezionatoId"
+                name="clienteSelezionato"
+                class="form-select"
+              >
+                <option [value]="0">Nessuna associazione</option>
+                <option
+                  *ngFor="let cliente of clientiDisponibili"
+                  [value]="cliente.id"
+                >
+                  {{ cliente.descrizione }}
+                </option>
+              </select>
+            </div>
           </div>
 
           <div class="form-actions">

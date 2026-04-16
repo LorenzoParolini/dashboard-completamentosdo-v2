@@ -4,8 +4,8 @@ import {
   HttpHeaders,
   HttpErrorResponse,
 } from '@angular/common/http';
-import { Observable, forkJoin, map, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { Observable, forkJoin, map, of, throwError } from 'rxjs';
+import { catchError, switchMap, tap } from 'rxjs/operators';
 import { Software, SoftwareInputDTO } from '../models/software.model';
 import { Ambiente } from '../models/ambiente.model';
 
@@ -15,6 +15,7 @@ import { Ambiente } from '../models/ambiente.model';
 export class SoftwareService {
   private readonly baseUrl = 'http://localhost:8085/api/software';
   private readonly ambientiUrl = 'http://localhost:8085/api/ambienti';
+  private readonly assegnazioniUrl = 'http://localhost:8085/api/assegnazioni';
 
   private readonly httpOptions = {
     headers: new HttpHeaders({
@@ -105,12 +106,37 @@ export class SoftwareService {
   }
 
   //POST
-  addSoftware(newSoftware: SoftwareInputDTO): Observable<Software> {
+  addSoftware(
+    newSoftware: SoftwareInputDTO,
+    clienteIds: number[] = [],
+  ): Observable<Software> {
     // software.push(newSoftware);
     // return of(newSoftware);
     return this.http
       .post<Software>(this.baseUrl, newSoftware, this.httpOptions)
       .pipe(
+        switchMap((addedSoftware: Software) => {
+          const uniqueClienteIds = Array.from(
+            new Set(clienteIds.filter((id) => id > 0)),
+          );
+
+          if (uniqueClienteIds.length === 0) {
+            return of(addedSoftware);
+          }
+
+          const assegnazioniRequests = uniqueClienteIds.map((clienteId) =>
+            this.http.post(
+              this.assegnazioniUrl,
+              {
+                softwareId: addedSoftware.id,
+                clienteId,
+              },
+              this.httpOptions,
+            ),
+          );
+
+          return forkJoin(assegnazioniRequests).pipe(map(() => addedSoftware));
+        }),
         tap((addedSoftware: Software) =>
           console.log('Software aggiunto:', addedSoftware),
         ),

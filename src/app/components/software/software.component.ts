@@ -169,7 +169,7 @@ export class SoftwareComponent implements OnInit, OnDestroy {
     }
 
     modalRef.result.then(
-      (result: SoftwareModel) => {
+      (result: SoftwareModel & { clienteSelezionatoId?: number }) => {
         if (software) {
           // Modifica: converti in InputDTO e passa l'ID
           const softwareInputDTO = {
@@ -191,13 +191,19 @@ export class SoftwareComponent implements OnInit, OnDestroy {
             descrizione: result.descrizione,
             note: result.note,
           };
-          this.softwareService.addSoftware(softwareInputDTO).subscribe(() => {
-            // Ricarica la lista dai software aggiornati
-            this.softwareService.getAllSoftware().subscribe((data) => {
-              this.software = data;
-              this.applyFilters();
+          const clienteIds = result.clienteSelezionatoId
+            ? [result.clienteSelezionatoId]
+            : [];
+
+          this.softwareService
+            .addSoftware(softwareInputDTO, clienteIds)
+            .subscribe(() => {
+              // Ricarica la lista dai software aggiornati
+              this.softwareService.getAllSoftware().subscribe((data) => {
+                this.software = data;
+                this.applyFilters();
+              });
             });
-          });
         }
       },
       () => {},

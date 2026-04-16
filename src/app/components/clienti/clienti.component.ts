@@ -174,8 +174,19 @@ export class ClientiComponent implements OnInit, OnDestroy {
             descrizione: result.descrizione,
             regioneId: result.regione.id,
           };
+          const softwareIdsCorrenti = (cliente.software ?? []).map(
+            (sw) => sw.id,
+          );
+          const softwareIdsSelezionati = (result.software ?? []).map(
+            (sw) => sw.id,
+          );
           this.clientiService
-            .updateCliente(result.id, clienteInputDTO)
+            .updateCliente(
+              result.id,
+              clienteInputDTO,
+              softwareIdsSelezionati,
+              softwareIdsCorrenti,
+            )
             .subscribe(() => {
               // Ricarica la lista dai clienti aggiornati
               this.clientiService.getAllClienti().subscribe((data) => {
@@ -189,13 +200,16 @@ export class ClientiComponent implements OnInit, OnDestroy {
             descrizione: result.descrizione,
             regioneId: result.regione.id,
           };
-          this.clientiService.addCliente(clienteInputDTO).subscribe(() => {
-            // Ricarica la lista dai clienti aggiornati
-            this.clientiService.getAllClienti().subscribe((data) => {
-              this.clienti = data;
-              this.applyFilters();
+          const softwareIds = (result.software ?? []).map((sw) => sw.id);
+          this.clientiService
+            .addCliente(clienteInputDTO, softwareIds)
+            .subscribe(() => {
+              // Ricarica la lista dai clienti aggiornati
+              this.clientiService.getAllClienti().subscribe((data) => {
+                this.clienti = data;
+                this.applyFilters();
+              });
             });
-          });
         }
       },
       () => {},

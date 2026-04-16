@@ -11,8 +11,10 @@ import { Ambiente } from '../../../models/ambiente.model';
 import { Rilascio } from '../../../models/rilascio.model';
 import { SoftwareService } from '../../../services/software.service';
 import { AmbientiService } from '../../../services/ambienti.service';
+import { ClientiService } from '../../../services/clienti.service';
 import { MinimizedModalsService } from '../../../services/minimized-modals.service';
 import { ConfirmationModalComponent } from '../../confirmation-modal/confirmation-modal.component';
+import { Cliente } from '../../../models/cliente.model';
 
 export interface SoftwareDialogData {
   software?: Software;
@@ -39,9 +41,11 @@ export class SoftwareModalComponent implements OnInit {
 
   // Campo per il menu a tendina
   ambienteSelezionatoId: number = 0;
+  clienteSelezionatoId: number = 0;
 
   // Mock data per le select
   ambientiDisponibili: Ambiente[] = [];
+  clientiDisponibili: Cliente[] = [];
   expandedAmbienti = new Set<number>();
 
   private originalData: Software = {
@@ -65,6 +69,7 @@ export class SoftwareModalComponent implements OnInit {
     public activeModal: NgbActiveModal,
     private softwareService: SoftwareService,
     private ambientiService: AmbientiService,
+    private clientiService: ClientiService,
     private modalService: NgbModal,
     private minimizedModalsService: MinimizedModalsService,
   ) {}
@@ -83,6 +88,10 @@ export class SoftwareModalComponent implements OnInit {
       this.originalData.ambienti = this.enrichAmbientiConRilasci(
         this.originalData.ambienti,
       );
+    });
+
+    this.clientiService.getAllClienti().subscribe((clienti) => {
+      this.clientiDisponibili = clienti;
     });
 
     if (this.software) {
@@ -338,7 +347,10 @@ export class SoftwareModalComponent implements OnInit {
     );
 
     this.hasUnsavedChanges = false;
-    this.activeModal.close(this.nuovoSoftware);
+    this.activeModal.close({
+      ...this.nuovoSoftware,
+      clienteSelezionatoId: this.clienteSelezionatoId,
+    });
   }
 
   closeModal() {
@@ -445,6 +457,7 @@ export class SoftwareModalComponent implements OnInit {
     const formDataToSave = {
       ...this.nuovoSoftware,
       ambienteSelezionatoId: this.ambienteSelezionatoId,
+      clienteSelezionatoId: this.clienteSelezionatoId,
       // Salva anche lo stato originale per riferimento
       originalData: this.originalData,
     };

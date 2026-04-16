@@ -166,11 +166,23 @@
 }
 
 .software-header {
-  @apply bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-5 py-4 flex justify-between items-center;
+  @apply bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-5 py-4 flex justify-between items-center cursor-pointer;
+}
+
+.software-header:focus-visible {
+  @apply outline-none ring-2 ring-offset-2 ring-indigo-300 ring-offset-indigo-700;
 }
 
 .software-name {
   @apply text-base font-semibold m-0;
+}
+
+.software-toggle-icon {
+  @apply inline-flex items-center justify-center transition-transform duration-200;
+}
+
+.software-toggle-icon.expanded {
+  @apply rotate-180;
 }
 
 .software-details {
@@ -324,7 +336,7 @@
 }
 
 .rilascio-item {
-  @apply bg-gray-50 border border-gray-200 rounded-md p-3;
+  @apply relative bg-gray-50 border border-gray-200 rounded-md p-3;
 }
 
 :host-context(.dark) .rilascio-item {
@@ -351,8 +363,24 @@
   @apply text-gray-400;
 }
 
+.rilascio-badges {
+  @apply absolute right-3 bottom-3 m-0;
+}
+
+.rilascio-badge {
+  @apply inline-flex items-center text-xs font-medium px-2.5 py-1 rounded-full border;
+}
+
+.rilascio-badge-ambiente {
+  @apply text-emerald-800 bg-emerald-100 border-emerald-200;
+}
+
+:host-context(.dark) .rilascio-badge-ambiente {
+  @apply text-emerald-200 bg-emerald-900/40 border-emerald-700;
+}
+
 .rilascio-item-body {
-  @apply flex flex-col gap-1 text-xs text-gray-700;
+  @apply mt-2 flex flex-col gap-1 text-xs text-gray-700 pb-7 pr-24;
 }
 
 :host-context(.dark) .rilascio-item-body {

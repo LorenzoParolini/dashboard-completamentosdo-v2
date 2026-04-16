@@ -118,6 +118,10 @@ export class MinimizedModalsBarComponent implements OnInit, OnDestroy {
             modalRef.componentInstance.ambienteSelezionatoId =
               modal.formData.ambienteSelezionatoId;
           }
+          if (modal.formData.clienteSelezionatoId) {
+            modalRef.componentInstance.clienteSelezionatoId =
+              modal.formData.clienteSelezionatoId;
+          }
           modalRef.componentInstance.isRestoredFromMinimized = true;
         }
         break;

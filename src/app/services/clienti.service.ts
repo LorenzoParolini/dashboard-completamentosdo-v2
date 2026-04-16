@@ -4,8 +4,8 @@ import {
   HttpHeaders,
   HttpErrorResponse,
 } from '@angular/common/http';
-import { Observable, forkJoin, map, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { Observable, forkJoin, map, of, throwError } from 'rxjs';
+import { catchError, switchMap, tap } from 'rxjs/operators';
 import { Cliente, ClienteInputDTO } from '../models/cliente.model';
 import { Software } from '../models/software.model';
 import { Ambiente } from '../models/ambiente.model';
@@ -17,6 +17,7 @@ export class ClientiService {
   private readonly baseUrl = 'http://localhost:8085/api/clienti';
   private readonly softwareUrl = 'http://localhost:8085/api/software';
   private readonly ambientiUrl = 'http://localhost:8085/api/ambienti';
+  private readonly assegnazioniUrl = 'http://localhost:8085/api/assegnazioni';
 
   private readonly httpOptions = {
     headers: new HttpHeaders({
@@ -173,10 +174,35 @@ export class ClientiService {
   }
 
   //POST
-  addCliente(cliente: ClienteInputDTO): Observable<Cliente> {
+  addCliente(
+    cliente: ClienteInputDTO,
+    softwareIds: number[] = [],
+  ): Observable<Cliente> {
     return this.http
       .post<Cliente>(this.baseUrl, cliente, this.httpOptions)
       .pipe(
+        switchMap((newCliente: Cliente) => {
+          const uniqueSoftwareIds = Array.from(
+            new Set(softwareIds.filter((id) => id > 0)),
+          );
+
+          if (uniqueSoftwareIds.length === 0) {
+            return of(newCliente);
+          }
+
+          const assegnazioniRequests = uniqueSoftwareIds.map((softwareId) =>
+            this.http.post(
+              this.assegnazioniUrl,
+              {
+                softwareId,
+                clienteId: newCliente.id,
+              },
+              this.httpOptions,
+            ),
+          );
+
+          return forkJoin(assegnazioniRequests).pipe(map(() => newCliente));
+        }),
         tap((newCliente: Cliente) =>
           console.log('Cliente aggiunto:', newCliente),
         ),
@@ -184,10 +210,61 @@ export class ClientiService {
       );
   }
 
+  private syncClienteSoftwareAssignments(
+    clienteId: number,
+    currentSoftwareIds: number[],
+    nextSoftwareIds: number[],
+  ): Observable<void> {
+    const currentSet = new Set(currentSoftwareIds.filter((id) => id > 0));
+    const nextSet = new Set(nextSoftwareIds.filter((id) => id > 0));
+
+    const softwareDaAggiungere = Array.from(nextSet).filter(
+      (softwareId) => !currentSet.has(softwareId),
+    );
+    const softwareDaRimuovere = Array.from(currentSet).filter(
+      (softwareId) => !nextSet.has(softwareId),
+    );
+
+    if (softwareDaAggiungere.length === 0 && softwareDaRimuovere.length === 0) {
+      return of(void 0);
+    }
+
+    const aggiunteRequests = softwareDaAggiungere.map((softwareId) =>
+      this.http.post(
+        this.assegnazioniUrl,
+        { softwareId, clienteId },
+        this.httpOptions,
+      ),
+    );
+
+    const rimozioniRequests = softwareDaRimuovere.map((softwareId) =>
+      this.http.delete<void>(
+        `${this.assegnazioniUrl}/${softwareId}/${clienteId}`,
+        this.httpOptions,
+      ),
+    );
+
+    return forkJoin([...aggiunteRequests, ...rimozioniRequests]).pipe(
+      map(() => void 0),
+    );
+  }
+
   //PUT
-  updateCliente(id: number, cliente: ClienteInputDTO): Observable<Cliente> {
+  updateCliente(
+    id: number,
+    cliente: ClienteInputDTO,
+    nextSoftwareIds: number[] = [],
+    currentSoftwareIds: number[] = [],
+  ): Observable<Cliente> {
     const url = `${this.baseUrl}/${id}`;
     return this.http.put<Cliente>(url, cliente, this.httpOptions).pipe(
+      switchMap((updatedCliente: Cliente) =>
+        this.syncClienteSoftwareAssignments(
+          id,
+          currentSoftwareIds,
+          nextSoftwareIds,
+        ).pipe(map(() => updatedCliente)),
+      ),
       tap((updatedCliente: Cliente) =>
         console.log('Cliente aggiornato:', updatedCliente),
       ),

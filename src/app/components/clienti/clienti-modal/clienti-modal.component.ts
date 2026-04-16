@@ -116,15 +116,19 @@ export class ClientiModalComponent implements OnInit {
   }
 
   private normalizeSoftwareSelection() {
-    if (this.nuovoCliente.software.length > 1) {
-      this.nuovoCliente.software = [this.nuovoCliente.software[0]];
-    }
+    this.nuovoCliente.software = Array.from(
+      new Map(
+        this.nuovoCliente.software.map((software) => [software.id, software]),
+      ).values(),
+    );
 
-    if (this.originalData.software.length > 1) {
-      this.originalData.software = [this.originalData.software[0]];
-    }
+    this.originalData.software = Array.from(
+      new Map(
+        this.originalData.software.map((software) => [software.id, software]),
+      ).values(),
+    );
 
-    this.softwareSelezionatoId = this.nuovoCliente.software[0]?.id ?? 0;
+    this.softwareSelezionatoId = 0;
   }
 
   onFieldChange() {
@@ -322,10 +326,6 @@ export class ClientiModalComponent implements OnInit {
     this.softwareSelezionatoId = softwareId;
 
     if (softwareId === 0) {
-      if (this.nuovoCliente.software.length > 0) {
-        this.nuovoCliente.software = [];
-        this.onFieldChange();
-      }
       return;
     }
 
@@ -336,14 +336,19 @@ export class ClientiModalComponent implements OnInit {
       return;
     }
 
-    const softwareAttualeId = this.nuovoCliente.software[0]?.id;
-    if (
-      this.nuovoCliente.software.length !== 1 ||
-      softwareAttualeId !== softwareId
-    ) {
-      this.nuovoCliente.software = [softwareSelezionato];
+    const softwareGiaAssociato = this.nuovoCliente.software.some(
+      (software) => software.id === softwareId,
+    );
+
+    if (!softwareGiaAssociato) {
+      this.nuovoCliente.software = [
+        ...this.nuovoCliente.software,
+        softwareSelezionato,
+      ];
       this.onFieldChange();
     }
+
+    this.softwareSelezionatoId = 0;
   }
 
   // Rimuove un software dalla lista

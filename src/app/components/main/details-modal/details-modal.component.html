@@ -148,11 +148,37 @@
               trackBy: trackBySoftwareId
             "
           >
-            <div class="software-header">
+            <div
+              class="software-header"
+              role="button"
+              tabindex="0"
+              [attr.aria-expanded]="isSoftwareExpanded(software)"
+              (click)="toggleSoftwareDetails(software)"
+              (keydown.enter)="toggleSoftwareDetails(software)"
+              (keydown.space)="
+                toggleSoftwareDetails(software); $event.preventDefault()
+              "
+            >
               <h4 class="software-name">{{ software.descrizione }}</h4>
+              <span
+                class="software-toggle-icon"
+                [class.expanded]="isSoftwareExpanded(software)"
+                aria-hidden="true"
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </span>
             </div>
 
-            <div class="software-details">
+            <div class="software-details" *ngIf="isSoftwareExpanded(software)">
               <div class="software-detail-grid">
                 <div class="detail-item" *ngIf="software.note">
                   <span class="detail-label">Note:</span>
@@ -191,10 +217,12 @@
                         rilascio.ultimoAggiornamento | date: "dd/MM/yyyy HH:mm"
                       }}</span>
                     </div>
+                    <div class="rilascio-badges">
+                      <span class="rilascio-badge rilascio-badge-ambiente">{{
+                        getAmbienteDescrizione(rilascio)
+                      }}</span>
+                    </div>
                     <div class="rilascio-item-body">
-                      <span
-                        >Ambiente: {{ getAmbienteDescrizione(rilascio) }}</span
-                      >
                       <span>Branch: {{ rilascio.branch || "N/A" }}</span>
                       <span>Build: {{ rilascio.build || "N/A" }}</span>
                       <span
