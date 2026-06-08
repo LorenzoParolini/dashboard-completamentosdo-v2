@@ -21,17 +21,21 @@
   @apply absolute right-2 p-2.5 rounded-lg transition-all duration-200 hover:bg-indigo-600 bg-gradient-to-r from-indigo-500 to-purple-600 shadow-md;
   transition: transform 0.18s cubic-bezier(0.4, 0, 0.2, 1);
   will-change: transform;
-} 
+}
+
 .search-button:hover {
   transform: scale(1.08);
 }
+
 .search-button:active {
   transform: scale(0.93);
 }
+
 .search-button .search-icon {
   transition: transform 0.18s cubic-bezier(0.4, 0, 0.2, 1);
   display: inline-block;
 }
+
 .search-button:hover .search-icon {
   transform: rotate(-16deg);
 }

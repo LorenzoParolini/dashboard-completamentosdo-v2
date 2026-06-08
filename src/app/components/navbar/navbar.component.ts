@@ -10,7 +10,6 @@ import { SearchbarComponent } from './searchbar/searchbar.component';
 import { FilterOffcanvasComponent } from './filter-offcanvas/filter-offcanvas.component';
 import { FilterService } from '../../services/filter.service';
 import { FilterCriteria } from '../../services/filter-utils.service';
-import { ThemeService } from '../../services/theme.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -30,16 +29,13 @@ export class NavbarComponent implements OnInit, OnDestroy {
   isFilterOffcanvasOpen = false;
   currentView: 'D' | 'R' | 'C' | 'S' | 'A' | 'L' = 'D';
   activeFiltersCount = 0;
-  isDarkTheme = false;
   filterResetVersion = 0;
   private filterSubscription: Subscription = new Subscription();
-  private themeSubscription: Subscription = new Subscription();
   private routeSubscription: Subscription = new Subscription();
   private currentRoutePath = '';
 
   constructor(
     private filterService: FilterService,
-    private themeService: ThemeService,
     private router: Router,
   ) {}
 
@@ -52,13 +48,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.filterSubscription = this.filterService.filters$.subscribe(
       (filters) => {
         this.activeFiltersCount = this.countActiveFilters(filters);
-      },
-    );
-
-    // Subscribe ai cambiamenti del tema
-    this.themeSubscription = this.themeService.darkTheme$.subscribe(
-      (isDark) => {
-        this.isDarkTheme = isDark;
       },
     );
 
@@ -84,7 +73,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.filterSubscription.unsubscribe();
-    this.themeSubscription.unsubscribe();
     this.routeSubscription.unsubscribe();
   }
 
@@ -202,12 +190,5 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   onClickRilascio() {
     this.switchView('L');
-  }
-
-  /**
-   * Toggle del tema scuro
-   */
-  toggleTheme(): void {
-    this.themeService.toggleTheme();
   }
 }

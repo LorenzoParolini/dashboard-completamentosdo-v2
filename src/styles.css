@@ -4,16 +4,13 @@
 
 /* You can add global styles to this file, and also import other style files */
 body {
-    background: #ffffff;
+    background: #111827;
+    color: #f3f4f6;
     margin: 0;
     transition: background-color 0.3s ease;
 }
 
-/* Dark theme styles */
-.dark body {
-    @apply bg-gray-900 text-gray-100;
-}
-
-.dark {
+/* Tema scuro applicato per impostazione predefinita */
+html {
     color-scheme: dark;
 }

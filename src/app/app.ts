@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 import { NavbarComponent } from './components/navbar/navbar.component';
@@ -16,6 +16,11 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
   templateUrl: './app.html',
   styleUrls: ['./app.css'],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   protected title = 'dashboard-project';
+
+  ngOnInit(): void {
+    // Applica il tema scuro come unico tema
+    document.documentElement.classList.add('dark');
+  }
 }
